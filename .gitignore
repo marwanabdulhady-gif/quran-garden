@@ -1,0 +1,28 @@
+# Dependencies
+node_modules/
+
+# Builds
+dist/
+dev-dist/
+build/
+out/
+coverage/
+
+# Vite / tooling caches
+.vite/
+*.local
+.env
+.env.*
+
+# Logs & OS cruft
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Misc
+*.tsbuildinfo

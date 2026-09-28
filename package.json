@@ -1,0 +1,34 @@
+{
+  "name": "quran-garden",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ssr": "node tests/ssr-smoke.mjs",
+    "lint": "eslint src tests",
+    "format": "prettier --write \"src/**/*.{js,jsx}\" \"tests/**/*.{js,mjs,jsx}\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx}\" \"tests/**/*.{js,mjs,jsx}\""
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^8.57.1",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "happy-dom": "^15.11.7",
+    "prettier": "^3.9.9",
+    "vite": "^5.4.11",
+    "vite-plugin-pwa": "^1.3.0",
+    "vitest": "^2.1.9"
+  }
+}
