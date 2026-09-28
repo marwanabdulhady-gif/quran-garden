@@ -15,7 +15,7 @@ function childSurah(listening) {
     if (p?.heard && !p.completed) return n;
   }
   for (const n of ALL_SURAHS) if (!listening[n]?.completed) return n;
-  return 77;
+  return ALL_SURAHS[ALL_SURAHS.length - 1] || 77;
 }
 
 function GateSection({ gate, listening, go }) {
@@ -90,7 +90,7 @@ export default function JourneyMap({ go }) {
     sfx.ok();
     setQ('');
     setJumpTo('');
-    const gate = n <= 66 ? GATES[1] : GATES[0];
+    const gate = GATES.find((g) => n >= g.from && n <= g.to) || GATES[0];
     go('player', { gate: gate.id, surah: n });
   };
 
@@ -198,6 +198,11 @@ export default function JourneyMap({ go }) {
               {n === 58 && (
                 <div className="map-sep">
                   <GateSection gate={GATES[1]} listening={listening} go={go} />
+                </div>
+              )}
+              {n === 78 && (
+                <div className="map-sep">
+                  <GateSection gate={GATES[2]} listening={listening} go={go} />
                 </div>
               )}
               <button

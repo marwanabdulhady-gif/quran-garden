@@ -1,5 +1,6 @@
 // بيانات الحديقة: كلمات جسر المعاني (جزء عمّ ٧٨–١١٤)، الرحلات، الزينة، القراء
 // المعاني كتابتها مبسّطة بأسلوب خاص للتطبيق.
+import { JUZ30 } from './juz30.js';
 
 export const WORDS = [
   {
@@ -397,6 +398,14 @@ export const GATES = [
     from: 58,
     to: 66,
   },
+  {
+    id: 'amma',
+    img: '/assets/gate-amma.jpg',
+    title: 'بوابة جزء عمّ',
+    sub: 'الجزء الثلاثون · من النبأ إلى الناس · ٣٧ سورة',
+    from: 78,
+    to: 114,
+  },
 ];
 
 // عدد آيات سور الرحلتين (احتياطي، يُحدَّث من الواجهة)
@@ -421,6 +430,8 @@ export const SURAH_META = {
   75: 40,
   76: 31,
   77: 50,
+  // جزء عمّ (٧٨–١١٤): عدد الآيات بيتاشتق من النص المدمج نفسه — ما بيفصلوش عن juz30.js أبدًا
+  ...Object.fromEntries(Object.entries(JUZ30).map(([n, ayahs]) => [n, ayahs.length])),
 };
 export const JOURNEY_TOTAL_AYAHS = Object.values(SURAH_META).reduce((a, b) => a + b, 0);
 

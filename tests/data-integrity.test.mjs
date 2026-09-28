@@ -99,4 +99,31 @@ describe('بنية بيانات الجسر', () => {
       expect(w.ayahNum, w.id).toBeLessThanOrEqual(J[w.surah].length);
     }
   });
+
+  it('البوابات الثلاث بتغطي ٥٨–١١٤ متصلة بدون فجوات أو تداخل (بوابة جزء عمّ)', () => {
+    expect(D.GATES.length).toBeGreaterThanOrEqual(3);
+    const amma = D.GATES.find((g) => g.id === 'amma');
+    expect(amma).toBeTruthy();
+    expect(amma.from).toBe(78);
+    expect(amma.to).toBe(114);
+    // المدى مرتب ومتصلة: من أول from لآخر to ما فيش رقم سورة برّه بوابة
+    const ranges = [...D.GATES].sort((a, b) => a.from - b.from);
+    let expected = ranges[0].from;
+    for (const g of ranges) {
+      expect(g.from, g.id).toBe(expected);
+      expect(g.to, g.id).toBeGreaterThanOrEqual(g.from);
+      expected = g.to + 1;
+    }
+    expect(expected).toBe(115); // ٥٨ → ١١٤ كاملة
+    // كل بوابة ليها لافتة مرسومة
+    for (const g of D.GATES) expect(g.img).toMatch(/^\/assets\/gate-.*\.(jpg|png)$/);
+  });
+
+  it('SURAH_META مطابقة للنص المدمج لجزء عمّ (عدد آيات كل سورة ٧٨–١١٤)', () => {
+    for (const n of Object.keys(J).map(Number)) {
+      expect(D.SURAH_META[n], 'سورة ' + n).toBe(J[n].length);
+    }
+    expect(Object.keys(D.SURAH_META).length).toBe(57); // ٥٨–١١٤
+    expect(D.JOURNEY_TOTAL_AYAHS).toBe(1132); // ٥٦٨ (تبارك+قد سمع) + ٥٦٤ (عمّ)
+  });
 });

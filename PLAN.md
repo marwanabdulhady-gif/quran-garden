@@ -217,11 +217,9 @@ ESLint (react-hooks, no-unused) + Prettier (RTL-safe config). Optionally `JSDoc`
 
 **P5 shipped details:** schema v3 (`migrateV2ToV3` = stats+parent on every child, dogfoods the P4 chain; `safeStats`/`safeParent` type-guarded with size caps); 10 round-2 words verified against the embedded Uthmani text (`matchForm` + `splitWord`, e.g. عَلَقٍ 96:2, كَبَدٍ 90:4, وَجُوهٌ 80:38, ٱلْفَوْزُ 85:11, مُخْلِصِينَ 98:5, يَغْشَى 91:4, ٱلثَّاقِبُ 86:3, ٱلْفَجْرِ 89:1, يَسْعَى 80:8, ٱلْحُطَمَةِ 104:5); two real bugs caught while wiring (Bridge `byId` only searched round 1; store `WORD_IDS` sanitizer dropped round-2 words on reload); pre-existing `go('gate', gate.id)` param bug fixed (fell back to first gate); tests now 368 (was 343): +10 round-2 data-integrity, +2 tafakkur rotation, +9 stats/parent store tests, +3 v3 migration, +2 share-card stats.
 
----
-
 ## P6 — Visual enrichment II: the illustrated world layer 🎨
 
-> **Status (2026-09-28): waves 1–4 shipped and verified — 14/14 assets generated, optimized & wired (760 KB total, precache 55 entries ≈ 6.1 MB). Waves 5–6 planned below.**
+> **Status (2026-09-28): waves 1–4 shipped and verified — 15 assets generated, optimized & wired (817 KB total, incl. the عمّ gate banner from P7). Waves 5–6 planned below.**
 > P3 gave every screen a watercolor background and the hero his poses — but the app's **content** surfaces are still carried by emoji: trip cards, gate headers, tafakkur cards, badge medals, garden decor. This phase replaces the emoji that carry the most emotional weight with generated watercolor art, in the same locked style, under a strict byte budget so the PWA precache stays healthy.
 >
 > **Shipped:** 6 trip scenes → Bridge card thumbs + step banners (locked round-2 = grayscale + 🔒) · 2 gate banners → gate intro + list head (replaced the bouncing 🏰) · 4 tafakkur illustrations → Daily تأمل الأسبوع card (all four weekly cards now rotate art too) · rosette frame behind every earned badge (wall + celebrations) · golden trophy sticker on trip-complete/round-2 celebrations + as the round-2 badge art on the wall.
@@ -264,6 +262,7 @@ no numbers, no watermark.
 | 6 | سماء وفجر scene | `trip-6-fajr.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
 | 7 | بوابة جزء تبارك banner | `gate-tabarak.jpg` | 800×280 | Listening gate head | 2 ✅ |
 | 8 | بوابة قد سمع banner | `gate-qadsama.jpg` | 800×280 | Listening gate head | 2 ✅ |
+| 8b | بوابة جزء عمّ banner | `gate-amma.jpg` | 800×280 | Listening gate head — added with the عمّ gate (P7) | 2 ✅ |
 | 9 | تأمل الطيور | `tafa-birds.jpg` | 480×360 | Daily tafakkur card | 3 ✅ |
 | 10 | تأمل السماوات | `tafa-heavens.jpg` | 480×360 | same | 3 ✅ |
 | 11 | تأمل الماء | `tafa-water.jpg` | 480×360 | same | 3 ✅ |
@@ -311,6 +310,24 @@ no numbers, no watermark.
 2. New files counted against the budget table — anything over budget gets re-compressed, not shipped fat.
 3. Live-preview pass on a 360 px viewport: contrast, RTL alignment, reduced-motion (no new animation on transparent art beyond existing gates).
 4. PWA: new assets land in the precache manifest automatically (`globPatterns` covers jpg/png) — verify `dist/sw.js` count grows by exactly the shipped files.
+
+---
+
+## P7 — بوابة جزء عمّ (فجوة اكتشفها مستخدم) ✅
+
+> **Problem (user report, 2026-09-28):** «انا لا اجد جزء عم» — the listening gates covered juz 28–29 only (قد سمع ٥٨–٦٦ + تبارك ٦٧–٧٧). Juz 30 existed as *text* (bridge words, كلماتي, آية اليوم — all from 78–114) but had **no listening gate and no place on the journey map** — odd for the juz every kid memorizes first.
+
+- **What shipped:**
+  - `GATES` += `amma` (78–114, النبأ→الناس, 37 surahs) — the gate engine is fully generic (`from`/`to`), so the gate list, player, celebration, review-by-listening, and parent-mode caps all work out of the box.
+  - `SURAH_META` now derives the 78–114 ayah counts **from `JUZ30` itself** (`Object.fromEntries` spread in data.js) — the map and the embedded text can never disagree.
+  - Journey map covers 58–114 (57 surahs, `JOURNEY_TOTAL_AYAHS` 568 → 1132), a third `GateSection` at surah 78, and `jump()` resolves the gate by range instead of a hardcoded ternary.
+  - `gate-amma.jpg` — rose-wrapped arch banner in the locked watercolor style (57 KB, P6 pipeline).
+  - Settings «كيف نظبط رحلتنا؟» copy updated to name all three gates.
+- **Offline:** juz-30 text is embedded, so the amma gate list + ayah texts work offline (audio shows the usual «التلاوة تحتاج إنترنت» notice); `sanitizeChild` already accepted listening keys 1–114, so old saves are unaffected.
+- **Tests added (`data-integrity`):** gates are contiguous 58→114 with no gaps/overlaps and every gate has a banner; `SURAH_META[n] === JUZ30[n].length` for all of 78–114; 57 surahs; total = 1132.
+- **Accept:** ✅ user can find جزء عمّ from the garden → map (or gate route), listen ayah-by-ayah, and the search box finds النبأ/الناس etc.
+
+---
 
 ---
 
