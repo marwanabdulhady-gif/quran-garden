@@ -193,3 +193,29 @@ describe('كاش IndexedDB المتواصل (مُرقّم) + SWR', () => {
     expect(list2).toHaveLength(3, 'قائمة محفوظة من الكاش المتواصل');
   });
 });
+
+// ============================================================
+describe('النص المدمج لجزء قد سمع وتبارك (أوفلاين — P8)', () => {
+  it('بدون إنترنت: سور ٥٨–٧٧ بترجع من النص المدمج (نص فقط بلا تلاوة)', async () => {
+    globalThis.fetch = vi.fn(async () => {
+      throw new Error('offline');
+    });
+    const Fresh = await import('../src/api.js' + '?freshjuz=' + Date.now());
+    // جزء تبارك: الملك
+    const s67 = await Fresh.getSurah(67, 'ar.husary');
+    expect(s67.offline).toBe(true);
+    expect(s67.numberOfAyahs).toBe(30);
+    expect(s67.ayahs[0].text).toContain('تَبَٰرَكَ');
+    expect(s67.ayahs[0].audio).toBeNull();
+    // جزء قد سمع: المجادلة
+    const s58 = await Fresh.getSurah(58, 'ar.husary');
+    expect(s58.offline).toBe(true);
+    expect(s58.numberOfAyahs).toBe(22);
+    // جزء عمّ لسه شغال زي ما كان
+    const s114 = await Fresh.getSurah(114, 'ar.husary');
+    expect(s114.offline).toBe(true);
+    expect(s114.numberOfAyahs).toBe(6);
+    // سورة برّه ٥٨–١١٤ مفيش لها نص مدمج → خطأ صريح
+    await expect(Fresh.getSurah(1, 'ar.husary')).rejects.toThrow();
+  });
+});

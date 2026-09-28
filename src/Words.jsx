@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useGarden, activeChild, markWord, wordState, awardStars, discoveredCount } from './store.js';
-import { WORDS, WORDS_R2, TRIPS, SURAH_NAMES_FALLBACK } from './data.js';
+import { WORDS, WORDS_R2, WORDS_R3, WORDS_R4, SURAH_NAMES_FALLBACK } from './data.js';
 import { getSurah } from './api.js';
 import { Modal, Confetti, useAudio, Loading, ErrorBox, readAyah, EmptyState, flyStar } from './Shared.jsx';
 import { sfx } from './sound.js';
@@ -19,7 +19,7 @@ function WordCard({ word, child, onOpen, style, locked = false }) {
         {SURAH_NAMES_FALLBACK[word.surah]} · {word.ayahNum}
       </div>
       <div className="w-status">
-        {locked ? 'بتتفتح بعد الجولة الأولى' : ws.done ? 'اكتشفت معناها ✓' : 'اكتشف معناها'}
+        {locked ? '🔒 كمّل الجولة اللي قبلها' : ws.done ? 'اكتشفت معناها ✓' : 'اكتشف معناها'}
       </div>
     </button>
   );
@@ -138,8 +138,20 @@ export default function Words({ go }) {
   const child = activeChild(s);
   const [open, setOpen] = useState(null);
   const disc = discoveredCount(child);
-  const r1Complete = WORDS.every((w) => wordState(child, w.id).done);
-  const reviewed = [...WORDS, ...WORDS_R2].filter((w) => wordState(child, w.id).done).length;
+  const allWords = [...WORDS, ...WORDS_R2, ...WORDS_R3, ...WORDS_R4];
+  const reviewed = allWords.filter((w) => wordState(child, w.id).done).length;
+
+  // كل جولة بتتفتح لما اللي قبلها تكتمل (زي الجسر بالظبط)
+  const roundDone = (list) => list.every((w) => wordState(child, w.id).done);
+  const r1Complete = roundDone(WORDS);
+  const r2Complete = roundDone(WORDS_R2);
+  const r3Complete = roundDone(WORDS_R3);
+  const WORD_ROUNDS = [
+    { words: WORDS, locked: false, note: null },
+    { words: WORDS_R2, locked: !r1Complete, note: '🔒 كلمات الجولة الثانية بتتفتح لما تكتمل الجولة الأولى' },
+    { words: WORDS_R3, locked: !r2Complete, note: '🔒 كلمات جزء تبارك بتتفتح لما تكتمل الجولة الثانية' },
+    { words: WORDS_R4, locked: !r3Complete, note: '🔒 كلمات جزء قد سمع بتتفتح لما تكتمل الجولة الثالثة' },
+  ];
 
   return (
     <div className="screen words-screen">
@@ -169,12 +181,12 @@ export default function Words({ go }) {
         <>
           <div className="words-head">
             <h1>مجموعة صغيرة تكبر معك 🌿</h1>
-            <p>راجعت {reviewed} من أصل ٣٠. افتح أي بطاقة لتتعلّم معناها ومصدره.</p>
+            <p>راجعت {reviewed} من أصل ٥٠. افتح أي بطاقة لتتعلّم معناها ومصدره.</p>
           </div>
 
           <div className="journey-stats">
             <div className="stat-card">
-              <div className="num">{disc} / ٣٠</div>
+              <div className="num">{disc} / ٥٠</div>
               <div className="lbl">🌱 الكلمات المكتشفة</div>
             </div>
           </div>
@@ -194,35 +206,25 @@ export default function Words({ go }) {
       )}
 
       <div className="words-grid">
-        {WORDS.map((w, i) => (
-          <WordCard
-            key={w.id}
-            word={w}
-            child={child}
-            style={{ '--i': i }}
-            onOpen={(word) => {
-              sfx.tap();
-              setOpen(word);
-            }}
-          />
-        ))}
-        {WORDS_R2.map((w, i) => (
-          <WordCard
-            key={w.id}
-            word={w}
-            child={child}
-            locked={!r1Complete}
-            style={{ '--i': i }}
-            onOpen={(word) => {
-              sfx.tap();
-              setOpen(word);
-            }}
-          />
+        {WORD_ROUNDS.map((round, ri) => (
+          <React.Fragment key={ri}>
+            {round.words.map((w, i) => (
+              <WordCard
+                key={w.id}
+                word={w}
+                child={child}
+                locked={round.locked}
+                style={{ '--i': i }}
+                onOpen={(word) => {
+                  sfx.tap();
+                  setOpen(word);
+                }}
+              />
+            ))}
+            {round.locked && round.note && <p className="center muted r2-note">{round.note}</p>}
+          </React.Fragment>
         ))}
       </div>
-      {!r1Complete && (
-        <p className="center muted r2-note">🔒 الجولات العشر الجديدة بتتفتح لما تكتمل الجولة الأولى على جسر المعاني</p>
-      )}
 
       {open && <WordDetail word={open} child={child} onClose={() => setOpen(null)} />}
     </div>

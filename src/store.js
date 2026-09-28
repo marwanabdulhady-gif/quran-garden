@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { BADGES, DECOR, LEVELS, RECIERS, WORDS, WORDS_R2 } from './data.js';
+import { BADGES, DECOR, LEVELS, RECIERS, WORDS, WORDS_R2, WORDS_R3, WORDS_R4 } from './data.js';
 
 /**
  * شكل بيانات الطفل (النسخة المرقّمة SCHEMA_VERSION).
@@ -157,7 +157,7 @@ function safeParent(raw) {
   };
 }
 
-const WORD_IDS = new Set([...WORDS, ...WORDS_R2].map((w) => w.id)); // كل كلمات الجولتين (P5-31)
+const WORD_IDS = new Set([...WORDS, ...WORDS_R2, ...WORDS_R3, ...WORDS_R4].map((w) => w.id)); // كل كلمات الجولات الأربع (عمّ + تبارك + قد سمع)
 const BADGE_IDS = new Set(Object.keys(BADGES));
 const DECOR_IDS = new Set(DECOR.map((d) => d.id));
 const RECIER_IDS = new Set(RECIERS.map((r) => r.id));
@@ -753,7 +753,7 @@ export function progressSummary(child) {
   const streak = streakOf(child);
   if (disc === 0 && surahsDone === 0 && streak === 0 && (child.daily?.waterStreak || 0) === 0) return 'جاهز للرحلة 🌿';
   const parts = [];
-  if (disc > 0) parts.push(`اكتشف ${disc} من ٣٠ كلمة`);
+  if (disc > 0) parts.push(`اكتشف ${disc} من ٥٠ كلمة`);
   if (surahsDone > 0) parts.push(`أتم الاستماع لـ${surahsDone} سورة`);
   if (streak >= 2) parts.push(`🔥 ${streak} أيام متتالية`);
   return parts.length ? parts.join(' · ') : 'جاهز للرحلة 🌿';

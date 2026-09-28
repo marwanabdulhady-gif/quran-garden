@@ -1,5 +1,5 @@
 // بطاقة تقدم قابلة للمشاركة (P5-33): PNG يرسمها الكانفس — اسم الطفل، النجوم، الأوسمة، الكلمات، السلسلة.
-import { BADGES, WORDS, WORDS_R2 } from './data.js';
+import { BADGES, WORDS, WORDS_R2, WORDS_R3, WORDS_R4 } from './data.js';
 import { streakOf, discoveredCount } from './store.js';
 
 const AR_MONTHS = [
@@ -30,7 +30,7 @@ export function collectShareStats(child, d = new Date()) {
     badgesEarned: earned.length,
     badgesTotal: Object.keys(BADGES).length,
     words: discoveredCount(child),
-    wordsTotal: WORDS.length + (WORDS_R2 ? WORDS_R2.length : 0),
+    wordsTotal: WORDS.length + (WORDS_R2?.length || 0) + (WORDS_R3?.length || 0) + (WORDS_R4?.length || 0),
     streak: streakOf(child),
     listeningMin: Math.round((child.stats?.seconds || 0) / 60),
     badgeEmojis: emojis,

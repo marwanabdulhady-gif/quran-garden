@@ -357,7 +357,7 @@ export default function Garden({ go }) {
         >
           <span className="ico">📖</span>
           كلماتي
-          <span className="sub">٣٠ كلمة</span>
+          <span className="sub">٥٠ كلمة</span>
         </button>
         <button
           className="nav-pill"

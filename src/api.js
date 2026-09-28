@@ -2,6 +2,7 @@
 // مع نسخة احتياطية بدون إنترنت: جزء عمّ (٧٨–١١٤) مدمج في التطبيق (نص فقط)
 // P4: مهلة fetch + إعادة محاولة واحدة، وكاش متواصل في IndexedDB (مُرقّم)
 import { JUZ30 } from './juz30.js';
+import { JUZ28_29 } from './juz28-29.js';
 import { SURAH_NAMES_FALLBACK, SURAH_META } from './data.js';
 
 const BASE = 'https://api.alquran.cloud/v1';
@@ -106,9 +107,12 @@ function refreshInBackground(key, fn) {
     .catch(() => {});
 }
 
+// النص المدمج: جزء عمّ + تبارك + قد سمع (٥٨–١١٤) — نصوص أوفلاين كاملة
+const EMBEDDED = { ...JUZ28_29, ...JUZ30 };
+
 // سورة من النسخة المدمجة (بدون تلاوة صوتية)
 function offlineSurah(n) {
-  const texts = JUZ30[n];
+  const texts = EMBEDDED[n];
   if (!texts) return null;
   return {
     number: n,

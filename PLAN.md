@@ -260,6 +260,10 @@ no numbers, no watermark.
 | 4 | حديقة الفوانيس scene | `trip-4-fawanis.jpg` | 720×300 | same | 1 ✅ |
 | 5 | مغامرة الخلق scene | `trip-5-khalq.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
 | 6 | سماء وفجر scene | `trip-6-fajr.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
+| 6b | تاج المُلك scene | `trip-7-taj.jpg` | 720×300 | same (juz-29 trip, added with P8) | — ✅ |
+| 6c | دروب الوحي scene | `trip-8-wahy.jpg` | 720×300 | same (juz-29 trip, added with P8) | — ✅ |
+| 6d | ميزان الحشر scene | `trip-9-mizan.jpg` | 720×300 | same (juz-28 trip, added with P8) | — ✅ |
+| 6e | أسرار الأسفار scene | `trip-10-asfar.jpg` | 720×300 | same (juz-28 trip, added with P8) | — ✅ |
 | 7 | بوابة جزء تبارك banner | `gate-tabarak.jpg` | 800×280 | Listening gate head | 2 ✅ |
 | 8 | بوابة قد سمع banner | `gate-qadsama.jpg` | 800×280 | Listening gate head | 2 ✅ |
 | 8b | بوابة جزء عمّ banner | `gate-amma.jpg` | 800×280 | Listening gate head — added with the عمّ gate (P7) | 2 ✅ |
@@ -328,6 +332,20 @@ no numbers, no watermark.
 - **Accept:** ✅ user can find جزء عمّ from the garden → map (or gate route), listen ayah-by-ayah, and the search box finds النبأ/الناس etc.
 
 ---
+
+---
+
+## P8 — ترتيب الرحلة + كلمات تبارك وقد سمع ✅
+
+> **User request (2026-09-28):** «خلي ترتيب الرحلة بيبدا من جزء 30 بعدين 29 بعدين 28 وفي كلماتي زود كلمات من جزء29 و 28 بنفس النمط»
+
+- **Journey order:** `ALL_SURAHS` in JourneyMap is now 78–114 → 67–77 → 58–66 (the natural kids' ḥifẓ order); `GATES` reordered `[amma, tabarak, qadsama]`; gate sections render at surahs 78/67/58; `jump()` resolves gates by range; `childSurah()` follows the new order (a fresh child starts at النبأ).
+- **20 new words, same pattern:** `WORDS_R3` (10 from juz 29) + `WORDS_R4` (10 from juz 28), each verified programmatically against the embedded Uthmani text (exact token extraction + uniqueness + `splitWord` highlight in both reading modes). Trips: 7 «تاج المُلك» 👑 + 8 «دروب الوحي» 🕊️ (juz 29), 9 «ميزان الحشر» ⚖️ + 10 «أسرار الأسفار» 📚 (juz 28) — full round gating (R2 after R1, R3 after R2, R4 after R3) in both Bridge and Words.
+- **New badges:** trip7–trip10 + «بطل ثلاثة أجزاء» 🎖️ at word 50.
+- **Offline for all three juz:** `src/juz28-29.js` (568 ayahs, 53 KB) — byte-identical edition to `juz30.js` (verified 564/564 ayahs of 78–114 match the existing embedded file); `api.js` offline fallback now serves 58–114 from `{...JUZ28_29, ...JUZ30}` (audio still needs net).
+- **Art:** 4 new watercolor trip scenes (~170 KB) in the locked style.
+- **Tests:** data-integrity now asserts 50 unique words / 10 trips / round surah ranges (67–77, 58–66) / trip scenes / gate order; api.test gained the juz-28–29 offline fallback case → **351 passing** (+22), lint/format/SSR 12/12/build green (precache 60 entries ≈ 6.4 MB).
+- **How the text was sourced:** api.alquran.cloud is blocked from the sandbox network → pulled the same Tanzil/Uthmani edition from the `@faha1999/al-quran-database` npm package and verified byte-identity against `juz30.js` before building the file.
 
 ---
 

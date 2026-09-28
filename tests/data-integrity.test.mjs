@@ -4,11 +4,12 @@ import { describe, it, expect } from 'vitest';
 
 const D = await import('../src/data.js');
 const T = await import('../src/text.js');
-const J = (await import('../src/juz30.js')).JUZ30;
+// النص المدمج الموحد: جزء قد سمع + تبارك (juz28-29) + جزء عمّ (juz30) — ٥٨–١١٤
+const J = { ...(await import('../src/juz28-29.js')).JUZ28_29, ...(await import('../src/juz30.js')).JUZ30 };
 
-// الجولة الثانية (P5-31): الجولتين مع بعض — 30 كلمة في 6 رحلات
-const ALL = [...D.WORDS, ...(D.WORDS_R2 || [])];
-const ALL_TRIPS = [...D.TRIPS, ...(D.TRIPS_R2 || [])];
+// الجولات الأربع (P8): عمّ (جولتان) + تبارك + قد سمع — 50 كلمة في 10 رحلات
+const ALL = [...D.WORDS, ...(D.WORDS_R2 || []), ...(D.WORDS_R3 || []), ...(D.WORDS_R4 || [])];
+const ALL_TRIPS = [...D.TRIPS, ...(D.TRIPS_R2 || []), ...(D.TRIPS_R3 || []), ...(D.TRIPS_R4 || [])];
 
 describe('كل كلمات الجسر (30 في الجولتين) اتلقت في آيتها بالضبط', () => {
   for (const w of ALL) {
@@ -41,17 +42,20 @@ describe('كل كلمات الجسر (30 في الجولتين) اتلقت في 
 });
 
 describe('بنية بيانات الجسر', () => {
-  it('30 كلمة بدون تكرار id (الجولتين)', () => {
-    expect(ALL).toHaveLength(30);
-    expect(new Set(ALL.map((w) => w.id)).size).toBe(30);
+  it('50 كلمة بدون تكرار id (الجولات الأربع)', () => {
+    expect(ALL).toHaveLength(50);
+    expect(new Set(ALL.map((w) => w.id)).size).toBe(50);
     expect(D.WORDS).toHaveLength(20);
     expect(D.WORDS_R2).toHaveLength(10);
+    expect(D.WORDS_R3).toHaveLength(10);
+    expect(D.WORDS_R4).toHaveLength(10);
   });
 
-  it('6 رحلات × 5 كلمات = كل الكلمات مرة واحدة (الجولتين)', () => {
+  it('10 رحلات × 5 كلمات = كل الكلمات مرة واحدة (الجولات الأربع)', () => {
     const ids = ALL_TRIPS.flatMap((t) => t.words);
-    expect(ids).toHaveLength(30);
-    expect(new Set(ids).size).toBe(30);
+    expect(ids).toHaveLength(50);
+    expect(new Set(ids).size).toBe(50);
+    expect(ALL_TRIPS).toHaveLength(10);
     for (const t of ALL_TRIPS) {
       expect(t.words, `الرحلة ${t.id}`).toHaveLength(5);
       expect(t.accent, `الرحلة ${t.id} عندها accent`).toMatch(/^#/);
@@ -91,13 +95,25 @@ describe('بنية بيانات الجسر', () => {
     expect(D.TAFAKKUR.map((c) => c.id)).toContain(today.id);
   });
 
-  it('كل سورة في السور 78–114 (جزء عمّ)', () => {
+  it('كلمات الجولات الأربع من الأجزاء الصح: عمّ (78–114) وتبارك (67–77) وقد سمع (58–66)', () => {
+    expect(D.WORDS_R3.every((w) => w.surah >= 67 && w.surah <= 77)).toBe(true); // تبارك
+    expect(D.WORDS_R4.every((w) => w.surah >= 58 && w.surah <= 66)).toBe(true); // قد سمع
     for (const w of ALL) {
-      expect(w.surah, w.id).toBeGreaterThanOrEqual(78);
+      expect(w.surah, w.id).toBeGreaterThanOrEqual(58);
       expect(w.surah, w.id).toBeLessThanOrEqual(114);
       expect(w.ayahNum, w.id).toBeGreaterThanOrEqual(1);
       expect(w.ayahNum, w.id).toBeLessThanOrEqual(J[w.surah].length);
     }
+  });
+
+  it('كل رحلة من العشر ليها مشهد مرسوم (img)', () => {
+    for (const t of ALL_TRIPS) expect(t.img, `الرحلة ${t.id}`).toMatch(/^\/assets\/trip-.*\.jpg$/);
+  });
+
+  it('ترتيب البوابات: عمّ أولًا ثم تبارك ثم قد سمع (ترتيب الرحلة)', () => {
+    expect(D.GATES[0].id).toBe('amma');
+    expect(D.GATES[1].id).toBe('tabarak');
+    expect(D.GATES[2].id).toBe('qadsama');
   });
 
   it('البوابات الثلاث بتغطي ٥٨–١١٤ متصلة بدون فجوات أو تداخل (بوابة جزء عمّ)', () => {

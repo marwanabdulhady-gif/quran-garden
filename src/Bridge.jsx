@@ -10,7 +10,19 @@ import {
   discoveredCount,
   updateChild,
 } from './store.js';
-import { WORDS, WORDS_R2, TRIPS, TRIPS_R2, BADGES, LEVELS, SURAH_NAMES_FALLBACK } from './data.js';
+import {
+  WORDS,
+  WORDS_R2,
+  WORDS_R3,
+  WORDS_R4,
+  TRIPS,
+  TRIPS_R2,
+  TRIPS_R3,
+  TRIPS_R4,
+  BADGES,
+  LEVELS,
+  SURAH_NAMES_FALLBACK,
+} from './data.js';
 import { getSurah } from './api.js';
 import {
   Modal,
@@ -26,7 +38,8 @@ import {
 } from './Shared.jsx';
 import { sfx } from './sound.js';
 
-const ALL_WORDS = [...WORDS, ...WORDS_R2]; // كل كلمات الجولتين
+const ALL_WORDS = [...WORDS, ...WORDS_R2, ...WORDS_R3, ...WORDS_R4]; // كل كلمات الجولات الأربع
+const ALL_TRIPS = [...TRIPS, ...TRIPS_R2, ...TRIPS_R3, ...TRIPS_R4];
 const byId = (id) => ALL_WORDS.find((w) => w.id === id);
 const tripWords = (trip) => trip.words.map(byId);
 const doneInTrip = (child, trip) => trip.words.filter((w) => wordState(child, w).done).length;
@@ -119,6 +132,7 @@ export function StepScreen({ trip, go }) {
       const before = discoveredCount(child);
       if (before < 10 && 1 + before >= 10) awardBadge(child.id, 'persist');
       if (before + 1 === WORDS.length + WORDS_R2.length) awardBadge(child.id, 'round2');
+      if (before + 1 === ALL_WORDS.length) awardBadge(child.id, 'parts');
       setConfetti(true);
       setTimeout(() => setConfetti(false), 4200);
       const doneNow = doneInTrip(child, trip) + 1;
@@ -397,7 +411,7 @@ function Celebration({ badgeKey, final, tripName, accent, confettiColors, go, on
 function ReviewScreen({ go }) {
   const s = useGarden();
   const child = activeChild(s);
-  const doneWords = [...WORDS, ...WORDS_R2].filter((w) => wordState(child, w.id).done);
+  const doneWords = ALL_WORDS.filter((w) => wordState(child, w.id).done);
   const [round, setRound] = useState(() => makeRound(doneWords, child));
   const [picked, setPicked] = useState(null);
   const au = useAudio();
@@ -406,8 +420,7 @@ function ReviewScreen({ go }) {
   function makeRound(pool, c) {
     if (!pool.length) return null;
     const w = pool[Math.floor(Math.random() * pool.length)];
-    const others = [...WORDS, ...WORDS_R2]
-      .filter((x) => x.surah !== w.surah && x.id !== w.id)
+    const others = ALL_WORDS.filter((x) => x.surah !== w.surah && x.id !== w.id)
       .map((x) => x.surah)
       .filter((v, i, a) => a.indexOf(v) === i);
     const opts = [
@@ -569,9 +582,41 @@ export default function Bridge({ go, initialView = 'list' }) {
   const [tripId, setTripId] = useState(null);
 
   const disc = discoveredCount(child);
-  const allTrips = [...TRIPS, ...TRIPS_R2];
+  const allTrips = ALL_TRIPS;
   const tripsDone = allTrips.filter((t) => doneInTrip(child, t) >= t.words.length).length;
-  const r1Complete = TRIPS.every((t) => doneInTrip(child, t) >= t.words.length);
+
+  // الجولات الأربع: عمّ (جولتان) ثم تبارك ثم قد سمع — كل جولة بتتفتح بعد إتمام اللي قبلها
+  const roundDone = (trips) => trips.every((t) => doneInTrip(child, t) >= t.words.length);
+  const ROUNDS = [
+    { n: 1, trips: TRIPS, label: 'الجولة الأولى', juz: 'جزء عمّ', unlocked: true },
+    {
+      n: 2,
+      trips: TRIPS_R2,
+      label: 'الجولة الثانية',
+      juz: 'جزء عمّ',
+      unlocked: roundDone(TRIPS),
+      unlockedHint: (d) => `اكتملت الجولة الأولى (${d} من ٤ رحلات) وبنفتحلك العشرة الجديدة.`,
+      openText: 'ما شاء الله! اكتملت الجولة الأولى — دلوقتي عندك رحلتين جديدتين.',
+    },
+    {
+      n: 3,
+      trips: TRIPS_R3,
+      label: 'الجولة الثالثة',
+      juz: 'جزء تبارك',
+      unlocked: roundDone(TRIPS_R2),
+      unlockedHint: (d) => `أكمل الجولة الثانية (${d} من ٢ رحلات) وتتفتح كلمات جزء تبارك.`,
+      openText: 'خلصت جزء عمّ كله! دلوقتي كلمات جديدة من جزء تبارك.',
+    },
+    {
+      n: 4,
+      trips: TRIPS_R4,
+      label: 'الجولة الرابعة',
+      juz: 'جزء قد سمع',
+      unlocked: roundDone(TRIPS_R3),
+      unlockedHint: (d) => `أكمل الجولة الثالثة (${d} من ٢ رحلات) وتتفتح كلمات جزء قد سمع.`,
+      openText: 'ما شاء الله على تبارك! آخر جولة: كلمات من جزء قد سمع.',
+    },
+  ];
   const level = LEVELS.find((l) => l.id === child.bridge.level) || LEVELS[0];
   const trip = allTrips.find((t) => t.id === tripId);
 
@@ -600,18 +645,18 @@ export default function Bridge({ go, initialView = 'list' }) {
       </div>
 
       <div className="journey-head">
-        <span className="kicker">جزء عمّ · ٣٠ كلمة · ٦ رحلات</span>
+        <span className="kicker">عمّ ← تبارك ← قد سمع · ٥٠ كلمة · ١٠ رحلات</span>
         <h1>كل كلمة… اكتشاف جديد</h1>
         <p>تعلّم الكلمة، اكتشف معناها، واعبر بشخصيتك إلى الضفة الأُخرى. مغامرة صغيرة، ومعانٍ تكبر معك.</p>
       </div>
 
       <div className="journey-stats">
         <div className="stat-card">
-          <div className="num">{disc} / ٣٠</div>
+          <div className="num">{disc} / ٥٠</div>
           <div className="lbl">🌱 الكلمات المكتشفة</div>
         </div>
         <div className="stat-card">
-          <div className="num">{tripsDone} / ٦</div>
+          <div className="num">{tripsDone} / ١٠</div>
           <div className="lbl">🌉 رحلات جسر المعاني</div>
         </div>
         <button
@@ -643,91 +688,61 @@ export default function Bridge({ go, initialView = 'list' }) {
         ))}
       </div>
 
-      <div className="trips-list">
-        {TRIPS.map((t) => {
-          const d = doneInTrip(child, t);
-          const complete = d >= t.words.length;
-          return (
-            <button
-              key={t.id}
-              className={'trip-card' + (complete ? ' done' : '')}
-              style={{ '--acc': t.accent, '--acc-soft': t.soft }}
-              onClick={() => {
-                sfx.tap();
-                setTripId(t.id);
-                setView('trip');
-              }}
-            >
-              <span className="t-scene">
-                <img src={t.img} alt="" loading="lazy" />
-                <i className="t-mini">{t.emoji}</i>
+      {/* الجولات الأربع: عمّ ← تبارك ← قد سمع — كل جولة بتتفتح بعد اللي قبلها */}
+      {ROUNDS.map((round) => (
+        <React.Fragment key={round.n}>
+          {round.n > 1 && (
+            <div className="round2-head">
+              <span className="kicker">
+                {round.unlocked ? `🎊 ${round.label} فتحت — ${round.juz}!` : `🔒 ${round.label} (${round.juz}) — مقفلة`}
               </span>
-              <span className="t-body">
-                <span className="t-name">{t.name}</span>
-                <br />
-                <span className="t-desc">{t.desc}</span>
-                <span className="t-progress">
-                  <i style={{ width: (d / t.words.length) * 100 + '%' }} />
-                </span>
-              </span>
-              <span className="t-badge">
-                {complete ? '✓ ' : ''}
-                {t.badge}
-              </span>
-              <span className="go">{complete ? '🏅' : '›'}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* الجولة الثانية: بتتفتح لما تكتمل الجولة الأولى */}
-      <div className="round2-head">
-        <span className="kicker">{r1Complete ? '🌠 الجولة الثانية فتحت!' : '🔒 الجولة الثانية — مقفلة'}</span>
-        <p className="r2-sub">
-          {r1Complete
-            ? 'ما شاء الله! اكتملت الجولة الأولى — دلوقتي عندك رحلتين جديدتين.'
-            : `اكتمل الجولة الأولى (${TRIPS.filter((t) => doneInTrip(child, t) >= t.words.length).length} من ٤ رحلات) وبنفتحلك العشرة الجديدة.`}
-        </p>
-      </div>
-
-      <div className={'trips-list r2' + (r1Complete ? '' : ' locked')}>
-        {TRIPS_R2.map((t) => {
-          const d = r1Complete ? doneInTrip(child, t) : 0;
-          const complete = d >= t.words.length;
-          return (
-            <button
-              key={t.id}
-              className={'trip-card' + (complete ? ' done' : '') + (r1Complete ? '' : ' locked')}
-              style={{ '--acc': t.accent, '--acc-soft': t.soft }}
-              disabled={!r1Complete}
-              onClick={() => {
-                if (!r1Complete) return;
-                sfx.tap();
-                setTripId(t.id);
-                setView('trip');
-              }}
-            >
-              <span className="t-scene">
-                <img src={t.img} alt="" loading="lazy" />
-                <i className="t-mini">{r1Complete ? t.emoji : '🔒'}</i>
-              </span>
-              <span className="t-body">
-                <span className="t-name">{t.name}</span>
-                <br />
-                <span className="t-desc">{t.desc}</span>
-                <span className="t-progress">
-                  <i style={{ width: (d / t.words.length) * 100 + '%' }} />
-                </span>
-              </span>
-              <span className="t-badge">
-                {complete ? '✓ ' : ''}
-                {t.badge}
-              </span>
-              <span className="go">{complete ? '🏅' : r1Complete ? '›' : ''}</span>
-            </button>
-          );
-        })}
-      </div>
+              <p className="r2-sub">
+                {round.unlocked
+                  ? round.openText
+                  : round.unlockedHint(round.trips.filter((t) => doneInTrip(child, t) >= t.words.length).length)}
+              </p>
+            </div>
+          )}
+          <div className={'trips-list r2' + (round.unlocked ? '' : ' locked')}>
+            {round.trips.map((t) => {
+              const d = round.unlocked ? doneInTrip(child, t) : 0;
+              const complete = d >= t.words.length;
+              return (
+                <button
+                  key={t.id}
+                  className={'trip-card' + (complete ? ' done' : '') + (round.unlocked ? '' : ' locked')}
+                  style={{ '--acc': t.accent, '--acc-soft': t.soft }}
+                  disabled={!round.unlocked}
+                  onClick={() => {
+                    if (!round.unlocked) return;
+                    sfx.tap();
+                    setTripId(t.id);
+                    setView('trip');
+                  }}
+                >
+                  <span className="t-scene">
+                    <img src={t.img} alt="" loading="lazy" />
+                    <i className="t-mini">{round.unlocked ? t.emoji : '🔒'}</i>
+                  </span>
+                  <span className="t-body">
+                    <span className="t-name">{t.name}</span>
+                    <br />
+                    <span className="t-desc">{t.desc}</span>
+                    <span className="t-progress">
+                      <i style={{ width: (d / t.words.length) * 100 + '%' }} />
+                    </span>
+                  </span>
+                  <span className="t-badge">
+                    {complete ? '✓ ' : ''}
+                    {t.badge}
+                  </span>
+                  <span className="go">{complete ? '🏅' : round.unlocked ? '›' : ''}</span>
+                </button>
+              );
+            })}
+          </div>
+        </React.Fragment>
+      ))}
 
       <div className="step-actions" style={{ justifyContent: 'center' }}>
         {disc > 0 && (

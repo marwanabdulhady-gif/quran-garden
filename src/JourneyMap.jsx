@@ -5,9 +5,21 @@ import { getSurahs } from './api.js';
 import { cleanAyah, downloadJson } from './Shared.jsx';
 import { sfx } from './sound.js';
 
-const ALL_SURAHS = Object.keys(SURAH_META)
-  .map(Number)
-  .sort((a, b) => a - b);
+// ترتيب الرحلة: جزء عمّ أولًا (٧٨–١١٤) ثم تبارك (٦٧–٧٧) ثم قد سمع (٥٨–٦٦) — ترتيب الحفظ الطبيعي
+const ALL_SURAHS = [
+  ...Object.keys(SURAH_META)
+    .map(Number)
+    .filter((n) => n >= 78)
+    .sort((a, b) => a - b),
+  ...Object.keys(SURAH_META)
+    .map(Number)
+    .filter((n) => n >= 67 && n <= 77)
+    .sort((a, b) => a - b),
+  ...Object.keys(SURAH_META)
+    .map(Number)
+    .filter((n) => n < 67)
+    .sort((a, b) => a - b),
+];
 
 function childSurah(listening) {
   for (const n of ALL_SURAHS) {
@@ -133,7 +145,7 @@ export default function JourneyMap({ go }) {
           <div className="lbl">📖 آيات سمعت</div>
         </div>
         <div className="stat-card">
-          <div className="num">{disc} / ٣٠</div>
+          <div className="num">{disc} / ٥٠</div>
           <div className="lbl">🌉 كلمات الجسر</div>
         </div>
       </div>
@@ -190,19 +202,19 @@ export default function JourneyMap({ go }) {
           const gate = n <= 66 ? 'qadsama' : 'tabarak';
           return (
             <React.Fragment key={n}>
+              {n === 78 && (
+                <div className="map-sep">
+                  <GateSection gate={GATES.find((g) => g.id === 'amma')} listening={listening} go={go} />
+                </div>
+              )}
               {n === 67 && (
                 <div className="map-sep">
-                  <GateSection gate={GATES[0]} listening={listening} go={go} />
+                  <GateSection gate={GATES.find((g) => g.id === 'tabarak')} listening={listening} go={go} />
                 </div>
               )}
               {n === 58 && (
                 <div className="map-sep">
-                  <GateSection gate={GATES[1]} listening={listening} go={go} />
-                </div>
-              )}
-              {n === 78 && (
-                <div className="map-sep">
-                  <GateSection gate={GATES[2]} listening={listening} go={go} />
+                  <GateSection gate={GATES.find((g) => g.id === 'qadsama')} listening={listening} go={go} />
                 </div>
               )}
               <button
