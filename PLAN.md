@@ -219,6 +219,98 @@ ESLint (react-hooks, no-unused) + Prettier (RTL-safe config). Optionally `JSDoc`
 
 ---
 
+## P6 — Visual enrichment II: the illustrated world layer 🎨
+
+> **Status (2026-09-28): waves 1–4 generated, optimized & wired; waves 5–6 planned below.**
+> P3 gave every screen a watercolor background and the hero his poses — but the app's **content** surfaces are still carried by emoji: trip cards, gate headers, tafakkur cards, badge medals, garden decor. This phase replaces the emoji that carry the most emotional weight with generated watercolor art, in the same locked style, under a strict byte budget so the PWA precache stays healthy.
+
+### Locked art direction — the shared prompt prefix
+
+Every asset of this phase is generated with the *same* style preamble (style drift is the #1 risk, see P4 risks — so one batch, one voice):
+
+```
+Soft watercolor children's storybook illustration, gentle washes, dreamy soft
+edges, no harsh outlines, subtle paper texture, calming emerald and mint green
+palette (#10b981 / #ecfdf5) with warm cream light (#fffbeb) and a small golden
+sun accent (#fbbf24), cozy and peaceful, no people, no text, no letters,
+no numbers, no watermark.
+```
+
+- Trip/gate/tafakkur scenes tint toward the surface's existing accent (violet / blue / amber / indigo / rose) while keeping the mint-emerald base.
+- Flat frontal compositions, wide landscapes with generous negative space where UI text sits on top.
+- Transparent art (rewards) is generated on a **pure white background**, then flood-fill keyed + alpha-softened in ImageMagick (same pipeline that produced `hero-*-t.png`).
+
+### Byte budget — the guardrail
+
+| Rule | Value |
+| --- | --- |
+| Waves 1–4 (this drop) | 14 assets |
+| Per asset, optimized | scene/banner ≤ 120 KB · tafakkur ≤ 90 KB · transparent PNG ≤ 150 KB |
+| Total added to precache | ≤ 1.1 MB (precache ≈ 5.2 MB → ≤ 6.3 MB) |
+| Formats | JPEG for scenes/banners/tafakkur, PNG for transparent reward art |
+| Processing | ImageMagick: center-crop to target ratio → resize → strip metadata → quality tune to budget |
+
+### Asset manifest
+
+| # | Asset | File | Target | Surface (where it appears) | Wave |
+| --- | --- | --- | --- | --- | --- |
+| 1 | وادي البدايات scene | `trip-1-wadi.jpg` | 720×300 | Bridge trip card thumb + step banner | 1 ✅ |
+| 2 | بستان الفراشات scene | `trip-2-bustan.jpg` | 720×300 | same | 1 ✅ |
+| 3 | شلال الرفق scene | `trip-3-shallal.jpg` | 720×300 | same | 1 ✅ |
+| 4 | حديقة الفوانيس scene | `trip-4-fawanis.jpg` | 720×300 | same | 1 ✅ |
+| 5 | مغامرة الخلق scene | `trip-5-khalq.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
+| 6 | سماء وفجر scene | `trip-6-fajr.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
+| 7 | بوابة جزء تبارك banner | `gate-tabarak.jpg` | 800×280 | Listening gate head | 2 ✅ |
+| 8 | بوابة قد سمع banner | `gate-qadsama.jpg` | 800×280 | Listening gate head | 2 ✅ |
+| 9 | تأمل الطيور | `tafa-birds.jpg` | 480×360 | Daily tafakkur card | 3 ✅ |
+| 10 | تأمل السماوات | `tafa-heavens.jpg` | 480×360 | same | 3 ✅ |
+| 11 | تأمل الماء | `tafa-water.jpg` | 480×360 | same | 3 ✅ |
+| 12 | تأمل المصابيح | `tafa-lamps.jpg` | 480×360 | same | 3 ✅ |
+| 13 | وسام-إطار مائي (rosette) | `medal-rosette-t.png` | 420² | behind every badge emoji (wall + celebrations) | 4 ✅ |
+| 14 | كأس الأبطال | `trophy-t.png` | 420² | «بطل الجولتين» + trip-complete celebrations | 4 ✅ |
+| 15–22 | garden decor sprites (قطة/عصفور/تنين/تاج/طوق/نجمة/ميدالية/فراشة) | `decor-*-t.png` | 200² | Garden scene, replaces floating emoji | 5 ⏳ |
+| 23 | وردة الحديقة + مرجيحة/زحليقة/مقعد spots | `spot-*.png` | ~240² | Garden interactive spots | 6 ⏳ backlog |
+
+### 37. Trip identity scenes ⭐ (wave 1)
+
+- **What:** six illustrated scene headers, one per bridge trip (4 round-1 + 2 round-2), tinted to each trip's accent; trip cards get a rounded scene **thumbnail** in place of the emoji box (same 62 px footprint — zero layout risk), and the step screen gets a full-width **scene banner** above the bridge strip.
+- **Why:** the bridge is the heart of the app; «اليوم أنا في بستان الفراشات» should *look* different from «شلال الرفق». Locked round-2 cards show the scene grayscale + 🔒 overlay — a teaser, not a dead lock.
+- **Accept:** every trip reads at a glance from its card; step banner keeps ≥ 4.5:1 text contrast (name overlaid on a cream wash); total ≤ 700 KB.
+
+### 38. Illustrated gate banners (wave 2)
+
+- **What:** two wide banners — a vine-wrapped wooden garden arch (تبارك) and a pale-stone arch with a soft geometric rim (قد سمع) — as the header of each gate screen.
+- **Accept:** both gates feel like two doors of the same garden; ≤ 240 KB the pair.
+
+### 39. Tafakkur card illustrations (wave 3)
+
+- **What:** four small illustrations (doves / layered sky / winding river / glowing lamps) matching the four weekly تأمل cards from Surah Al-Mulk; rendered at the top of the tafakkur card.
+- **Accept:** weekly rotation visibly changes the art; ≤ 340 KB all four.
+
+### 40. Reward medal + trophy (wave 4)
+
+- **What:** a watercolor **rosette frame** (transparent) that sits behind every badge emoji — badge wall, celebration modals — and a **golden trophy** for «بطل الجولتين» and trip-complete moments. The emoji stays as the badge's unique center; the rosette gives all 13 badges one consistent, illustrated body.
+- **Accept:** locked badges keep their gray treatment; earned medals animate in (existing `badge-spin`); ≤ 300 KB the pair.
+
+### 41. Garden decor sprites (wave 5 — next)
+
+- **What:** the 8 gift decorations become small transparent watercolor sprites pinned on the garden photo at their existing `x/y` anchors; tap → same `say()` bubble + a tiny sway animation.
+- **Risk note:** transparent keying of soft watercolor needs visual QA (white fuzz halos on the garden photo); generate on pure white, flood-fill from the edges, alpha-blur the seam, and verify at 72–96 px render size before shipping all 8.
+
+### 42. Words cards & share-card art (wave 6 — backlog)
+
+- **What:** tiny leaf/word motifs for «كلماتي» cards, hero art in the canvas share card, and an optional night-garden variant background.
+- **Why:** nice-to-have polish; only after waves 1–5 prove their byte cost.
+
+### QA checklist per wave
+
+1. `npm test` (368) + `npm run lint` + `npm run build` stay green.
+2. New files counted against the budget table — anything over budget gets re-compressed, not shipped fat.
+3. Live-preview pass on a 360 px viewport: contrast, RTL alignment, reduced-motion (no new animation on transparent art beyond existing gates).
+4. PWA: new assets land in the precache manifest automatically (`globPatterns` covers jpg/png) — verify `dist/sw.js` count grows by exactly the shipped files.
+
+---
+
 ## Suggested execution order
 
 ```

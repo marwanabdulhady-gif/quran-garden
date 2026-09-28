@@ -167,6 +167,15 @@ export function StepScreen({ trip, go }) {
         <span className="chip trip-chip">⭐ {child.stars}</span>
       </div>
 
+      {/* لافتة مشهد الرحلة */}
+      <div className="trip-banner" aria-hidden="true">
+        <img src={trip.img} alt="" />
+        <span className="tb-wash" />
+        <span className="tb-name">
+          {trip.emoji} {trip.name}
+        </span>
+      </div>
+
       {/* شريط الجسر */}
       <div className="bridge-strip">
         <span className="bank r">🏞️</span>
@@ -644,7 +653,10 @@ export default function Bridge({ go, initialView = 'list' }) {
                 setView('trip');
               }}
             >
-              <span className="t-emoji">{t.emoji}</span>
+              <span className="t-scene">
+                <img src={t.img} alt="" loading="lazy" />
+                <i className="t-mini">{t.emoji}</i>
+              </span>
               <span className="t-body">
                 <span className="t-name">{t.name}</span>
                 <br />
@@ -690,7 +702,10 @@ export default function Bridge({ go, initialView = 'list' }) {
                 setView('trip');
               }}
             >
-              <span className="t-emoji">{r1Complete ? t.emoji : '🔒'}</span>
+              <span className="t-scene">
+                <img src={t.img} alt="" loading="lazy" />
+                <i className="t-mini">{r1Complete ? t.emoji : '🔒'}</i>
+              </span>
               <span className="t-body">
                 <span className="t-name">{t.name}</span>
                 <br />

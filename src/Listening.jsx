@@ -129,7 +129,9 @@ function GateList({ gate, go }) {
         style={{ alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}
       >
         <div style={{ padding: 20 }}>
-          <div style={{ fontSize: 90, animation: 'bounce-soft 2s ease-in-out infinite' }}>🏰</div>
+          <div className="gate-banner" aria-hidden="true">
+            <img src={gate.img} alt="" />
+          </div>
           <h1 style={{ fontSize: 28, fontWeight: 900, margin: '10px 0 4px' }}>{gate.title}</h1>
           <p className="muted" style={{ fontWeight: 800 }}>
             {gate.sub}
@@ -168,6 +170,9 @@ function GateList({ gate, go }) {
         <span className="chip star-count">⭐ {child.stars}</span>
       </div>
       <div className="gate-head">
+        <div className="gate-banner" aria-hidden="true">
+          <img src={gate.img} alt="" />
+        </div>
         <p>
           {completed} من {total} سورة تمّت ✓
         </p>

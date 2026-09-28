@@ -288,6 +288,7 @@ export const TRIPS = [
     accent: '#059669',
     soft: '#d1fae5',
     confetti: ['#059669', '#34d399', '#a7f3d0', '#fbbf24', '#10b981'],
+    img: '/assets/trip-1-wadi.jpg',
     words: ['subatan', 'wahhaja', 'thajjajan', 'alfafa', 'ghulban'],
   },
   {
@@ -300,6 +301,7 @@ export const TRIPS = [
     accent: '#9333ea',
     soft: '#f3e8ff',
     confetti: ['#9333ea', '#c084fc', '#f0abfc', '#fbbf24', '#a855f7'],
+    img: '/assets/trip-2-bustan.jpg',
     words: ['namariq', 'malfufa', 'zarabi', 'mabthutha', 'aila'],
   },
   {
@@ -312,6 +314,7 @@ export const TRIPS = [
     accent: '#0284c7',
     soft: '#e0f2fe',
     confetti: ['#0284c7', '#38bdf8', '#7dd3fc', '#fbbf24', '#06b6d4'],
+    img: '/assets/trip-3-shallal.jpg',
     words: ['taqhar', 'tanhar', 'usrun', 'ysran', 'yadau'],
   },
   {
@@ -324,6 +327,7 @@ export const TRIPS = [
     accent: '#d97706',
     soft: '#fef3c7',
     confetti: ['#d97706', '#fbbf24', '#fcd34d', '#fb923c', '#f59e0b'],
+    img: '/assets/trip-4-fawanis.jpg',
     words: ['ihnin', 'manfush', 'ababil', 'addadu', 'kaydahum'],
   },
 ];
@@ -358,6 +362,7 @@ export const TRIPS_R2 = [
     confetti: ['#4f46e5', '#818cf8', '#c7d2fe', '#fbbf24', '#34d399'],
     badge: 'وسام الخالق الصغير',
     badgeEmoji: '🔭',
+    img: '/assets/trip-5-khalq.jpg',
     words: ['alaq', 'kabad', 'wajuh', 'fawz', 'mukhlasina'],
   },
   {
@@ -370,6 +375,7 @@ export const TRIPS_R2 = [
     confetti: ['#e11d48', '#fb7185', '#fecdd3', '#fbbf24', '#34d399'],
     badge: 'وسام آفاق السماء',
     badgeEmoji: '🌠',
+    img: '/assets/trip-6-fajr.jpg',
     words: ['yaghsha', 'thaqib', 'fajr', 'yasa', 'hutama'],
   },
 ];
@@ -377,6 +383,7 @@ export const TRIPS_R2 = [
 export const GATES = [
   {
     id: 'tabarak',
+    img: '/assets/gate-tabarak.jpg',
     title: 'بوابة جزء تبارك',
     sub: 'الجزء التاسع والعشرون · من الملك إلى المرسلات',
     from: 67,
@@ -384,6 +391,7 @@ export const GATES = [
   },
   {
     id: 'qadsama',
+    img: '/assets/gate-qadsama.jpg',
     title: 'بوابة جزء قد سمع',
     sub: 'الجزء الثامن والعشرون · ٩ سور',
     from: 58,
@@ -481,6 +489,7 @@ export const SURAH_NAMES_FALLBACK = {
 export const TAFAKKUR = [
   {
     id: 'birds',
+    img: '/assets/tafa-birds.jpg',
     title: 'تأمل الطيور',
     emoji: '🕊️',
     question: 'سبحان الله! مَن يمسكُ الطيورَ في السماء؟',
@@ -490,6 +499,7 @@ export const TAFAKKUR = [
   },
   {
     id: 'stars',
+    img: '/assets/tafa-heavens.jpg',
     title: 'تأمل السماوات',
     emoji: '✨',
     question: 'مَن رتّبَ السماواتِ سبعًا، طبقةً فوق طبقة؟',
