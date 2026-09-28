@@ -509,6 +509,7 @@ export const TAFAKKUR = [
   },
   {
     id: 'water',
+    img: '/assets/tafa-water.jpg',
     title: 'تأمل الماء',
     emoji: '💧',
     question: 'لو أصبحَ ماءُنا الغائرُ في الأرضِ، مين اللي يجيبنا بماءٍ؟',
@@ -518,6 +519,7 @@ export const TAFAKKUR = [
   },
   {
     id: 'mabaha',
+    img: '/assets/tafa-lamps.jpg',
     title: 'تأمل السماء المضيئة',
     emoji: '🌙',
     question: 'ليه السماءُ بتلمع بنجومٍ ليلًا؟',

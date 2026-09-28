@@ -361,7 +361,12 @@ function Celebration({ badgeKey, final, tripName, accent, confettiColors, go, on
       <div className="overlay" style={{ zIndex: 55 }}>
         <div className="modal" style={{ textAlign: 'center', borderTop: `6px solid ${accent || '#10b981'}` }}>
           <img className="celebrate-hero" src="/assets/hero-celebrate-t.png" alt="" aria-hidden="true" />
-          <div className="badge-medal">{badge.emoji}</div>
+          {(isTrip || badgeKey === 'round2') && (
+            <img className="celebrate-trophy" src="/assets/trophy-t.png" alt="" aria-hidden="true" />
+          )}
+          <div className={'badge-medal' + (badgeKey === 'round2' ? ' trophy' : '')}>
+            {badgeKey === 'round2' ? <img src="/assets/trophy-t.png" alt="" /> : badge.emoji}
+          </div>
           <h2 style={{ fontSize: 24 }}>{isTrip ? 'عبرت الجسر… أحسنت!' : 'بداية جميلة 🌱'}</h2>
           <p className="muted" style={{ fontWeight: 800, marginTop: 6 }}>
             {isTrip ? `${tripName} اكتملت واستلمت ${badge.name}` : `استلمت ${badge.name}`}

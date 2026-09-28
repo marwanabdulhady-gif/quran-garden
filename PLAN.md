@@ -221,8 +221,10 @@ ESLint (react-hooks, no-unused) + Prettier (RTL-safe config). Optionally `JSDoc`
 
 ## P6 — Visual enrichment II: the illustrated world layer 🎨
 
-> **Status (2026-09-28): waves 1–4 generated, optimized & wired; waves 5–6 planned below.**
+> **Status (2026-09-28): waves 1–4 shipped and verified — 14/14 assets generated, optimized & wired (760 KB total, precache 55 entries ≈ 6.1 MB). Waves 5–6 planned below.**
 > P3 gave every screen a watercolor background and the hero his poses — but the app's **content** surfaces are still carried by emoji: trip cards, gate headers, tafakkur cards, badge medals, garden decor. This phase replaces the emoji that carry the most emotional weight with generated watercolor art, in the same locked style, under a strict byte budget so the PWA precache stays healthy.
+>
+> **Shipped:** 6 trip scenes → Bridge card thumbs + step banners (locked round-2 = grayscale + 🔒) · 2 gate banners → gate intro + list head (replaced the bouncing 🏰) · 4 tafakkur illustrations → Daily تأمل الأسبوع card (all four weekly cards now rotate art too) · rosette frame behind every earned badge (wall + celebrations) · golden trophy sticker on trip-complete/round-2 celebrations + as the round-2 badge art on the wall.
 
 ### Locked art direction — the shared prompt prefix
 
@@ -271,26 +273,27 @@ no numbers, no watermark.
 | 15–22 | garden decor sprites (قطة/عصفور/تنين/تاج/طوق/نجمة/ميدالية/فراشة) | `decor-*-t.png` | 200² | Garden scene, replaces floating emoji | 5 ⏳ |
 | 23 | وردة الحديقة + مرجيحة/زحليقة/مقعد spots | `spot-*.png` | ~240² | Garden interactive spots | 6 ⏳ backlog |
 
-### 37. Trip identity scenes ⭐ (wave 1)
+### 37. Trip identity scenes ⭐ (wave 1) ✅
 
 - **What:** six illustrated scene headers, one per bridge trip (4 round-1 + 2 round-2), tinted to each trip's accent; trip cards get a rounded scene **thumbnail** in place of the emoji box (same 62 px footprint — zero layout risk), and the step screen gets a full-width **scene banner** above the bridge strip.
 - **Why:** the bridge is the heart of the app; «اليوم أنا في بستان الفراشات» should *look* different from «شلال الرفق». Locked round-2 cards show the scene grayscale + 🔒 overlay — a teaser, not a dead lock.
-- **Accept:** every trip reads at a glance from its card; step banner keeps ≥ 4.5:1 text contrast (name overlaid on a cream wash); total ≤ 700 KB.
+- **Accept:** every trip reads at a glance from its card; step banner keeps ≥ 4.5:1 text contrast (name overlaid on a cream wash); total ≤ 700 KB. — ✅ 258 KB for the six (34–71 KB each), scene name sits on a `#fffbeb` wash at `#065f46`.
 
-### 38. Illustrated gate banners (wave 2)
+### 38. Illustrated gate banners (wave 2) ✅
 
 - **What:** two wide banners — a vine-wrapped wooden garden arch (تبارك) and a pale-stone arch with a soft geometric rim (قد سمع) — as the header of each gate screen.
-- **Accept:** both gates feel like two doors of the same garden; ≤ 240 KB the pair.
+- **Accept:** both gates feel like two doors of the same garden; ≤ 240 KB the pair. — ✅ 111 KB the pair; wired into the gate intro hero (replacing the bouncing 🏰) and the gate list head.
 
-### 39. Tafakkur card illustrations (wave 3)
+### 39. Tafakkur card illustrations (wave 3) ✅
 
 - **What:** four small illustrations (doves / layered sky / winding river / glowing lamps) matching the four weekly تأمل cards from Surah Al-Mulk; rendered at the top of the tafakkur card.
-- **Accept:** weekly rotation visibly changes the art; ≤ 340 KB all four.
+- **Accept:** weekly rotation visibly changes the art; ≤ 340 KB all four. — ✅ 125 KB all four; `img` field per TAFAKKUR entry, card renders it only when present.
 
-### 40. Reward medal + trophy (wave 4)
+### 40. Reward medal + trophy (wave 4) ✅
 
 - **What:** a watercolor **rosette frame** (transparent) that sits behind every badge emoji — badge wall, celebration modals — and a **golden trophy** for «بطل الجولتين» and trip-complete moments. The emoji stays as the badge's unique center; the rosette gives all 13 badges one consistent, illustrated body.
-- **Accept:** locked badges keep their gray treatment; earned medals animate in (existing `badge-spin`); ≤ 300 KB the pair.
+- **How:** both generated on pure white and keyed to alpha (flood-fill from the edges + alpha-blur seam, same pipeline as `hero-*-t.png`); rosette = CSS `background` on the earned `.b-emoji` box and on `.badge-medal` (replacing the radial-gradient circle); trophy = corner sticker in trip/round-2 celebrations + the round-2 badge's own art on the wall.
+- **Accept:** locked badges keep their gray treatment (🔒 centered in the same-size box so grid rows stay even); earned medals animate in (existing `badge-spin`, auto-gated by the global reduced-motion rule); 257 KB the pair (budget ≤ 300 KB). ✅
 
 ### 41. Garden decor sprites (wave 5 — next)
 

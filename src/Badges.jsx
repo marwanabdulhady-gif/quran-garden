@@ -105,8 +105,8 @@ export default function Badges({ go, childId }) {
               style={{ '--i': i }}
             >
               {fresh && <span className="fresh-tag">جديد!</span>}
-              <div className="b-emoji" aria-hidden>
-                {at ? b.emoji : '🔒'}
+              <div className={'b-emoji' + (at && id === 'round2' ? ' has-trophy' : '')} aria-hidden>
+                {at ? id === 'round2' ? <img src="/assets/trophy-t.png" alt="" /> : b.emoji : '🔒'}
               </div>
               <div className="b-name">{b.name}</div>
               <div className="b-date">{at ? `حصلت عليه ${fmtDate(at)}` : b.hint}</div>
