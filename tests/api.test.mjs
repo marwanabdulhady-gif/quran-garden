@@ -108,30 +108,34 @@ describe('fetchJson: مهلة + إعادة محاولة', () => {
 
 // ============================================================
 describe('كاش IndexedDB المتواصل (مُرقّم) + SWR', () => {
-  const netSurah = (n, tag) => ({
-    number: n,
-    name: 'سورة اختبار',
-    englishName: 'Test',
-    numberOfAyahs: 3,
-    ayahs: [1, 2, 3].map((i) => ({
-      number: i,
-      numberInSurah: i,
-      text: 'آية ' + i,
-      audio: `https://cdn.test/${n}/${i}${tag ? '?' + tag : ''}`,
-    })),
-  });
+  // نفس شكل api.alquran.cloud: [نسخة النص بدون audio، نسخة التلاوة فيها audio]
+  const netSurah = (n, tag) => {
+    const base = { number: n, name: 'سورة اختبار', englishName: 'Test', numberOfAyahs: 3 };
+    return [
+      { ...base, ayahs: [1, 2, 3].map((i) => ({ number: i, numberInSurah: i, text: 'آية ' + i })) },
+      {
+        ...base,
+        ayahs: [1, 2, 3].map((i) => ({
+          number: i,
+          numberInSurah: i,
+          text: 'aya ' + i,
+          audio: `https://cdn.test/${n}/${i}${tag ? '?' + tag : ''}`,
+        })),
+      },
+    ];
+  };
 
   it('أول طلب بالنت → يتخزن في الكاش بمفتاح مُرقّم', async () => {
     globalThis.fetch = vi.fn(async () => ({
       ok: true,
       status: 200,
-      json: async () => ({ data: [netSurah(101, 'one')] }),
+      json: async () => ({ data: netSurah(101, 'one') }),
     }));
     const out = await A.getSurah(101, 'ar.alafasy');
     expect(out.numberOfAyahs).toBe(3);
     expect(out.offline).toBeUndefined();
     await FLUSH();
-    expect(db._data.has('v1:surah:101:ar.alafasy')).toBe(true, 'مفتاح الكاش مُرقّم');
+    expect(db._data.has('v2:surah:101:ar.alafasy')).toBe(true, 'مفتاح الكاش مُرقّم');
   });
 
   it('إعادة فتح التطبيق (موديول جديد) + النت مقطوع → يرجع النسخة المحفوظة مش الأوفلاين', async () => {
@@ -153,7 +157,7 @@ describe('كاش IndexedDB المتواصل (مُرقّم) + SWR', () => {
         new Promise((resolve) => {
           n++;
           setTimeout(
-            () => resolve({ ok: true, status: 200, json: async () => ({ data: [netSurah(101, 'refreshed')] }) }),
+            () => resolve({ ok: true, status: 200, json: async () => ({ data: netSurah(101, 'refreshed') }) }),
             n === 1 ? 120 : 10
           );
         })
@@ -165,7 +169,7 @@ describe('كاش IndexedDB المتواصل (مُرقّم) + SWR', () => {
     expect(out.ayahs[0].audio).toContain('?one');
     await new Promise((r) => setTimeout(r, 250));
     await FLUSH();
-    const saved = db._data.get('v1:surah:101:ar.alafasy');
+    const saved = db._data.get('v2:surah:101:ar.alafasy');
     expect(saved.value.ayahs[0].audio).toContain('?refreshed', 'التحديث في الخلفية وصل للكاش');
   });
 
@@ -182,7 +186,7 @@ describe('كاش IndexedDB المتواصل (مُرقّم) + SWR', () => {
     const list = await Fresh.getSurahs();
     expect(list).toHaveLength(3, 'القائمة من النت اتخزنت');
     await FLUSH();
-    expect(db._data.has('v1:surahs')).toBe(true);
+    expect(db._data.has('v2:surahs')).toBe(true);
 
     // إعادة فتح + النت مقطوع → ترجع المحفوظة (3) مش الأوفلاين (57)
     globalThis.fetch = vi.fn(async () => {

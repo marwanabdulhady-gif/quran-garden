@@ -42,7 +42,7 @@ export async function fetchJson(url, { timeout = 10000, retryDelay = 600 } = {})
 }
 
 /* ---------- كاش متواصل (IndexedDB) — نسخة مرقّمة ---------- */
-export const CACHE_VERSION = 'v1';
+export const CACHE_VERSION = 'v2'; // v2: v1 كان بيخزّن سور بدون روابط audio
 const DB_NAME = 'quran-garden-cache';
 let dbPromise = null;
 
@@ -126,17 +126,19 @@ function offlineSurah(n) {
 
 async function fetchSurah(n, edition) {
   const d = await fetchJson(`${BASE}/surah/${n}/editions/quran-uthmani,${edition}`);
+  // data[0] = النص العثماني (بدون صوت)، data[1] = نسخة التلاوة (فيها روابط audio)
   const data = d.data[0];
+  const recit = d.data[1] || { ayahs: [] };
   return {
     number: data.number,
     name: data.name,
     englishName: data.englishName,
     numberOfAyahs: data.numberOfAyahs,
-    ayahs: data.ayahs.map((a) => ({
+    ayahs: data.ayahs.map((a, i) => ({
       number: a.number,
       numberInSurah: a.numberInSurah,
       text: a.text.replace(/\n$/, ''),
-      audio: a.audio,
+      audio: recit.ayahs[i]?.audio || null,
     })),
   };
 }
