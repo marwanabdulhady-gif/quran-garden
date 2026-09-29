@@ -219,7 +219,7 @@ ESLint (react-hooks, no-unused) + Prettier (RTL-safe config). Optionally `JSDoc`
 
 ## P6 — Visual enrichment II: the illustrated world layer 🎨
 
-> **Status (2026-09-28): waves 1–4 shipped and verified — 15 assets generated, optimized & wired (817 KB total, incl. the عمّ gate banner from P7). Waves 5–6 planned below.**
+> **Status (2026-09-28): waves 1–5 shipped and verified — 27 assets generated, optimized & wired (817 KB waves 1–4 + 170 KB P8 trip scenes + 376 KB decor sprites ≈ 1.36 MB). Wave 6 remains backlog.**
 > P3 gave every screen a watercolor background and the hero his poses — but the app's **content** surfaces are still carried by emoji: trip cards, gate headers, tafakkur cards, badge medals, garden decor. This phase replaces the emoji that carry the most emotional weight with generated watercolor art, in the same locked style, under a strict byte budget so the PWA precache stays healthy.
 >
 > **Shipped:** 6 trip scenes → Bridge card thumbs + step banners (locked round-2 = grayscale + 🔒) · 2 gate banners → gate intro + list head (replaced the bouncing 🏰) · 4 tafakkur illustrations → Daily تأمل الأسبوع card (all four weekly cards now rotate art too) · rosette frame behind every earned badge (wall + celebrations) · golden trophy sticker on trip-complete/round-2 celebrations + as the round-2 badge art on the wall.
@@ -273,7 +273,7 @@ no numbers, no watermark.
 | 12 | تأمل المصابيح | `tafa-lamps.jpg` | 480×360 | same | 3 ✅ |
 | 13 | وسام-إطار مائي (rosette) | `medal-rosette-t.png` | 420² | behind every badge emoji (wall + celebrations) | 4 ✅ |
 | 14 | كأس الأبطال | `trophy-t.png` | 420² | «بطل الجولتين» + trip-complete celebrations | 4 ✅ |
-| 15–22 | garden decor sprites (قطة/عصفور/تنين/تاج/طوق/نجمة/ميدالية/فراشة) | `decor-*-t.png` | 200² | Garden scene, replaces floating emoji | 5 ⏳ |
+| 15–22 | garden decor sprites (قطة/عصفور/تنين/تاج/طوق/نجمة/ميدالية/فراشة) | `decor-{cat,bird,dragon,crown,halo,star,medal,butterfly}-t.png` | ≤200² | Garden scene, replaces floating emoji | 5 ✅ |
 | 23 | وردة الحديقة + مرجيحة/زحليقة/مقعد spots | `spot-*.png` | ~240² | Garden interactive spots | 6 ⏳ backlog |
 
 ### 37. Trip identity scenes ⭐ (wave 1) ✅
@@ -298,10 +298,10 @@ no numbers, no watermark.
 - **How:** both generated on pure white and keyed to alpha (flood-fill from the edges + alpha-blur seam, same pipeline as `hero-*-t.png`); rosette = CSS `background` on the earned `.b-emoji` box and on `.badge-medal` (replacing the radial-gradient circle); trophy = corner sticker in trip/round-2 celebrations + the round-2 badge's own art on the wall.
 - **Accept:** locked badges keep their gray treatment (🔒 centered in the same-size box so grid rows stay even); earned medals animate in (existing `badge-spin`, auto-gated by the global reduced-motion rule); 257 KB the pair (budget ≤ 300 KB). ✅
 
-### 41. Garden decor sprites (wave 5 — next)
+### 41. Garden decor sprites (wave 5) ✅
 
-- **What:** the 8 gift decorations become small transparent watercolor sprites pinned on the garden photo at their existing `x/y` anchors; tap → same `say()` bubble + a tiny sway animation.
-- **Risk note:** transparent keying of soft watercolor needs visual QA (white fuzz halos on the garden photo); generate on pure white, flood-fill from the edges, alpha-blur the seam, and verify at 72–96 px render size before shipping all 8.
+- **What:** the 8 gift decorations become small transparent watercolor sprites pinned on the garden photo at their existing `x/y` anchors; tap → same `say()` bubble; the existing `floaty` sway + drop-shadow stay (reduced-motion still kills them via the global rule).
+- **Shipped:** 8 sprites (`decor-*-t.png`, 26–69 KB each, 376 KB total) generated on pure white → flood-fill key + alpha-blur seam + trim + ≤200 px — same pipeline as the hero poses. The halo got a second interior flood-fill so its center is a true transparent ring (not a white disc). Corner-alpha + opaque-fraction verified per sprite; `img` field per DECOR entry with emoji fallback in the component; sized `clamp(36px, 7vw, 60px)` (watercolor reads lighter than dense emoji glyphs).
 
 ### 42. Words cards & share-card art (wave 6 — backlog)
 

@@ -110,6 +110,16 @@ describe('بنية بيانات الجسر', () => {
     for (const t of ALL_TRIPS) expect(t.img, `الرحلة ${t.id}`).toMatch(/^\/assets\/trip-.*\.jpg$/);
   });
 
+  it('زينة الحديقة: ٨ قطع ليها صور مرسومة شفافة (P6-41)', () => {
+    expect(D.DECOR).toHaveLength(8);
+    expect(new Set(D.DECOR.map((x) => x.id)).size).toBe(8);
+    for (const x of D.DECOR) {
+      expect(x.img, x.id).toMatch(/^\/assets\/decor-[a-z]+-t\.png$/);
+      expect(x.name.length, x.id).toBeGreaterThan(2);
+      expect(x.desc.length, x.id).toBeGreaterThan(5);
+    }
+  });
+
   it('ترتيب البوابات: عمّ أولًا ثم تبارك ثم قد سمع (ترتيب الرحلة)', () => {
     expect(D.GATES[0].id).toBe('amma');
     expect(D.GATES[1].id).toBe('tabarak');

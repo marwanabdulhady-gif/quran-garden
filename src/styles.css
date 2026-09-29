@@ -749,6 +749,12 @@ select {
   filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.18));
   animation: floaty 4s ease-in-out infinite;
 }
+/* زينة الحديقة المرسومة (P6-41) — المائية أخف من الإيموجي فبنكبّرها شوية */
+.decor img {
+  width: clamp(36px, 7vw, 60px);
+  height: auto;
+  display: block;
+}
 .roses {
   position: absolute;
   transform: translate(-50%, -50%);
