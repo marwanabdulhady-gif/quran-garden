@@ -3625,6 +3625,8 @@ button.stat-card {
   height: calc(100% + 18px);
   transform: rotate(-90deg);
   filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.45));
+  /* الحلقة زخرفة فوق زرار التشغيل — لازم الضغطات تعدّي منها للزرار */
+  pointer-events: none;
 }
 .play-ring .pr-bg {
   fill: none;
