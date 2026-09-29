@@ -243,6 +243,8 @@ function load() {
             ...d,
             ...c,
             name: d.name, // الاسم المفصّل (مع الترحيل) له الأولوية على البيانات القديمة
+            // قارئ اتشال من القائمة (زي العزازي — id غلط وما فيهوش صوت لكل آية) → الحصري
+            reciter: RECIER_IDS.has(c?.reciter) ? c.reciter : d.reciter,
             badges: normalizeBadges(c?.badges, safeNum(c?.createdAt) ?? d.createdAt),
             playback: { ...d.playback, ...(c?.playback && typeof c.playback === 'object' ? c.playback : {}) },
             reading: { ...d.reading, ...(c?.reading && typeof c.reading === 'object' ? c.reading : {}) },

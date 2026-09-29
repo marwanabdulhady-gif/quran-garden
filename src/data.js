@@ -580,12 +580,13 @@ export const DECOR = [
   },
 ];
 
+// الحصري هو القارئ الأساسي (الافتراضي في store.js). كل id لازم يكون نسخة ayah-by-ayah
+// من api.alquran.cloud — نسخ surahbysurah (زي العزازي مع الأطفال) ما فيهاش صوت لكل آية.
 export const RECIERS = [
-  { id: 'ar.alafasy', name: 'مشاري العفاسي' },
   { id: 'ar.husary', name: 'محمود خليل الحصري' },
+  { id: 'ar.alafasy', name: 'مشاري العفاسي' },
   { id: 'ar.saoodshuraym', name: 'سعود الشريم' },
   { id: 'ar.abdurrahmaansudais', name: 'عبدالرحمن السديس' },
-  { id: 'ar.husain al-azazi with children', name: 'الحسين العزازي (مع الأطفال)' },
 ];
 // جولات الجولة الثانية: رحلتان جديدتان بنفس محرك الجسر
 export const TRIPS_R2 = [
