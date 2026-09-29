@@ -42,17 +42,11 @@ export default defineConfig({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
-          {
-            // ملفات التلاوة الصوتية — السور اللي اتسمعت قبل كده تشتغل أوفلاين
-            urlPattern: /^https:\/\/cdn\.islamic\.network\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'alquran-audio',
-              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 14, purgeOnQuotaError: true },
-              cacheableResponse: { statuses: [0, 200] },
-            },
-          },
+          // ملفات التلاوة (cdn.islamic.network) مقصود إنها ما تعديش على الـ SW:
+          // السيرفر ما بيبعتش CORS، فالاستجابة بتبقى opaque والـ SW ما يقدرش يرد على
+          // طلبات Range اللي عنصر <audio> بيبعتها — Safari والموبايل بيرفضوا التشغيل.
         ],
+        cleanupOutdatedCaches: true,
       },
     }),
   ],

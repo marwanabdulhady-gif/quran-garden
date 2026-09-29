@@ -238,6 +238,8 @@ export function Player({ gate, surahNum, go }) {
     return p0?.heard && !p0.completed ? Math.min(p0.heard, 300) : 0;
   });
   const [playing, setPlaying] = useState(false);
+  // فشل تشغيل الصوت (رفض المتصفح / خطأ تحميل) — نعرضه بدل ما الزرار "ما يعملش حاجة"
+  const [playErr, setPlayErr] = useState(false);
   const [finished, setFinished] = useState(false);
   const [confetti, setConfetti] = useState(false);
   const audioRef = useRef(null);
@@ -327,7 +329,10 @@ export function Player({ gate, surahNum, go }) {
           mark(idx, true, totalN);
         }
       };
-      audioRef.current.onerror = () => setPlaying(false);
+      audioRef.current.onerror = () => {
+        setPlaying(false);
+        setPlayErr(true);
+      };
     }
     const a = surah.ayahs[i];
     if (!a || !a.audio) {
@@ -338,7 +343,12 @@ export function Player({ gate, surahNum, go }) {
     el.playbackRate = speedRef.current;
     el.src = a.audio;
     setPlaying(true);
-    el.play().catch(() => setPlaying(false));
+    setPlayErr(false);
+    el.play().catch((e) => {
+      setPlaying(false);
+      // AbortError = اتقطع بطلب تشغيل تاني (تنقّل بين الآيات) — مش خطأ حقيقي
+      if (!e || e.name !== 'AbortError') setPlayErr(true);
+    });
   };
   const playAtRef = useRef(playAt);
   playAtRef.current = playAt;
@@ -480,6 +490,9 @@ export function Player({ gate, surahNum, go }) {
       )}
       {!canPlay && (
         <div className="err-box">📴 التلاوة الصوتية غير متاحة حاليًا. تأكد من الإنترنت ثم اضغط للتشغيل.</div>
+      )}
+      {canPlay && playErr && (
+        <div className="err-box">🔇 المتصفح ما قدرش يشغّل التلاوة. جرّب تضغط تشغيل تاني، أو حدّث الصفحة.</div>
       )}
       <div className="player-ctrl">
         <div className="player-nav">
