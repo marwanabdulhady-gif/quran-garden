@@ -1,0 +1,167 @@
+/* ---------- الأصول البصرية والاحتفالات (حديقة سلمان) ---------- */
+.sg-hero {
+  position: relative;
+  height: 160px;
+  border-radius: 24px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.sg-hero-small {
+  height: 120px;
+}
+
+.sg-hero-plant {
+  font-size: 2.6rem;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 10px;
+}
+
+.sg-mascot-small {
+  position: absolute;
+  bottom: -8px;
+  inset-inline-start: 8px;
+  width: 84px;
+  height: auto;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+.sg-guide {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sg-mascot {
+  width: 104px;
+  height: auto;
+  flex: 0 0 auto;
+  animation: sg-float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+}
+
+.sg-bubble {
+  margin: 0;
+  background: #fff;
+  border-radius: 20px;
+  padding: 10px 14px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.sg-link {
+  min-height: 48px;
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 800;
+  color: var(--sg-ink);
+  cursor: pointer;
+}
+
+.sg-celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgba(6, 95, 70, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.sg-celebrate-card {
+  position: relative;
+  z-index: 2;
+  max-width: 340px;
+  background: #fff;
+  border-radius: 28px;
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: sg-pop 0.4s ease-out;
+}
+
+.sg-tap-hint {
+  margin: 0;
+  opacity: 0.6;
+  font-size: 0.9rem;
+}
+
+.sg-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.sg-confetti span {
+  position: absolute;
+  top: -14px;
+  width: 10px;
+  height: 14px;
+  border-radius: 3px;
+  animation: sg-fall 2.6s linear infinite;
+}
+
+.sg-bounce {
+  display: inline-block;
+  animation: sg-bounce-anim 1.2s ease-in-out infinite;
+}
+
+@keyframes sg-fall {
+  to {
+    transform: translateY(110vh) rotate(540deg);
+  }
+}
+
+@keyframes sg-pop {
+  from {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes sg-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes sg-bounce-anim {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.06);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-confetti span,
+  .sg-mascot,
+  .sg-bounce,
+  .sg-celebrate-card {
+    animation: none;
+  }
+}

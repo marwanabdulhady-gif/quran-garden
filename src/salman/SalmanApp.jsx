@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { GARDENS, GARDEN_ORDER } from './data/gardens.js';
 import { QURAN_LEVELS, SURAHS } from './data/quran.js';
+import { BACKGROUNDS, MASCOTS, GARDEN_MASCOT } from './data/art.js';
 import { JUZ30 } from '../juz30.js';
 import {
   BADGES,
@@ -15,7 +16,48 @@ import {
 } from './lib/gamify.js';
 import { gardenItems, visitPlan, toArabicNumeral } from './lib/catalog.js';
 import { loadState, saveState } from './lib/store.js';
-import { speak, canSpeak } from './lib/speech.js';
+import { canSpeak, speak } from './lib/speech.js';
+import { playClip, assetUrl } from './lib/voice.js';
+import { sfx } from './lib/sfx.js';
+
+const CONFETTI_COLORS = ['#f43f5e', '#fbbf24', '#10b981', '#38bdf8', '#a78bfa', '#fb923c'];
+
+// قطع ملوّنة متساقطة للاحتفال (تُعطَّل تلقائيًا عند تفضيل تقليل الحركة في CSS)
+function Confetti() {
+  return (
+    <div className="sg-confetti" aria-hidden="true">
+      {Array.from({ length: 24 }, (_, i) => (
+        <span
+          key={i}
+          style={{
+            left: `${(i * 37) % 100}%`,
+            animationDelay: `${(i % 6) * 0.12}s`,
+            background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// نافذة احتفال تظهر ثم تختفي (أو تُغلق بلمسة)
+function Celebrate({ data, onClose }) {
+  useEffect(() => {
+    const t = setTimeout(onClose, 3800);
+    return () => clearTimeout(t);
+  }, [onClose]);
+  return (
+    <div className="sg-celebrate" role="dialog" aria-label={data.title} onClick={onClose}>
+      <Confetti />
+      <div className="sg-celebrate-card">
+        <span className="sg-big sg-bounce">{data.emoji}</span>
+        <h2 className="sg-title">{data.title}</h2>
+        {data.sub && <p className="sg-sub">{data.sub}</p>}
+        <p className="sg-tap-hint">اضغط للمتابعة</p>
+      </div>
+    </div>
+  );
+}
 
 // درس واحد: قصة + سؤال من خيارين. الخطأ لا يعاقب، وبعد محاولتين يظهر الجواب الصحيح بلون مميز.
 function Lesson({ item, onCorrect, onContinue, continueLabel }) {
@@ -27,18 +69,26 @@ function Lesson({ item, onCorrect, onContinue, continueLabel }) {
 
   const pick = (choice) => {
     if (solved) return;
+    sfx('tap');
     if (choice === item.question.answer) {
       setSolved(true);
       setMessage('أحسنت! ⭐');
       onCorrect(tries === 0);
     } else {
-      setTries((t) => t + 1);
+      const nextTries = tries + 1;
+      setTries(nextTries);
       setMessage('قريب! جرّب مرة ثانية 🤗');
+      sfx('retry');
+      if (nextTries === 2) playClip('hint');
+      else playClip('retry');
     }
   };
 
   return (
     <section className="sg-lesson" aria-label={item.title}>
+      <div className="sg-hero sg-hero-small" style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS[item.garden])})` }}>
+        <img className="sg-mascot-small" src={assetUrl(MASCOTS[GARDEN_MASCOT[item.garden]])} alt="" />
+      </div>
       <p className="sg-chip" style={{ background: garden.color }}>
         {garden.emoji} {garden.name} · {garden.guide}
       </p>
@@ -104,25 +154,59 @@ function Back({ onClick, label = 'رجوع للغابة' }) {
   );
 }
 
+function Mascot({ name, bubble, className = '' }) {
+  return (
+    <div className={`sg-guide ${className}`}>
+      <img className="sg-mascot" src={assetUrl(MASCOTS[name])} alt="" />
+      {bubble && <p className="sg-bubble">{bubble}</p>}
+    </div>
+  );
+}
+
+function gardenStageIndex(state, garden) {
+  return growthStage(state.gardens[garden] || 0).index;
+}
+
 export default function SalmanApp() {
   const [state, setState] = useState(() => loadState());
   const [screen, setScreen] = useState({ name: 'home' });
   const [openSurah, setOpenSurah] = useState(null);
+  const [celebrate, setCelebrate] = useState(null);
   const today = dayKeyFrom();
 
   useEffect(() => {
     saveState(state);
   }, [state]);
 
+  const closeCelebrate = useCallback(() => setCelebrate(null), []);
+
+  // كل إجابة صحيحة: نجوم + صوت + احتفال إن نمت شجرة أو فُتح وسام
   const credit = (item, firstTry) => {
+    const before = gardenStageIndex(state, item.garden);
     const r = recordStory(state, { storyId: item.id, garden: item.garden, firstTry, dayKey: today });
     setState(r.state);
+    sfx('correct');
+    const after = gardenStageIndex(r.state, item.garden);
+    if (after > before) {
+      setCelebrate({
+        emoji: GARDENS[item.garden].emoji,
+        title: 'شجرة جديدة!',
+        sub: `${GARDENS[item.garden].name} تكبر معك`,
+        clip: 'garden-grow',
+      });
+    } else if (r.newBadges.length) {
+      const badge = BADGES.find((b) => b.id === r.newBadges[0]);
+      setCelebrate({ emoji: badge.emoji, title: 'وسام جديد!', sub: badge.title, clip: 'badge' });
+    } else {
+      playClip('correct');
+    }
     return r;
   };
 
   // ---------- زيارة اليوم ----------
   const startVisit = () => {
     const plan = visitPlan(state.doneStories);
+    if (state.streak.current >= 2) playClip('streak');
     setScreen({ name: 'visit', plan, step: 0, stars: 0, badges: [] });
   };
 
@@ -132,6 +216,7 @@ export default function SalmanApp() {
   };
 
   const visitNext = () => {
+    setCelebrate(null);
     const nextStep = screen.step + 1;
     if (nextStep < screen.plan.length) {
       setScreen({ ...screen, step: nextStep });
@@ -148,11 +233,21 @@ export default function SalmanApp() {
     });
   };
 
-  // ---------- الحديقة ----------
+  // صوت وتأثير عند الوصول إلى شاشة الهدية
+  useEffect(() => {
+    if (screen.name === 'reward') {
+      sfx('gift');
+      playClip('visit-done');
+    }
+  }, [screen.name]);
+
+  const celebrateLayer = celebrate ? <Celebrate data={celebrate} onClose={closeCelebrate} /> : null;
+
   if (screen.name === 'visit') {
     const item = screen.plan[screen.step];
     return (
       <main className="sg-app" dir="rtl">
+        {celebrateLayer}
         <p className="sg-progress" aria-label="تقدّم الزيارة">
           زيارة اليوم · {toArabicNumeral(screen.step + 1)} / {toArabicNumeral(screen.plan.length)}
         </p>
@@ -170,6 +265,7 @@ export default function SalmanApp() {
   if (screen.name === 'reward') {
     return (
       <main className="sg-app sg-reward" dir="rtl">
+        <Mascot name="salman" className="sg-bounce" bubble="أحسنت يا بطل!" />
         <h1 className="sg-title">🎉 أحسنت يا بطل!</h1>
         <p className="sg-big">{screen.gift.emoji}</p>
         <p>هدية اليوم: {screen.gift.name}</p>
@@ -207,12 +303,16 @@ export default function SalmanApp() {
     }
     return (
       <main className="sg-app" dir="rtl">
+        {celebrateLayer}
         <Back onClick={() => setScreen({ name: 'garden', garden: screen.garden })} label="رجوع للحديقة" />
         <Lesson
           key={item.id}
           item={item}
           onCorrect={(firstTry) => credit(item, firstTry)}
-          onContinue={() => setScreen({ name: 'garden', garden: screen.garden })}
+          onContinue={() => {
+            setCelebrate(null);
+            setScreen({ name: 'garden', garden: screen.garden });
+          }}
           continueLabel="القصة التالية ➜"
         />
       </main>
@@ -226,12 +326,18 @@ export default function SalmanApp() {
     return (
       <main className="sg-app" dir="rtl">
         <Back onClick={() => setScreen({ name: 'home' })} />
+        <div className="sg-hero" style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS[screen.garden])})` }}>
+          <span className="sg-hero-plant" aria-hidden="true">
+            {stage.emoji}
+          </span>
+        </div>
         <h1 className="sg-title" style={{ color: g.color }}>
           {g.emoji} {g.name}
         </h1>
         <p className="sg-sub">
-          {stage.emoji} {stage.name} · ⭐ {toArabicNumeral(state.gardens[screen.garden] || 0)}
+          {stage.name} · ⭐ {toArabicNumeral(state.gardens[screen.garden] || 0)}
         </p>
+        <Mascot name={GARDEN_MASCOT[screen.garden]} bubble={`أهلًا! أنا ${g.guide}، هيا نتعلّم معًا`} />
         <ul className="sg-list">
           {items.map((it) => {
             const done = !!state.doneStories[it.id];
@@ -261,6 +367,7 @@ export default function SalmanApp() {
   if (screen.name === 'quran') {
     return (
       <main className="sg-app" dir="rtl">
+        {celebrateLayer}
         <Back onClick={() => setScreen({ name: 'home' })} />
         <h1 className="sg-title">📗 مستويات السور</h1>
         {QURAN_LEVELS.map((lvl) => {
@@ -295,7 +402,22 @@ export default function SalmanApp() {
                       <button
                         type="button"
                         className="sg-btn sg-btn-main"
-                        onClick={() => setState(recordSurah(state, { surahId: sid, dayKey: today }).state)}
+                        onClick={() => {
+                          const wasDone = levelDone(state, lvl.level);
+                          const r = recordSurah(state, { surahId: sid, dayKey: today });
+                          setState(r.state);
+                          sfx('levelUp');
+                          if (!wasDone && levelDone(r.state, lvl.level)) {
+                            setCelebrate({ emoji: '📗', title: 'مستوى مكتمل!', sub: lvl.title, clip: 'level-unlock' });
+                          } else {
+                            setCelebrate({
+                              emoji: '📜',
+                              title: 'سورة محفوظة!',
+                              sub: `سورة ${s.name}`,
+                              clip: 'surah-learned',
+                            });
+                          }
+                        }}
                       >
                         حفظتها ✓ (+⭐⭐)
                       </button>
@@ -338,6 +460,16 @@ export default function SalmanApp() {
   return (
     <main className="sg-app" dir="rtl">
       <Header state={state} />
+      <Mascot
+        name="salman"
+        bubble={
+          <>
+            <button type="button" className="sg-link" onClick={() => playClip('welcome')}>
+              🔊 اسمع الترحيب
+            </button>
+          </>
+        }
+      />
       <h1 className="sg-title">🌳 غابة سلمان</h1>
       <p className="sg-sub">أربع حدائق تنمو معك كل يوم</p>
 
