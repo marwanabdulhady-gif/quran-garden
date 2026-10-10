@@ -14,11 +14,11 @@ export const SCHEMA_VERSION = 2;
 
 // مراحل نمو الحديقة حسب عدد النجوم
 export const GROWTH = [
-  { min: 0, emoji: '🌱', name: 'بذرة' },
-  { min: 3, emoji: '🌿', name: 'نبتة' },
-  { min: 8, emoji: '🌳', name: 'شجرة صغيرة' },
-  { min: 15, emoji: '🌸', name: 'شجرة مزهرة' },
-  { min: 25, emoji: '🌺', name: 'بستان' },
+  { min: 0, emoji: '🌱', name: 'بذرة', art: 'salman/art/growth-1.png' },
+  { min: 3, emoji: '🌿', name: 'نبتة', art: 'salman/art/growth-2.png' },
+  { min: 8, emoji: '🌳', name: 'شجرة صغيرة', art: 'salman/art/growth-3.png' },
+  { min: 15, emoji: '🌸', name: 'شجرة مزهرة', art: 'salman/art/growth-4.png' },
+  { min: 25, emoji: '🌺', name: 'بستان', art: 'salman/art/growth-5.png' },
 ];
 
 export function growthStage(stars) {

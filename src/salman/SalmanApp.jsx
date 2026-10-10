@@ -352,9 +352,7 @@ export default function SalmanApp() {
       <main className="sg-app" dir="rtl">
         <Back onClick={() => setScreen({ name: 'home' })} />
         <div className="sg-hero" style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS[screen.garden])})` }}>
-          <span className="sg-hero-plant" aria-hidden="true">
-            {stage.emoji}
-          </span>
+          <img className="sg-hero-plant" src={assetUrl(stage.art)} alt="" />
         </div>
         <h1 className="sg-title" style={{ color: g.color }}>
           {g.emoji} {g.name}
@@ -518,7 +516,7 @@ export default function SalmanApp() {
               style={{ borderColor: g.color }}
               onClick={() => setScreen({ name: 'garden', garden: id })}
             >
-              <span className="sg-big">{st.emoji}</span>
+              <img className="sg-garden-art" src={assetUrl(st.art)} alt="" />
               <span className="sg-garden-name">{g.name}</span>
               <span className="sg-sub">
                 {st.name} · ⭐ {toArabicNumeral(stars)}

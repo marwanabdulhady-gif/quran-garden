@@ -16,12 +16,21 @@
 }
 
 .sg-hero-plant {
-  font-size: 2.6rem;
-  line-height: 1;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 999px;
-  padding: 6px 14px;
-  margin-bottom: 10px;
+  display: block;
+  height: 118px;
+  width: auto;
+  max-width: 80%;
+  object-fit: contain;
+  margin: 0 auto 10px;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.12));
+}
+
+.sg-garden-art {
+  display: block;
+  height: 72px;
+  width: auto;
+  object-fit: contain;
+  margin: 0 auto;
 }
 
 .sg-mascot-small {
