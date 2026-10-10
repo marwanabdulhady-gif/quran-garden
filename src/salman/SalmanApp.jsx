@@ -20,6 +20,8 @@ import {
 } from './lib/gamify.js';
 import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
 import { pickSession } from './lib/session.js';
+import { countVisit, riyadhHour, visitGate } from './lib/parent.js';
+import ParentArea from './ParentArea.jsx';
 import { loadState, saveState } from './lib/store.js';
 import { canSpeak, speak } from './lib/speech.js';
 import { playClip, playStory, assetUrl } from './lib/voice.js';
@@ -233,8 +235,11 @@ export default function SalmanApp() {
 
   // ---------- زيارة اليوم ----------
   const startVisit = () => {
+    // وضع ولي الأمر: حدّ الزيارات وساعات الهدوء. الرفض لا يُظهر عدّادًا ولا عقوبة
+    if (!visitGate(state, { dayKey: today, hour: riyadhHour() }).open) return;
     const plan = pickSession(state, CATALOG, today);
     if (state.streak.current >= 2) playClip('streak');
+    setState((s) => countVisit(s, today));
     if (plan[0]) showItem(plan[0]);
     setScreen({ name: 'visit', plan, step: 0, stars: 0, badges: [] });
   };
@@ -405,6 +410,10 @@ export default function SalmanApp() {
     );
   }
 
+  if (screen.name === 'parent') {
+    return <ParentArea state={state} setState={setState} onBack={() => setScreen({ name: 'home' })} />;
+  }
+
   if (screen.name === 'quran') {
     return (
       <main className="sg-app" dir="rtl">
@@ -505,6 +514,7 @@ export default function SalmanApp() {
   }
 
   // ---------- الغابة الرئيسية ----------
+  const gate = visitGate(state, { dayKey: today, hour: riyadhHour() });
   return (
     <main className="sg-app" dir="rtl">
       <Header state={state} />
@@ -548,9 +558,15 @@ export default function SalmanApp() {
         })}
       </div>
 
-      <button type="button" className="sg-btn sg-btn-main sg-visit" onClick={startVisit}>
-        ✨ زيارة اليوم (١٠ دقايق)
-      </button>
+      {gate.open ? (
+        <button type="button" className="sg-btn sg-btn-main sg-visit" onClick={startVisit}>
+          ✨ زيارة اليوم (١٠ دقايق)
+        </button>
+      ) : (
+        <p className="sg-gate" role="status">
+          {gate.reason === 'quiet' ? '🌙 الغابة نايمة الآن. نرجع الصبح!' : '🎁 خلصت زيارة اليوم. تعال بكرة!'}
+        </p>
+      )}
       <div className="sg-row-buttons">
         <button type="button" className="sg-btn sg-btn-soft" onClick={() => setScreen({ name: 'quran' })}>
           📗 مستويات السور
@@ -559,6 +575,9 @@ export default function SalmanApp() {
           🏅 الأوسمة
         </button>
       </div>
+      <button type="button" className="sg-btn sg-btn-soft sg-parent-link" onClick={() => setScreen({ name: 'parent' })}>
+        🔒 ولي الأمر
+      </button>
     </main>
   );
 }

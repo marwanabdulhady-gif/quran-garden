@@ -6,11 +6,13 @@
 import { GARDEN_ORDER } from '../data/gardens.js';
 import { QURAN_LEVELS } from '../data/quran.js';
 import { DAILY_NEW_CAP, applyAnswer, legacyRecord, markSeen, newRecord, sanitizeRecord } from './leitner.js';
+import { PARENT_DEFAULTS, sanitizeParent } from './parent.js';
 
 // مفتاح التخزين ثابت، ورقم المخطط داخل الحالة (v) يتغيّر مع الترحيل.
 // v1: بلا Leitner. v2: skills (سجل Leitner لكل عنصر) و daily (عدّاد الجديد لكل حديقة في اليوم).
+// v3: visitLog (عدد الزيارات في اليوم) و parent (PIN وحد الزيارات وساعات الهدوء). الترحيل إضافة فقط، بقيم افتراضية.
 export const STORAGE_KEY = 'salman-garden-v1';
-export const SCHEMA_VERSION = 2;
+export const SCHEMA_VERSION = 3;
 
 // مراحل نمو الحديقة حسب عدد النجوم
 export const GROWTH = [
@@ -170,6 +172,8 @@ export function createState() {
     badges: {},
     skills: {},
     daily: { day: null, newByGarden: {} },
+    visitLog: { day: null, count: 0 },
+    parent: { ...PARENT_DEFAULTS },
   };
 }
 
@@ -201,6 +205,14 @@ function normalizeDaily(raw) {
     }
   }
   return { day, newByGarden };
+}
+
+function normalizeVisitLog(raw) {
+  const base = { day: null, count: 0 };
+  if (!raw || typeof raw !== 'object') return base;
+  const day = typeof raw.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.day) ? raw.day : null;
+  const count = Number(raw.count);
+  return { day, count: Number.isInteger(count) && count >= 0 && count <= 99 ? count : 0 };
 }
 
 // عدد العناصر الجديدة المسموح بها اليوم في هذه الحديقة (حدّ 2)
@@ -257,6 +269,8 @@ export function normalizeState(raw) {
     badges: raw.badges && typeof raw.badges === 'object' ? raw.badges : {},
     skills: normalizeSkills(raw.skills, doneStories),
     daily: normalizeDaily(raw.daily),
+    visitLog: normalizeVisitLog(raw.visitLog),
+    parent: sanitizeParent(raw.parent),
   };
 }
 

@@ -30,8 +30,9 @@ const ARABIC_NUMERALS = [
   '٢٠',
 ];
 
+// الأرقام حتى 20 من الجدول، وما بعدها يُحوَّل رقمًا رقمًا (مثلًا 21 ← ٢١)
 export function toArabicNumeral(n) {
-  return ARABIC_NUMERALS[n] ?? String(n);
+  return ARABIC_NUMERALS[n] ?? String(n).replace(/\d/g, (d) => ARABIC_NUMERALS[Number(d)]);
 }
 
 function arabicItems() {

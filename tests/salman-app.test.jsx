@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 // اختبار واجهة حديقة سلمان: الغابة، زيارة اليوم، الخطأ لا يعاقب، والإجابة الصحيحة تحفظ النجوم
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
 import { render, screen, cleanup, fireEvent, within } from '@testing-library/react';
 import SalmanApp from '../src/salman/SalmanApp.jsx';
@@ -10,12 +10,18 @@ import { pickSession } from '../src/salman/lib/session.js';
 
 const firstOfVisit = () => pickSession(createState(), CATALOG, dayKeyFrom())[0];
 
+// وقت نهاري ثابت بتوقيت الرياض (10:00): ساعات الهدوء تمنع الزيارة ليلًا، فلا نعتمد على ساعة الجهاز
+const DAYTIME = new Date('2026-10-11T07:00:00Z');
+
 beforeEach(() => {
   window.localStorage.clear();
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(DAYTIME);
 });
 
 afterEach(() => {
   cleanup();
+  vi.useRealTimers();
   window.localStorage.clear();
 });
 
