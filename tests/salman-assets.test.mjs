@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { CLIPS, CLIP_KEYS } from '../src/salman/lib/clips.js';
 import { BACKGROUNDS, MASCOTS, GARDEN_MASCOT } from '../src/salman/data/art.js';
 import { GARDEN_ORDER } from '../src/salman/data/gardens.js';
-import { GROWTH } from '../src/salman/lib/gamify.js';
+import { GROWTH, BADGES } from '../src/salman/lib/gamify.js';
 import { sfx, SFX_NAMES } from '../src/salman/lib/sfx.js';
 import { playClip, clipUrl } from '../src/salman/lib/voice.js';
 
@@ -70,6 +70,16 @@ describe('صور مراحل النمو', () => {
       const file = path.join(PUBLIC, stage.art);
       expect(fs.existsSync(file), stage.art).toBe(true);
       expect(fs.statSync(file).size, stage.art).toBeGreaterThan(1000);
+    }
+  });
+});
+
+describe('صور الأوسمة', () => {
+  it('كل وسام له صورة موجودة وغير فارغة', () => {
+    for (const b of BADGES) {
+      const file = path.join(PUBLIC, b.art);
+      expect(fs.existsSync(file), b.art).toBe(true);
+      expect(fs.statSync(file).size, b.art).toBeGreaterThan(1000);
     }
   });
 });

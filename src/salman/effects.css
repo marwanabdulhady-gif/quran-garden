@@ -174,3 +174,21 @@
     animation: none;
   }
 }
+
+.sg-celebrate-art {
+  display: block;
+  height: 150px;
+  width: auto;
+  max-width: 70%;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.sg-badge-art {
+  display: block;
+  height: 64px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  margin: 0 auto;
+}

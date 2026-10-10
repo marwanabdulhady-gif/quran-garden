@@ -85,21 +85,76 @@ export function levelUnlocked(state, levelNumber) {
 }
 
 export const BADGES = [
-  { id: 'first-star', emoji: '⭐', title: 'أول نجمة', test: (s) => s.stars >= 1 },
-  { id: 'ten-stars', emoji: '🌟', title: 'عشر نجوم', test: (s) => s.stars >= 10 },
-  { id: 'streak-3', emoji: '🔥', title: 'ثلاثة أيام متتالية', test: (s) => s.streak.best >= 3 },
-  { id: 'streak-7', emoji: '🏆', title: 'أسبوع كامل', test: (s) => s.streak.best >= 7 },
-  { id: 'tree', emoji: '🌳', title: 'حديقة صارت شجرة', test: (s) => Object.values(s.gardens).some((v) => v >= 8) },
+  {
+    id: 'first-star',
+    art: 'salman/art/badges/first-star.png',
+    emoji: '⭐',
+    title: 'أول نجمة',
+    test: (s) => s.stars >= 1,
+  },
+  {
+    id: 'ten-stars',
+    art: 'salman/art/badges/ten-stars.png',
+    emoji: '🌟',
+    title: 'عشر نجوم',
+    test: (s) => s.stars >= 10,
+  },
+  {
+    id: 'streak-3',
+    art: 'salman/art/badges/streak-3.png',
+    emoji: '🔥',
+    title: 'ثلاثة أيام متتالية',
+    test: (s) => s.streak.best >= 3,
+  },
+  {
+    id: 'streak-7',
+    art: 'salman/art/badges/streak-7.png',
+    emoji: '🏆',
+    title: 'أسبوع كامل',
+    test: (s) => s.streak.best >= 7,
+  },
+  {
+    id: 'tree',
+    art: 'salman/art/badges/tree.png',
+    emoji: '🌳',
+    title: 'حديقة صارت شجرة',
+    test: (s) => Object.values(s.gardens).some((v) => v >= 8),
+  },
   {
     id: 'four-gardens',
+    art: 'salman/art/badges/four-gardens.png',
     emoji: '🌲',
     title: 'الغابة الأربع',
     test: (s) => GARDEN_ORDER.every((g) => (s.gardens[g] || 0) >= 1),
   },
-  { id: 'first-visit', emoji: '🎁', title: 'أول زيارة', test: (s) => s.visits >= 1 },
-  { id: 'quran-level-1', emoji: '📗', title: 'المستوى الأول من القرآن', test: (s) => levelDone(s, 1) },
-  { id: 'quran-level-2', emoji: '📘', title: 'المستوى الثاني من القرآن', test: (s) => levelDone(s, 2) },
-  { id: 'quran-level-3', emoji: '📕', title: 'المستوى الثالث من القرآن', test: (s) => levelDone(s, 3) },
+  {
+    id: 'first-visit',
+    art: 'salman/art/badges/first-visit.png',
+    emoji: '🎁',
+    title: 'أول زيارة',
+    test: (s) => s.visits >= 1,
+  },
+  {
+    id: 'quran-level-1',
+    art: 'salman/art/badges/quran-level-1.png',
+    emoji: '📗',
+    title: 'المستوى الأول من القرآن',
+    test: (s) => levelDone(s, 1),
+  },
+  {
+    id: 'quran-level-2',
+    art: 'salman/art/badges/quran-level-2.png',
+    emoji: '📘',
+    title: 'المستوى الثاني من القرآن',
+    test: (s) => levelDone(s, 2),
+  },
+  {
+    id: 'quran-level-3',
+    art: 'salman/art/badges/quran-level-3.png',
+    emoji: '📕',
+    title: 'المستوى الثالث من القرآن',
+    test: (s) => levelDone(s, 3),
+  },
 ];
 
 export function createState() {

@@ -55,7 +55,11 @@ function Celebrate({ data, onClose }) {
     <div className="sg-celebrate" role="dialog" aria-label={data.title} onClick={onClose}>
       <Confetti />
       <div className="sg-celebrate-card">
-        <span className="sg-big sg-bounce">{data.emoji}</span>
+        {data.art ? (
+          <img className="sg-celebrate-art sg-bounce" src={assetUrl(data.art)} alt="" />
+        ) : (
+          <span className="sg-big sg-bounce">{data.emoji}</span>
+        )}
         <h2 className="sg-title">{data.title}</h2>
         {data.sub && <p className="sg-sub">{data.sub}</p>}
         <p className="sg-tap-hint">اضغط للمتابعة</p>
@@ -206,7 +210,7 @@ export default function SalmanApp() {
       });
     } else if (r.newBadges.length) {
       const badge = BADGES.find((b) => b.id === r.newBadges[0]);
-      setCelebrate({ emoji: badge.emoji, title: 'وسام جديد!', sub: badge.title, clip: 'badge' });
+      setCelebrate({ emoji: badge.emoji, art: badge.art, title: 'وسام جديد!', sub: badge.title, clip: 'badge' });
     } else {
       playClip('correct');
     }
@@ -475,7 +479,11 @@ export default function SalmanApp() {
             const got = !!state.badges[b.id];
             return (
               <div key={b.id} className={got ? 'sg-badge-card' : 'sg-badge-card is-locked'}>
-                <span className="sg-big">{got ? b.emoji : '🔒'}</span>
+                {got ? (
+                  <img className="sg-badge-art" src={assetUrl(b.art)} alt="" />
+                ) : (
+                  <span className="sg-big">🔒</span>
+                )}
                 <span>{b.title}</span>
               </div>
             );
