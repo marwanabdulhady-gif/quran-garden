@@ -4,8 +4,11 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { render, screen, cleanup, fireEvent, within } from '@testing-library/react';
 import SalmanApp from '../src/salman/SalmanApp.jsx';
-import { CATALOG, visitPlan } from '../src/salman/lib/catalog.js';
-import { STORAGE_KEY } from '../src/salman/lib/gamify.js';
+import { CATALOG } from '../src/salman/lib/catalog.js';
+import { STORAGE_KEY, createState, dayKeyFrom } from '../src/salman/lib/gamify.js';
+import { pickSession } from '../src/salman/lib/session.js';
+
+const firstOfVisit = () => pickSession(createState(), CATALOG, dayKeyFrom())[0];
 
 beforeEach(() => {
   window.localStorage.clear();
@@ -33,8 +36,8 @@ describe('حديقة سلمان — الواجهة', () => {
   it('زيارة اليوم تبدأ بقصة العربية، وفيها سؤال من خيارين فقط', () => {
     render(<SalmanApp />);
     fireEvent.click(screen.getByText(/زيارة اليوم/));
-    expect(screen.getByText(/زيارة اليوم · ١ \/ ٤/)).toBeTruthy();
-    const first = visitPlan({})[0];
+    expect(screen.getByText(/زيارة اليوم · ١ \/ ٨/)).toBeTruthy();
+    const first = firstOfVisit();
     const choices = first.question.choices;
     expect(choices).toHaveLength(2);
     for (const c of choices) {
@@ -45,7 +48,7 @@ describe('حديقة سلمان — الواجهة', () => {
   it('الخيار الخاطئ لا يعطي نجمة ولا يعاقب، والصحيح يعطي نجمتين ويحفظ الحالة', () => {
     render(<SalmanApp />);
     fireEvent.click(screen.getByText(/زيارة اليوم/));
-    const first = visitPlan({})[0];
+    const first = firstOfVisit();
     const wrong = first.question.choices.find((c) => c !== first.question.answer);
 
     fireEvent.click(choiceButton(wrong));
@@ -72,5 +75,20 @@ describe('حديقة سلمان — الواجهة', () => {
   it('عدد الأسئلة في كل حديقة مطابق للكتالوج', () => {
     expect(CATALOG.arabic.length).toBeGreaterThanOrEqual(28);
     expect(CATALOG.quran.length).toBe(13);
+  });
+
+  it('ليلي: الخطأ الأول يُسجَّل في Leitner (صندوق 1) والصحيح بعده يعطي نجمة واحدة', () => {
+    render(<SalmanApp />);
+    fireEvent.click(screen.getByText(/زيارة اليوم/));
+    const first = firstOfVisit();
+    const wrong = first.question.choices.find((c) => c !== first.question.answer);
+    fireEvent.click(choiceButton(wrong));
+    const midway = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+    expect(midway.skills[first.id].box).toBe(1);
+    expect(midway.skills[first.id].days).toBe(0);
+    fireEvent.click(choiceButton(first.question.answer));
+    const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY));
+    expect(saved.skills[first.id].box).toBe(1);
+    expect(saved.stars).toBe(1);
   });
 });

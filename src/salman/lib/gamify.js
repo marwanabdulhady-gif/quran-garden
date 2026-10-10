@@ -1,12 +1,16 @@
 // منطق التلعيب لحديقة سلمان — دوال نقية (بدون React ولا تخزين) لتسهيل الاختبار.
 // القواعد: كل إجابة صحيحة تعطي نجمة، والصحيحة من أول محاولة تعطي نجمتين.
 // الخطأ لا يُنقص شيئًا ولا يُلغي تقدّمًا. الحدائق تنمو بالنجوم، والأوسمة تُفتح بالإنجازات.
-// لا مؤقتات ولا لوحات متصدّرين. قواعد Leitner غير مُضافة بعد (بانتظار موافقة ولي الأمر).
+// لا مؤقتات ولا لوحات متصدّرين. قواعد Leitner (leitner.js) معتمدة من المستخدم ومطبّقة على كل عنصر.
 
 import { GARDEN_ORDER } from '../data/gardens.js';
 import { QURAN_LEVELS } from '../data/quran.js';
+import { DAILY_NEW_CAP, applyAnswer, legacyRecord, markSeen, newRecord, sanitizeRecord } from './leitner.js';
 
+// مفتاح التخزين ثابت، ورقم المخطط داخل الحالة (v) يتغيّر مع الترحيل.
+// v1: بلا Leitner. v2: skills (سجل Leitner لكل عنصر) و daily (عدّاد الجديد لكل حديقة في اليوم).
 export const STORAGE_KEY = 'salman-garden-v1';
+export const SCHEMA_VERSION = 2;
 
 // مراحل نمو الحديقة حسب عدد النجوم
 export const GROWTH = [
@@ -100,7 +104,7 @@ export const BADGES = [
 
 export function createState() {
   return {
-    v: 1,
+    v: SCHEMA_VERSION,
     stars: 0,
     gardens: { quran: 0, arabic: 0, math: 0, english: 0 },
     doneStories: {},
@@ -109,7 +113,68 @@ export function createState() {
     visits: 0,
     gifts: [],
     badges: {},
+    skills: {},
+    daily: { day: null, newByGarden: {} },
   };
+}
+
+// الترحيل من v1 إلى v2: كل قصة مكتملة سابقًا تصبح عنصرًا متعلَّمًا يحتاج مراجعة (box 1، مستحق الآن).
+// النجوم والأوسمة والسلسلة لا تتغيّر. الإصلاح idempotent: القصة التي لها سجل تبقى كما هي.
+function normalizeSkills(raw, doneStories) {
+  const skills = {};
+  if (raw && typeof raw === 'object') {
+    for (const [id, rec] of Object.entries(raw)) {
+      const clean = sanitizeRecord(rec);
+      if (clean) skills[id] = clean;
+    }
+  }
+  for (const id of Object.keys(doneStories)) {
+    if (!skills[id]) skills[id] = legacyRecord();
+  }
+  return skills;
+}
+
+function normalizeDaily(raw) {
+  const base = { day: null, newByGarden: {} };
+  if (!raw || typeof raw !== 'object') return base;
+  const day = typeof raw.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.day) ? raw.day : null;
+  const newByGarden = {};
+  if (raw.newByGarden && typeof raw.newByGarden === 'object') {
+    for (const [g, n] of Object.entries(raw.newByGarden)) {
+      const k = Number(n);
+      if (Number.isInteger(k) && k >= 0 && k <= 99) newByGarden[g] = k;
+    }
+  }
+  return { day, newByGarden };
+}
+
+// عدد العناصر الجديدة المسموح بها اليوم في هذه الحديقة (حدّ 2)
+export function newAllowed(state, garden, dayKey) {
+  const used = state.daily.day === dayKey ? state.daily.newByGarden[garden] || 0 : 0;
+  return Math.max(0, DAILY_NEW_CAP - used);
+}
+
+// يُسجَّل ظهور عنصر لأول مرة (يصبح «شُوهد») ويُحسب ضمن حدّ الجديد اليومي.
+// إن كان للعنصر سجل بالفعل فلا يُحسب مرة ثانية.
+export function exposeItem(state, { itemId, garden, dayKey }) {
+  const rec = state.skills[itemId];
+  if (rec) {
+    return { ...state, skills: { ...state.skills, [itemId]: markSeen(rec, dayKey) } };
+  }
+  const daily = state.daily.day === dayKey ? state.daily : { day: dayKey, newByGarden: {} };
+  const used = daily.newByGarden[garden] || 0;
+  return {
+    ...state,
+    skills: { ...state.skills, [itemId]: newRecord(dayKey) },
+    daily: { day: dayKey, newByGarden: { ...daily.newByGarden, [garden]: used + 1 } },
+  };
+}
+
+// إجابة واحدة (أول محاولة فقط): صحيحة أو غلط، تُحدّث صندوق Leitner.
+export function answerItem(state, { itemId, garden, correct, dayKey }) {
+  const exposed = exposeItem(state, { itemId, garden, dayKey });
+  const next = applyAnswer(exposed.skills[itemId], { correct, dayKey });
+  return { ...exposed, skills: { ...exposed.skills, [itemId]: next } };
 }
 
 // يدمج الحالة المحفوظة مع القيم الافتراضية، فيتحمّل أي بيانات ناقصة أو تالفة.
@@ -124,16 +189,19 @@ export function normalizeState(raw) {
     }
   }
   const stars = Number(raw.stars);
+  const doneStories = raw.doneStories && typeof raw.doneStories === 'object' ? raw.doneStories : {};
   return {
     ...base,
     stars: Number.isFinite(stars) && stars >= 0 ? stars : 0,
     gardens,
-    doneStories: raw.doneStories && typeof raw.doneStories === 'object' ? raw.doneStories : {},
+    doneStories,
     learnedSurahs: raw.learnedSurahs && typeof raw.learnedSurahs === 'object' ? raw.learnedSurahs : {},
     streak: raw.streak && typeof raw.streak === 'object' ? { ...base.streak, ...raw.streak } : base.streak,
     visits: Number.isFinite(Number(raw.visits)) ? Number(raw.visits) : 0,
     gifts: Array.isArray(raw.gifts) ? raw.gifts : [],
     badges: raw.badges && typeof raw.badges === 'object' ? raw.badges : {},
+    skills: normalizeSkills(raw.skills, doneStories),
+    daily: normalizeDaily(raw.daily),
   };
 }
 

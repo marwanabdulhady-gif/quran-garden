@@ -4,7 +4,7 @@ import { JUZ30 } from '../src/juz30.js';
 import { SURAHS, QURAN_LEVELS, SURAH_STORIES } from '../src/salman/data/quran.js';
 import { ARABIC_STORIES } from '../src/salman/data/stories.generated.js';
 import { MATH_STORIES, ENGLISH_STORIES, GARDEN_ORDER } from '../src/salman/data/gardens.js';
-import { CATALOG, visitPlan, nextItem } from '../src/salman/lib/catalog.js';
+import { CATALOG } from '../src/salman/lib/catalog.js';
 
 describe('السور والمستويات (الاقتراح §3)', () => {
   it('المستويات الثلاثة تغطي الفاتحة و103–114 مرة واحدة بالضبط', () => {
@@ -89,15 +89,5 @@ describe('الكتالوج وزيارة اليوم', () => {
   it('معرّفات كل العناصر فريدة عبر الحدائق', () => {
     const ids = GARDEN_ORDER.flatMap((g) => CATALOG[g].map((i) => i.id));
     expect(new Set(ids).size).toBe(ids.length);
-  });
-
-  it('زيارة اليوم تمر بالحدائق بالترتيب: عربية ← رياضيات ← قرآن ← إنجليزية', () => {
-    const plan = visitPlan({});
-    expect(plan.map((p) => p.garden)).toEqual(['arabic', 'math', 'quran', 'english']);
-  });
-
-  it('إذا اكتملت الحديقة نعيد أول قصة للمراجعة بدل أن تتوقف الزيارة', () => {
-    const done = Object.fromEntries(CATALOG.math.map((i) => [i.id, true]));
-    expect(nextItem('math', done).id).toBe(CATALOG.math[0].id);
   });
 });

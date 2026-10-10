@@ -1,8 +1,8 @@
 // كتالوج العناصر القابلة للعب: كل قصة = عنصر فيه نص وسؤال من خيارين.
-// الترتيب داخل الزيارة اليومية: العربية ← الرياضيات ← القرآن ← الإنجليزية (docs/salmans-garden/PROPOSAL.md §1).
+// الترتيب داخل الزيارة اليومية: العربية ← الرياضيات ← القرآن ← الإنجليزية (اختيار الجلسة في session.js).
 
 import { ARABIC_STORIES } from '../data/stories.generated.js';
-import { GARDENS, GARDEN_ORDER, MATH_STORIES, ENGLISH_STORIES } from '../data/gardens.js';
+import { GARDENS, MATH_STORIES, ENGLISH_STORIES } from '../data/gardens.js';
 import { SURAHS, QURAN_LEVELS, SURAH_STORIES } from '../data/quran.js';
 
 const ALPHABET = ARABIC_STORIES.map((l) => l.letter);
@@ -123,17 +123,6 @@ export const CATALOG = {
 
 export function gardenItems(garden) {
   return CATALOG[garden] || [];
-}
-
-// أول قصة لم تُكمل بعد في الحديقة؛ وإن اكتملت كلها نعيد القصة الأولى للمراجعة
-export function nextItem(garden, doneStories) {
-  const items = gardenItems(garden);
-  return items.find((it) => !doneStories[it.id]) || items[0] || null;
-}
-
-// زيارة اليوم: عنصر من كل حديقة بالترتيب
-export function visitPlan(doneStories) {
-  return GARDEN_ORDER.map((g) => nextItem(g, doneStories)).filter(Boolean);
 }
 
 export function gardenMeta(id) {

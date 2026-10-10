@@ -3,6 +3,7 @@ import { GARDENS, GARDEN_ORDER } from './data/gardens.js';
 import { QURAN_LEVELS, SURAHS } from './data/quran.js';
 import { BACKGROUNDS, MASCOTS, GARDEN_MASCOT } from './data/art.js';
 import { JUZ30 } from '../juz30.js';
+import { FATIHA } from './data/fatiha.js';
 import {
   BADGES,
   dayKeyFrom,
@@ -10,11 +11,15 @@ import {
   growthStage,
   levelDone,
   levelUnlocked,
+  answerItem,
+  exposeItem,
+  newAllowed,
   recordStory,
   recordSurah,
   GIFTS,
 } from './lib/gamify.js';
-import { gardenItems, visitPlan, toArabicNumeral } from './lib/catalog.js';
+import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
+import { pickSession } from './lib/session.js';
 import { loadState, saveState } from './lib/store.js';
 import { canSpeak, speak } from './lib/speech.js';
 import { playClip, assetUrl } from './lib/voice.js';
@@ -60,7 +65,7 @@ function Celebrate({ data, onClose }) {
 }
 
 // درس واحد: قصة + سؤال من خيارين. الخطأ لا يعاقب، وبعد محاولتين يظهر الجواب الصحيح بلون مميز.
-function Lesson({ item, onCorrect, onContinue, continueLabel }) {
+function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
   const [tries, setTries] = useState(0);
   const [solved, setSolved] = useState(false);
   const [message, setMessage] = useState('');
@@ -75,6 +80,7 @@ function Lesson({ item, onCorrect, onContinue, continueLabel }) {
       setMessage('أحسنت! ⭐');
       onCorrect(tries === 0);
     } else {
+      if (tries === 0) onMiss?.();
       const nextTries = tries + 1;
       setTries(nextTries);
       setMessage('قريب! جرّب مرة ثانية 🤗');
@@ -184,9 +190,13 @@ export default function SalmanApp() {
   const credit = (item, firstTry) => {
     const before = gardenStageIndex(state, item.garden);
     const r = recordStory(state, { storyId: item.id, garden: item.garden, firstTry, dayKey: today });
-    setState(r.state);
+    // Leitner: الإجابة الأولى فقط، والخطأ الأول يُسجَّل في onMiss
+    const next = firstTry
+      ? answerItem(r.state, { itemId: item.id, garden: item.garden, correct: true, dayKey: today })
+      : r.state;
+    setState(next);
     sfx('correct');
-    const after = gardenStageIndex(r.state, item.garden);
+    const after = gardenStageIndex(next, item.garden);
     if (after > before) {
       setCelebrate({
         emoji: GARDENS[item.garden].emoji,
@@ -203,10 +213,21 @@ export default function SalmanApp() {
     return r;
   };
 
+  // خطأ أول محاولة: يُسجَّل غلطًا في Leitner (بدون أي عقوبة ظاهرة)
+  const missItem = (item) => {
+    setState((s) => answerItem(s, { itemId: item.id, garden: item.garden, correct: false, dayKey: today }));
+  };
+
+  // أول ظهور للعنصر: يصبح «شُوهد» ويُحسب ضمن حدّ الجديد اليومي
+  const showItem = (item) => {
+    setState((s) => exposeItem(s, { itemId: item.id, garden: item.garden, dayKey: today }));
+  };
+
   // ---------- زيارة اليوم ----------
   const startVisit = () => {
-    const plan = visitPlan(state.doneStories);
+    const plan = pickSession(state, CATALOG, today);
     if (state.streak.current >= 2) playClip('streak');
+    if (plan[0]) showItem(plan[0]);
     setScreen({ name: 'visit', plan, step: 0, stars: 0, badges: [] });
   };
 
@@ -219,6 +240,7 @@ export default function SalmanApp() {
     setCelebrate(null);
     const nextStep = screen.step + 1;
     if (nextStep < screen.plan.length) {
+      showItem(screen.plan[nextStep]);
       setScreen({ ...screen, step: nextStep });
       return;
     }
@@ -255,6 +277,7 @@ export default function SalmanApp() {
           key={item.id}
           item={item}
           onCorrect={(firstTry) => visitCorrect(item, firstTry)}
+          onMiss={() => missItem(item)}
           onContinue={visitNext}
           continueLabel={screen.step + 1 < screen.plan.length ? 'التالي ➜' : 'انتهت الزيارة 🎁'}
         />
@@ -309,6 +332,7 @@ export default function SalmanApp() {
           key={item.id}
           item={item}
           onCorrect={(firstTry) => credit(item, firstTry)}
+          onMiss={() => missItem(item)}
           onContinue={() => {
             setCelebrate(null);
             setScreen({ name: 'garden', garden: screen.garden });
@@ -323,6 +347,7 @@ export default function SalmanApp() {
     const g = GARDENS[screen.garden];
     const items = gardenItems(screen.garden);
     const stage = growthStage(state.gardens[screen.garden] || 0);
+    const freshLeft = newAllowed(state, screen.garden, today);
     return (
       <main className="sg-app" dir="rtl">
         <Back onClick={() => setScreen({ name: 'home' })} />
@@ -341,15 +366,21 @@ export default function SalmanApp() {
         <ul className="sg-list">
           {items.map((it) => {
             const done = !!state.doneStories[it.id];
+            const fresh = !state.skills[it.id];
+            const locked = fresh && freshLeft <= 0;
             return (
               <li key={it.id}>
                 <button
                   type="button"
-                  className={done ? 'sg-row is-done' : 'sg-row'}
-                  onClick={() => setScreen({ name: 'lesson', garden: screen.garden, itemId: it.id })}
+                  className={done ? 'sg-row is-done' : locked ? 'sg-row is-locked' : 'sg-row'}
+                  disabled={locked}
+                  onClick={() => {
+                    if (fresh) showItem(it);
+                    setScreen({ name: 'lesson', garden: screen.garden, itemId: it.id });
+                  }}
                 >
-                  <span>{done ? '✅' : '📖'}</span>
-                  <span lang={it.lang || 'ar'}>{it.title}</span>
+                  <span>{done ? '✅' : locked ? '🌙' : '📖'}</span>
+                  <span lang={it.lang || 'ar'}>{locked ? 'غدًا' : it.title}</span>
                 </button>
               </li>
             );
@@ -384,7 +415,7 @@ export default function SalmanApp() {
                 const s = SURAHS[sid];
                 const learned = !!state.learnedSurahs[sid];
                 const open = openSurah === sid;
-                const verses = JUZ30[sid];
+                const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
                 return (
                   <article key={sid} className="sg-surah">
                     <button type="button" className="sg-row" onClick={() => setOpenSurah(open ? null : sid)}>
@@ -395,7 +426,7 @@ export default function SalmanApp() {
                     </button>
                     {open && (
                       <div className="sg-verses" lang="ar">
-                        {verses ? verses.join(' ۝ ') : 'نص الفاتحة يُضاف قريبًا (يعمل بدون إنترنت بعد الإضافة).'}
+                        {verses ? verses.join(' ۝ ') : 'النص يُضاف قريبًا.'}
                       </div>
                     )}
                     {unlocked && !learned && (
