@@ -14,7 +14,7 @@ globalThis.localStorage = {
   removeItem: (k) => delete store[k],
 };
 globalThis.location = { origin: 'http://x', pathname: '/', href: 'http://x/' };
-globalThis.navigator = {};
+Object.defineProperty(globalThis, 'navigator', { value: {}, configurable: true, writable: true });
 
 const S = await import('../src/store.js');
 const D = await import('../src/data.js');
