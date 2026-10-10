@@ -3,9 +3,28 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 import { resolve } from 'node:path';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
+
+// صفحة سلمان تستخدم manifest خاص بها (تبدأ من salman.html، لا من حديقة القرآن).
+// يُعدَّل الملف المبني بعد كل الحقن الذي يضيفه PWA plugin.
+const salmanManifest = {
+  name: 'salman-manifest-link',
+  apply: 'build',
+  writeBundle(options) {
+    const dir = options.dir ?? resolve(root, 'dist');
+    const file = resolve(dir, 'salman.html');
+    const html = readFileSync(file, 'utf-8');
+    const next = html.replace(
+      /<link rel="manifest" href="[^"]*">/,
+      '<link rel="manifest" href="/salman.webmanifest">',
+    );
+    if (next === html) throw new Error('salman-manifest-link: manifest tag not found in salman.html');
+    writeFileSync(file, next, 'utf-8');
+  },
+};
 
 export default defineConfig({
   // نقطتا دخول: التطبيق الأصلي (index.html) وحديقة سلمان (salman.html) — كل واحد مستقل
@@ -19,6 +38,7 @@ export default defineConfig({
   },
   plugins: [
     react(),
+    salmanManifest,
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
@@ -43,7 +63,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,jpg,webp,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,jpg,webp,woff2,mp3,webmanifest}'],
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
