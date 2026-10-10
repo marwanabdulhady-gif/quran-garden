@@ -66,6 +66,7 @@ function mathItems() {
       garden: 'math',
       title: m.title,
       paragraphs: [m.text],
+      audio: `stories/${m.id}`,
       question: {
         prompt: 'كم العدد؟',
         choices: [toArabicNumeral(m.count), toArabicNumeral(distractor)],
@@ -106,6 +107,7 @@ function englishItems() {
     title: e.title,
     lang: 'en',
     paragraphs: [e.text],
+    audio: `stories/${e.id}`,
     question: {
       prompt: 'Which sound do you hear? · أي صوت تسمع؟',
       choices: e.choices,

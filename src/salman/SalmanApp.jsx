@@ -22,7 +22,7 @@ import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
 import { pickSession } from './lib/session.js';
 import { loadState, saveState } from './lib/store.js';
 import { canSpeak, speak } from './lib/speech.js';
-import { playClip, assetUrl } from './lib/voice.js';
+import { playClip, playStory, assetUrl } from './lib/voice.js';
 import { sfx } from './lib/sfx.js';
 
 const CONFETTI_COLORS = ['#f43f5e', '#fbbf24', '#10b981', '#38bdf8', '#a78bfa', '#fb923c'];
@@ -111,7 +111,11 @@ function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
         ))}
       </div>
       {canSpeak() && (
-        <button type="button" className="sg-btn sg-btn-soft" onClick={() => speak(item.paragraphs.join(' '), lang)}>
+        <button
+          type="button"
+          className="sg-btn sg-btn-soft"
+          onClick={() => playStory(item.audio, item.paragraphs.join(' '), lang)}
+        >
           🔊 اسمع القصة
         </button>
       )}
@@ -294,7 +298,11 @@ export default function SalmanApp() {
       <main className="sg-app sg-reward" dir="rtl">
         <Mascot name="salman" className="sg-bounce" bubble="أحسنت يا بطل!" />
         <h1 className="sg-title">🎉 أحسنت يا بطل!</h1>
-        <p className="sg-big">{screen.gift.emoji}</p>
+        {screen.gift.art ? (
+          <img className="sg-gift-art" src={assetUrl(screen.gift.art)} alt="" />
+        ) : (
+          <p className="sg-big">{screen.gift.emoji}</p>
+        )}
         <p>هدية اليوم: {screen.gift.name}</p>
         <p>
           ⭐ {toArabicNumeral(screen.stars)} نجوم في هذه الزيارة · 🔥 {toArabicNumeral(screen.streak)} يوم متتالي
@@ -472,7 +480,10 @@ export default function SalmanApp() {
         <h1 className="sg-title">🏅 الأوسمة</h1>
         <p className="sg-sub">
           🎁 هدايا: {toArabicNumeral(state.gifts.length)}{' '}
-          {state.gifts.map((id) => GIFTS.find((g) => g.id === id)?.emoji).join(' ')}
+          {state.gifts.map((id) => {
+            const g = GIFTS.find((x) => x.id === id);
+            return g?.art ? <img key={id} className="sg-gift-chip" src={assetUrl(g.art)} alt={g.name} /> : g?.emoji;
+          })}
         </p>
         <div className="sg-badges">
           {BADGES.map((b) => {

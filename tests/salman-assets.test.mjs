@@ -6,7 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { CLIPS, CLIP_KEYS } from '../src/salman/lib/clips.js';
 import { BACKGROUNDS, MASCOTS, GARDEN_MASCOT } from '../src/salman/data/art.js';
 import { GARDEN_ORDER } from '../src/salman/data/gardens.js';
-import { GROWTH, BADGES } from '../src/salman/lib/gamify.js';
+import { GROWTH, BADGES, GIFTS } from '../src/salman/lib/gamify.js';
+import { CATALOG } from '../src/salman/lib/catalog.js';
 import { sfx, SFX_NAMES } from '../src/salman/lib/sfx.js';
 import { playClip, clipUrl } from '../src/salman/lib/voice.js';
 
@@ -80,6 +81,26 @@ describe('صور الأوسمة', () => {
       const file = path.join(PUBLIC, b.art);
       expect(fs.existsSync(file), b.art).toBe(true);
       expect(fs.statSync(file).size, b.art).toBeGreaterThan(1000);
+    }
+  });
+});
+
+describe('الهدايا وقصص الصوت', () => {
+  it('كل هدية لها صورة موجودة', () => {
+    for (const g of GIFTS) {
+      const file = path.join(PUBLIC, g.art);
+      expect(fs.existsSync(file), g.art).toBe(true);
+    }
+  });
+
+  it('كل عنصر له قصة صوتية يملك ملف mp3 موجودًا', () => {
+    const items = Object.values(CATALOG)
+      .flat()
+      .filter((it) => it.audio);
+    expect(items.length).toBeGreaterThan(0);
+    for (const it of items) {
+      const file = path.join(PUBLIC, 'salman/audio', `${it.audio}.mp3`);
+      expect(fs.existsSync(file), it.audio).toBe(true);
     }
   });
 });

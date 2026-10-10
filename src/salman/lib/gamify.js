@@ -62,12 +62,12 @@ export function updateStreak(streak, dayKey) {
 
 // الهدايا: تُمنح في نهاية كل زيارة يومية بالترتيب
 export const GIFTS = [
-  { id: 'gift-star', emoji: '⭐', name: 'نجمة ذهبية' },
-  { id: 'gift-butterfly', emoji: '🦋', name: 'فراشة' },
-  { id: 'gift-bird', emoji: '🐦', name: 'عصفور صغير' },
-  { id: 'gift-flower', emoji: '🌷', name: 'زهرة' },
-  { id: 'gift-rainbow', emoji: '🌈', name: 'قوس قزح' },
-  { id: 'gift-owl', emoji: '🦉', name: 'بومة حكيمة' },
+  { id: 'gift-star', emoji: '⭐', name: 'نجمة ذهبية', art: 'salman/art/gifts/star.png' },
+  { id: 'gift-butterfly', emoji: '🦋', name: 'فراشة', art: 'salman/art/gifts/butterfly.png' },
+  { id: 'gift-bird', emoji: '🐦', name: 'عصفور صغير', art: 'salman/art/gifts/bird.png' },
+  { id: 'gift-flower', emoji: '🌷', name: 'زهرة', art: 'salman/art/gifts/flower.png' },
+  { id: 'gift-rainbow', emoji: '🌈', name: 'قوس قزح', art: 'salman/art/gifts/rainbow.png' },
+  { id: 'gift-owl', emoji: '🦉', name: 'بومة حكيمة', art: 'salman/art/gifts/owl.png' },
 ];
 
 export function giftFor(visitNumber) {

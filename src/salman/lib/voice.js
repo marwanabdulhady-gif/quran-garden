@@ -30,3 +30,18 @@ export function playClip(key) {
     return speak(clip.text);
   }
 }
+
+// قصة مسجّلة (مقطع mp3 في public/salman/audio/stories/)، وإن تعذّر تُنطق بصوت المتصفح
+export function playStory(audioKey, fallbackText, lang = 'ar') {
+  if (!audioKey || typeof Audio === 'undefined') return speak(fallbackText, lang);
+  try {
+    if (current) current.pause();
+    current = new Audio(assetUrl(`salman/audio/${audioKey}.mp3`));
+    current.onerror = () => speak(fallbackText, lang);
+    const p = current.play();
+    if (p && typeof p.catch === 'function') p.catch(() => speak(fallbackText, lang));
+    return true;
+  } catch {
+    return speak(fallbackText, lang);
+  }
+}

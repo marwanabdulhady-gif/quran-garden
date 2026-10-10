@@ -192,3 +192,20 @@
   object-fit: contain;
   margin: 0 auto;
 }
+
+.sg-gift-art {
+  display: block;
+  height: 130px;
+  width: auto;
+  max-width: 70%;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+.sg-gift-chip {
+  display: inline-block;
+  height: 36px;
+  width: auto;
+  vertical-align: middle;
+  margin-inline-start: 4px;
+}
