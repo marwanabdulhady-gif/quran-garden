@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { createLevelState, hintTarget, levelReducer, placedCount, starsEarned } from '../game/logic.js';
-import { speak } from '../lib/speech.js';
+import AnimalArt from './AnimalArt.jsx';
+import { playClip } from '../lib/audio.js';
 
 const DRAG_THRESHOLD_PX = 8;
 // بعد السحب المتحرك، المتصفح ممكن يبعت click على عنصر تاني — نفلتر ده لفترة قصيرة بس
@@ -15,8 +16,14 @@ export default function Play({ level, onExit, onLevelComplete, onNext }) {
   const suppressClick = useRef(false);
   const suppressTimer = useRef(null);
   const doneReported = useRef(false);
+  const correctCount = useRef(0);
 
   const hint = hintTarget(state);
+  const lastHint = useRef(null);
+  useEffect(() => {
+    if (hint && hint !== lastHint.current) playClip('hint');
+    lastHint.current = hint;
+  }, [hint]);
   const placed = placedCount(state);
   const total = level.pairs.length;
   const stars = starsEarned(state);
@@ -29,9 +36,12 @@ export default function Play({ level, onExit, onLevelComplete, onNext }) {
     if (kind === 'correct') {
       const pair = pairFor(target);
       setAnnounce(`أحسنت! ${letter} مع ${pair?.word}`);
-      speak(pair?.word);
+      // بالتبادل: اسم الحيوان بعد كل صح، ومقطع تشجيع مختلف
+      playClip(correctCount.current % 2 === 0 ? 'correct1' : 'correct2');
+      correctCount.current += 1;
     } else {
       setAnnounce('لا بأس، جرّب حيوان تاني');
+      playClip('retry');
     }
   }, [state.feedback, pairFor]);
 
@@ -39,6 +49,7 @@ export default function Play({ level, onExit, onLevelComplete, onNext }) {
   useEffect(() => {
     if (state.complete && !doneReported.current) {
       doneReported.current = true;
+      playClip('levelComplete');
       onLevelComplete?.(level.id, stars);
     }
   }, [state.complete, stars, level.id, onLevelComplete]);
@@ -99,7 +110,7 @@ export default function Play({ level, onExit, onLevelComplete, onNext }) {
   const onLetterClick = (e, letter) => {
     if (isStaleDragClick(e)) return;
     dispatch({ type: 'select', letter });
-    speak(pairFor(letter)?.word);
+    playClip('select');
   };
 
   const onTargetClick = (e, target) => {
@@ -178,9 +189,7 @@ export default function Play({ level, onExit, onLevelComplete, onNext }) {
                 aria-label={`${pair.word}${filledBy ? `، فيه حرف ${filledBy} في مكانه` : ''}`}
                 onClick={(e) => onTargetClick(e, target)}
               >
-                <span className="emoji" aria-hidden="true">
-                  {pair.emoji}
-                </span>
+                <AnimalArt pair={pair} />
                 <span className="word">{pair.word}</span>
                 {filledBy && <span className="filled-letter">{filledBy}</span>}
               </button>

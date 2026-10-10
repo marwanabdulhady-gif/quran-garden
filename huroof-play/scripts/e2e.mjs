@@ -83,6 +83,20 @@ try {
   // ---- المستوى 1: ضغط (اختيار ثم حيوان) ----
   await page.click('.level-card:not([disabled])');
   await page.waitForSelector('.board');
+  // الرسومات المولّدة بتتحمّل فعلًا (مش فاضلة أو بتفشل)
+  const art = await page.$$eval('img.art', (imgs) => imgs.map((i) => i.complete && i.naturalWidth > 0));
+  check(
+    'الرسومات المولّدة متحمّلة في المستوى 1',
+    art.length > 0 && art.every(Boolean),
+    `${art.filter(Boolean).length}/${art.length}`
+  );
+  const clipStatus = await page.evaluate(async () => {
+    const r = await fetch('/audio/narration/intro.mp3');
+    return r.ok && (r.headers.get('content-type') ?? '').includes('audio')
+      ? 'ok'
+      : `${r.status} ${r.headers.get('content-type')}`;
+  });
+  check('مقاطع التعليق الصوتي متاحة (intro.mp3)', clipStatus === 'ok', clipStatus);
   await page.click('[data-letter="ب"]');
   const pressed = await page.$eval('[data-letter="ب"]', (e) => e.getAttribute('aria-pressed'));
   check('الضغط على الحرف بيختاره (aria-pressed)', pressed === 'true');

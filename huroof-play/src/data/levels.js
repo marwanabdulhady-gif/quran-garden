@@ -4,34 +4,34 @@
 // visual.emoji: احتياطي يظهر لو الصورة المولّدة ما اتحمّلتش. visual.image: مسار الرسمة (Phase 2).
 
 export const ANIMALS = {
-  أ: { word: 'أسد', emoji: '🦁' },
-  ب: { word: 'بطة', emoji: '🦆' },
-  ت: { word: 'تمساح', emoji: '🐊' },
-  ث: { word: 'ثعلب', emoji: '🦊' },
-  ج: { word: 'جمل', emoji: '🐪' },
-  ح: { word: 'حصان', emoji: '🐴' },
-  خ: { word: 'خروف', emoji: '🐑' },
-  د: { word: 'دب', emoji: '🐻' },
-  ذ: { word: 'ذئب', emoji: '🐺' },
-  ر: { word: 'راكون', emoji: '🦝' },
-  ز: { word: 'زرافة', emoji: '🦒' },
-  س: { word: 'سلحفاة', emoji: '🐢' },
-  ش: { word: 'شمبانزي', emoji: '🐒' },
-  ص: { word: 'صقر', emoji: '🦅' },
-  ض: { word: 'ضفدع', emoji: '🐸' },
-  ط: { word: 'طاووس', emoji: '🦚' },
-  ظ: { word: 'ظبي', emoji: '🦌' },
-  ع: { word: 'عصفور', emoji: '🐦' },
-  غ: { word: 'غوريلا', emoji: '🦍' },
-  ف: { word: 'فيل', emoji: '🐘' },
-  ق: { word: 'قط', emoji: '🐱' },
-  ك: { word: 'كلب', emoji: '🐶' },
-  ل: { word: 'لاما', emoji: '🦙' },
-  م: { word: 'ماعز', emoji: '🐐' },
-  ن: { word: 'نحلة', emoji: '🐝' },
-  ه: { word: 'هامستر', emoji: '🐹' },
-  و: { word: 'وحيد القرن', emoji: '🦏' },
-  ي: { word: 'يمامة', emoji: '🕊️' },
+  أ: { word: 'أسد', emoji: '🦁', slug: 'lion' },
+  ب: { word: 'بطة', emoji: '🦆', slug: 'duck' },
+  ت: { word: 'تمساح', emoji: '🐊', slug: 'crocodile' },
+  ث: { word: 'ثعلب', emoji: '🦊', slug: 'fox' },
+  ج: { word: 'جمل', emoji: '🐪', slug: 'camel' },
+  ح: { word: 'حصان', emoji: '🐴', slug: 'horse' },
+  خ: { word: 'خروف', emoji: '🐑', slug: 'sheep' },
+  د: { word: 'دب', emoji: '🐻', slug: 'bear' },
+  ذ: { word: 'ذئب', emoji: '🐺', slug: 'wolf' },
+  ر: { word: 'راكون', emoji: '🦝', slug: 'raccoon' },
+  ز: { word: 'زرافة', emoji: '🦒', slug: 'giraffe' },
+  س: { word: 'سلحفاة', emoji: '🐢', slug: 'turtle' },
+  ش: { word: 'شمبانزي', emoji: '🐒', slug: 'chimpanzee' },
+  ص: { word: 'صقر', emoji: '🦅', slug: 'eagle' },
+  ض: { word: 'ضفدع', emoji: '🐸', slug: 'frog' },
+  ط: { word: 'طاووس', emoji: '🦚', slug: 'peacock' },
+  ظ: { word: 'ظبي', emoji: '🦌', slug: 'deer' },
+  ع: { word: 'عصفور', emoji: '🐦', slug: 'sparrow' },
+  غ: { word: 'غوريلا', emoji: '🦍', slug: 'gorilla' },
+  ف: { word: 'فيل', emoji: '🐘', slug: 'elephant' },
+  ق: { word: 'قط', emoji: '🐱', slug: 'cat' },
+  ك: { word: 'كلب', emoji: '🐶', slug: 'dog' },
+  ل: { word: 'لاما', emoji: '🦙', slug: 'llama' },
+  م: { word: 'ماعز', emoji: '🐐', slug: 'goat' },
+  ن: { word: 'نحلة', emoji: '🐝', slug: 'bee' },
+  ه: { word: 'هامستر', emoji: '🐹', slug: 'hamster' },
+  و: { word: 'وحيد القرن', emoji: '🦏', slug: 'rhinoceros' },
+  ي: { word: 'يمامة', emoji: '🕊️', slug: 'dove' },
 };
 
 export const LEVELS = [
@@ -44,13 +44,32 @@ export const LEVELS = [
   { id: 7, title: 'قمة النجوم', goal: 'ن ه و ي', letters: ['ن', 'ه', 'و', 'ي'] },
 ];
 
-// يبني بيانات كل مستوى من الجدولين السابقين: pairs = [{ letter, word, emoji, image }]
+// الرسومات المولّدة الجاهزة (public/media/animals/<slug>.png). أي حيوان مش هنا بيظهر بالإيموجي لحد ما ترسم.
+// tests/content.test.js بيتأكد إن كل ملف هنا موجود فعلًا على القرص.
+export const ILLUSTRATED = new Set([
+  'lion',
+  'duck',
+  'crocodile',
+  'fox',
+  'camel',
+  'horse',
+  'sheep',
+  'bear',
+  'wolf',
+  'raccoon',
+]);
+
+export function artPathFor(slug) {
+  return ILLUSTRATED.has(slug) ? `media/animals/${slug}.png` : null;
+}
+
+// يبني بيانات كل مستوى من الجدولين السابقين: pairs = [{ letter, word, emoji, slug, image }]
 export function buildLevels() {
   return LEVELS.map((level) => ({
     ...level,
     pairs: level.letters.map((letter) => {
       const animal = ANIMALS[letter];
-      return { letter, word: animal.word, emoji: animal.emoji, image: null };
+      return { letter, word: animal.word, emoji: animal.emoji, slug: animal.slug, image: artPathFor(animal.slug) };
     }),
   }));
 }

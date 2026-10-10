@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { playClip } from '../lib/audio.js';
 
 export const DEFAULT_NAME = 'صديقي';
 
@@ -6,6 +7,7 @@ export default function Welcome({ initialName = '', onStart }) {
   const [name, setName] = useState(initialName);
   const submit = (e) => {
     e.preventDefault();
+    playClip('intro'); // داخل حدث الضغط، فالمتصفح بيسمح بالتشغيل
     onStart(name.trim().slice(0, 20) || DEFAULT_NAME);
   };
   return (

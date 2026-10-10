@@ -467,6 +467,13 @@ input:focus-visible {
   line-height: 1.1;
 }
 
+.tile.animal .art {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.18));
+}
+
 .tile.animal .word {
   font-weight: 900;
   font-size: 1.1rem;
@@ -635,5 +642,9 @@ input:focus-visible {
   }
   .tile.animal .emoji {
     font-size: 3.2rem;
+  }
+  .tile.animal .art {
+    width: 120px;
+    height: 120px;
   }
 }

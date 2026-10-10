@@ -84,3 +84,38 @@ describe('محتوى اللعبة', () => {
     });
   });
 });
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { ILLUSTRATED, artPathFor } from '../src/data/levels.js';
+
+const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
+
+describe('الرسومات المولّدة', () => {
+  it('كل حيوان ليه slug فريد (اسم الملف)', () => {
+    const slugs = Object.values(ANIMALS).map((a) => a.slug);
+    expect(slugs.every((s) => /^[a-z]+$/.test(s))).toBe(true);
+    expect(new Set(slugs).size).toBe(slugs.length);
+  });
+
+  it('كل رسمة مسجلة في ILLUSTRATED موجودة فعلًا كـ PNG شفاف 384px', () => {
+    ILLUSTRATED.forEach((slug) => {
+      const file = path.join(PUBLIC_DIR, 'media', 'animals', `${slug}.png`);
+      expect(fs.existsSync(file), `${file} مفقود`).toBe(true);
+      const head = fs.readFileSync(file).subarray(0, 24);
+      // PNG signature + IHDR width/height (big-endian)
+      expect(head.subarray(1, 4).toString('ascii')).toBe('PNG');
+      expect(head.readUInt32BE(16)).toBe(384);
+      expect(head.readUInt32BE(20)).toBe(384);
+    });
+  });
+
+  it('الحيوانات اللي ليس لها رسمة بتاخد image=null (fallback للإيموجي)', () => {
+    LEVEL_DATA.flatMap((l) => l.pairs).forEach((p) => {
+      const slug = Object.values(ANIMALS).find((a) => a.word === p.word).slug;
+      expect(p.image).toBe(artPathFor(slug));
+      if (!ILLUSTRATED.has(slug)) expect(p.image).toBeNull();
+    });
+  });
+});

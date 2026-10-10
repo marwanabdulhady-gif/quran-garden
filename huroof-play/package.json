@@ -11,7 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:smoke": "node tests/ssr-smoke.mjs",
-    "lint": "eslint src tests scripts",
+    "lint": "eslint src tests scripts --ext .js,.jsx,.mjs",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\" \"tests/**/*.{js,mjs,jsx}\" \"scripts/**/*.mjs\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css}\" \"tests/**/*.{js,mjs,jsx}\" \"scripts/**/*.mjs\"",
     "e2e": "npm run build && node scripts/e2e.mjs"

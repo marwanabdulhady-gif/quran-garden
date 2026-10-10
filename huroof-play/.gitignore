@@ -4,3 +4,6 @@ dev-dist/
 .vite/
 coverage/
 docs/qa/*.log
+
+# الرسومات الخام (قبل المعالجة) — مش جزء من الـ repo، التفاصيل في docs/MEDIA.md
+media-src/
