@@ -1,12 +1,14 @@
 # Plan — مغامرة الحروف (Huroof Play)
 
+> **v2** — بعد المراجعة (انظر `docs/PLAN_REVIEW.md`): أضفنا موافقة ولي الأمر (PDPL)، تقليل البيانات، صوت الحروف (phonics)، فحص الوصولية الآلي، CI وheaders، والمرحلة الاختيارية للأشكال الموضعية.
+
 Working branch: `arena/d1d6ab89-quran-garden` (session-bound). One pull request tracks all phases; each phase is one or more commits, and its quality gate must be green before the phase is ticked.
 
 | Phase | Scope | Quality gate | Status |
 | --- | --- | --- | --- |
 | **0 — Audit** | Check the source site, feature inventory, findings, decisions (`docs/AUDIT.md`) | Findings evidenced; limits stated | ✅ |
 | **1 — Game core** | Vite/React app, 7 levels × 4 letter–animal pairs, drag + tap placement, stars, feedback, keyboard support | lint, format, unit tests, SSR smoke, build, Chromium E2E | ✅ |
-| **2 — Media** | Generated illustrations (28 animals, scenes, mascot, icons), voice clips (Arabic narration), Web Speech for names | Image/audio inventory check, size budget (< 3 MB precache), visual review | 🔄 partial: narration 8/8 ✅, illustrations 10/28, icons & scene ⬜ |
+| **2a — Media** | Generated illustrations (28 animals, scenes, mascot, icons), voice clips (Arabic narration), Web Speech for names | Image/audio inventory check, size budget (< 3 MB precache), visual review | 🔄 partial: narration 8/8 ✅, illustrations 10/28, icons & scene ⬜ |
 | **3 — Progress & voice check** | Player profiles (nickname), per-level progress, teacher/parent panel, JSON/CSV export, reset, optional spoken-name check (SpeechRecognition) | Unit tests for storage + export + migration; e2e: play → progress → export | ⬜ |
 | **4 — Deploy & PWA** | Offline PWA, install prompt, Vercel/Netlify configs, CI workflow for this app, `robots.txt`, security headers | `npm run build` artefacts, `dist` served and checked in headless browser, CI green | ⬜ |
 | **5 — Documentation & release** | README (AR + EN), DEPLOY, PRIVACY, CONTENT, MEDIA (licences & prompts), QA report, CHANGELOG | Docs link-check and command check (every documented command executed) | ⬜ |

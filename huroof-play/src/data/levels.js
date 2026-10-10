@@ -57,6 +57,16 @@ export const ILLUSTRATED = new Set([
   'bear',
   'wolf',
   'raccoon',
+  'giraffe',
+  'turtle',
+  'chimpanzee',
+  'eagle',
+  'frog',
+  'peacock',
+  'deer',
+  'sparrow',
+  'gorilla',
+  'elephant',
 ]);
 
 export function artPathFor(slug) {
