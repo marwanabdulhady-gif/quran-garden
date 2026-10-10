@@ -2,7 +2,21 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const root = fileURLToPath(new URL('.', import.meta.url));
+
 export default defineConfig({
+  // نقطتا دخول: التطبيق الأصلي (index.html) وحديقة سلمان (salman.html) — كل واحد مستقل
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(root, 'index.html'),
+        salman: resolve(root, 'salman.html'),
+      },
+    },
+  },
   plugins: [
     react(),
     VitePWA({

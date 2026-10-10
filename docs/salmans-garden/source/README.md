@@ -7,7 +7,7 @@ Both PDFs are image-only scans with no text layer, so every word here came from 
 | File | Source | Pages | Method | Status |
 |---|---|---|---|---|
 | `alphabet-with-the-companions.md` | Drive `12y4bMBEvS0bOrVMjZA8r9TezHNmc9TSX` — «حروف الهجاء مع الصحابة» | 56 scanned | Visual transcription, page by page, from the images | Full structure: 27 letter chapters plus the closing section. **Needs a full proofread against the printed book.** Flagged passages are marked `[مراجعة]`. Spot-checked against page 4 (printed p. 11, ch. ب): text and citations match. The page-order anomaly around pp. 48–50 (ه cover before ن story) needs checking on the printed copy. |
-| `alphabet-with-the-final-prophet.md` | Drive `1QipxkfLJXg_1R4Gwq4nvwSKP8Kqt7DwK` — «حروف الهجاء مع خاتم الأنبياء» | 50 scanned | Tesseract OCR (Arabic model, 300 dpi), then automatic cleanup | **All 50 pages included, one heading per page.** Not proofread. Pages with OCR confidence below 70% are marked ⚠️. Page 1 is the cover, with no OCR text. The earlier partial version (ended mid-sentence at about p. 38) is in git history, commit `df878fa`. |
+| `alphabet-with-the-final-prophet.md` | Drive `1LOYecCL_acpZQEZNWDY0k5IuzUsnVjvN` («Welcome file.md»، نص Markdown جاهز، 28 حرفًا) — وهو نفس كتاب «حروف الهجاء مع خاتم الأنبياء» (Drive `1QipxkfLJXg_1R4Gwq4nvwSKP8Kqt7DwK`، PDF ممسوح، 50 صفحة) | 50 scanned | نص جاهز من Drive، وقورن بالتعرف الضوئي على صفحات الـ PDF: تطابق في معظم الصفحات. الصفحات p05 و p29 و p49 صور أو أغلفة بلا نص. | 28 حرفًا كاملة. **لم يُراجَع بعد مقابل الكتاب المطبوع.** |
 
 ## Conventions
 - Chapter heading: `## الفصل N — الحرف: X — «كلمة»` (companions). Then the story, parent questions (أسئلة تربوية وأفكار عملية), and source footnotes (`⁽¹⁾`).
@@ -15,14 +15,12 @@ Both PDFs are image-only scans with no text layer, so every word here came from 
 - Hadith and Qur'an citations are kept as printed. They have not been checked against external sources.
 - Harakat are as shown in the scan. OCR drops many of them.
 
-## Reproducing the final-prophet conversion
-Tools live in `tools/` and are not run by CI.
-1. Render pages from the PDF at 300 dpi (pypdfium2) into `/home/user/.qa-tools/pages/prophet/pNN.png`.
-2. `node tools/ocr_pages.mjs` (tesseract.js 5 with `@tesseract.js-data/ara` 1.0.0; writes `/home/user/.qa-tools/ocr/out/prophet/pNN.txt`). The script also handles the companions PDF, but its output was too garbled to use.
-3. Save per-page confidence as JSON at `/home/user/.qa-tools/ocr/conf-prophet.json`.
-4. `python3 tools/build_prophet_md.py` writes the Markdown.
+## Generated outputs
+- `src/salman/data/stories.generated.js` ← `python3 tools/build_salman_stories.py --write` (reads both Markdown files here).
+- `journey/index.html` ← `python3 tools/build_journey.py`.
 
-Paths are hard-coded to the sandbox layout. Adjust them if you move the work.
+## OCR fallback (superseded)
+`tools/ocr-superseded/` holds the OCR pipeline used before the Drive text was found (tesseract.js with the Arabic model, 300 dpi page renders). It is kept only for reference. Its output for the final-prophet book was replaced by the Drive text. OCR on the companions book was too garbled to use.
 
 ## How to finish verification
 1. Proofread `alphabet-with-the-companions.md` against the printed book, chapter by chapter, and clear every `[مراجعة]` marker.
