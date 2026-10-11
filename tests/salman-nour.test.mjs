@@ -121,6 +121,19 @@ describe('حدائق النور — المحتوى', () => {
     }
   });
 
+  it('الإنجليزية: كل صوت له صورة معلَنة (رسمة جديدة أو من مكتبة التطبيق)', () => {
+    const en = gardenUnits('english');
+    expect(en).toHaveLength(18);
+    for (const u of en) {
+      expect(u.art, u.id).toBeTruthy();
+      expect(u.art, u.id).toMatch(/^salman\/art\/(nour|animals|badges|gifts|count)\//);
+    }
+    // ١٠ رسمات جديدة + باب من دفعة الطيار = ١١ من nour
+    expect(en.filter((u) => u.art.includes('/nour/'))).toHaveLength(11);
+    // وإعادة الاستخدام حقيقية: ٧ وحدات من مكتبة التطبيق القائمة بلا أي توليد جديد
+    expect(en.filter((u) => !u.art.includes('/nour/'))).toHaveLength(7);
+  });
+
   it('الجسر بين الحدائق: كل ربط `related` يشير إلى وحدة موجودة', () => {
     const linked = UNITS.filter((u) => u.related);
     expect(linked.length).toBeGreaterThanOrEqual(3);
@@ -168,13 +181,23 @@ describe('حدائق النور — المحتوى', () => {
     const arts = UNITS.map((u) => u.art || '');
     const own = new Set(arts.filter((a) => a.includes('/nour/')).map((a) => a.split('/').pop()));
     expect([...own].sort()).toEqual([
+      'ant.png',
+      'bouquet.png',
+      'bricks.png',
+      'cloud.png',
       'dates.png',
       'door.png',
       'garment.png',
+      'lamp.png',
       'mosque.png',
       'mountain.png',
+      'nest.png',
+      'olive.png',
+      'pot.png',
+      'rock.png',
       'rooster.png',
       'rope.png',
+      'sun.png',
     ]);
     // الحدائق الثلاث تستخدم صورًا مُعلَنة فقط
     for (const u of gardenUnits('arabic')) {

@@ -12,6 +12,7 @@
 export const ENGLISH_UNITS = [
   {
     id: 'en-s',
+    art: 'salman/art/nour/sun.png',
     group: 1,
     sound: 's',
     keyWord: 'sun',
@@ -55,6 +56,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-a',
+    art: 'salman/art/nour/ant.png',
     group: 1,
     sound: 'a',
     keyWord: 'ant',
@@ -98,6 +100,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-t',
+    art: 'salman/art/badges/tree.png',
     group: 1,
     sound: 't',
     keyWord: 'tree',
@@ -141,6 +144,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-i',
+    art: 'salman/art/nour/bricks.png',
     group: 1,
     sound: 'i',
     keyWord: 'in',
@@ -188,6 +192,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-p',
+    art: 'salman/art/nour/pot.png',
     group: 1,
     sound: 'p',
     keyWord: 'pot',
@@ -236,6 +241,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-n',
+    art: 'salman/art/nour/nest.png',
     group: 1,
     sound: 'n',
     keyWord: 'nest',
@@ -286,6 +292,7 @@ export const ENGLISH_UNITS = [
   // ---------- المجموعة 2: c k · e · h · r · m · d ----------
   {
     id: 'en-ck',
+    art: 'salman/art/animals/camel.png',
     group: 2,
     sound: 'c k',
     keyWord: 'camel',
@@ -334,6 +341,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-e',
+    art: 'salman/art/animals/elephant.png',
     group: 2,
     sound: 'e',
     keyWord: 'elephant',
@@ -377,6 +385,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-h',
+    art: 'salman/art/nour/door.png',
     group: 2,
     sound: 'h',
     keyWord: 'home',
@@ -425,6 +434,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-r',
+    art: 'salman/art/nour/rock.png',
     group: 2,
     sound: 'r',
     keyWord: 'rock',
@@ -473,6 +483,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-m',
+    art: 'salman/art/nour/bouquet.png',
     group: 2,
     sound: 'm',
     keyWord: 'mother',
@@ -516,6 +527,7 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-d',
+    art: 'salman/art/animals/dog.png',
     group: 2,
     sound: 'd',
     keyWord: 'dog',
@@ -565,13 +577,14 @@ export const ENGLISH_UNITS = [
   // ---------- المجموعة 3: g · o · u · l · f · b ----------
   {
     id: 'en-g',
+    art: 'salman/art/gifts/flower.png',
     group: 3,
     sound: 'g',
     keyWord: 'garden',
     keyEmoji: '🌷',
     action: { emoji: '🌷', text: 'Draw a big circle in the air like a round garden and say: g, g, g' },
     chant: {
-      voiced: false,
+      voiced: true,
       lines: ['g … g … garden', 'Allah made gardens for the good people', 'g, g, gate'],
       text: 'g, g, garden. Allah made gardens for the good people. g, g, gate.',
       lang: 'en',
@@ -609,13 +622,14 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-o',
+    art: 'salman/art/nour/olive.png',
     group: 3,
     sound: 'o',
     keyWord: 'olive',
     keyEmoji: '🫒',
     action: { emoji: '🫒', text: 'Make a small round shape with your fingers like an olive and say: o, o, o' },
     chant: {
-      voiced: false,
+      voiced: true,
       lines: ['o … o … olive', 'Allah made the olive tree blessed', 'o, o, on'],
       text: 'o, o, olive. Allah made the olive tree blessed. o, o, on.',
       lang: 'en',
@@ -653,13 +667,14 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-u',
+    art: 'salman/art/nour/cloud.png',
     group: 3,
     sound: 'u',
     keyWord: 'up',
     keyEmoji: '⬆️',
     action: { emoji: '⬆️', text: 'Point up to the sky with both hands and say: u, u, up' },
     chant: {
-      voiced: false,
+      voiced: true,
       lines: ['u … u … up', 'The sky is a roof above us', 'u, u, umbrella'],
       text: 'u, u, up. The sky is a roof above us. u, u, umbrella.',
       lang: 'en',
@@ -697,13 +712,14 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-l',
+    art: 'salman/art/nour/lamp.png',
     group: 3,
     sound: 'l',
     keyWord: 'lamp',
     keyEmoji: '💡',
     action: { emoji: '💡', text: 'Hold up one finger like a little lamp and say: l, l, l' },
     chant: {
-      voiced: false,
+      voiced: true,
       lines: ['l … l … lamp', 'The Prophet ﷺ is a shining lamp', 'l, l, leg'],
       text: 'l, l, lamp. The Prophet ﷺ is a shining lamp. l, l, leg.',
       lang: 'en',
@@ -745,13 +761,14 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-f',
+    art: 'salman/art/count/fish.png',
     group: 3,
     sound: 'f',
     keyWord: 'fish',
     keyEmoji: '🐟',
     action: { emoji: '🐟', text: 'Move your hand like a fish swimming and say: f, f, f' },
     chant: {
-      voiced: false,
+      voiced: true,
       lines: ['f … f … fish', 'Yunus called Allah in the dark', 'f, f, fan'],
       text: 'f, f, fish. Yunus called Allah in the dark. f, f, fan.',
       lang: 'en',
@@ -789,13 +806,14 @@ export const ENGLISH_UNITS = [
   },
   {
     id: 'en-b',
+    art: 'salman/art/animals/bee.png',
     group: 3,
     sound: 'b',
     keyWord: 'bee',
     keyEmoji: '🐝',
     action: { emoji: '🐝', text: 'Tap your shoulders like little wings and say: b, b, b' },
     chant: {
-      voiced: false,
+      voiced: true,
       lines: ['b … b … bee', 'The bee makes honey for people', 'b, b, bag'],
       text: 'b, b, bee. The bee makes honey for people. b, b, bag.',
       lang: 'en',

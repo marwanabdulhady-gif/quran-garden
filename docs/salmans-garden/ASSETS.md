@@ -99,8 +99,8 @@
 
 ## 10. أصول «حدائق النور» — المحطة الأولى (P0–P2)
 
-- **الصور**: `public/salman/art/nour/{mountain,door,mosque,rooster,dates,garment,rope}.png` — 7 صور للأشياء فقط (الدفعة الأولى 4، وحروف P3 أضافت تمر/ثوب/حبل، وحرف الجيم يعيد استخدام `animals/camel.png`) (جبل أُحُد · باب · مسجد · ديك)، شفافة، ≤ 256 px، 96 لونًا: **34 KB** من ميزانية الطيار (≤ 200 KB). لا يُجسَّد نبي ولا صحابي ولا ملك.
-- **إعادة التوليد**: `python3 tools/salman-process-nour.py mountain door mosque rooster dates garment rope` (يقرأ الخام من `.work/` خارج Git: إزالة البياض من الحواف، قصّ، تصغير، تكميم).
-- **الصوت**: `public/salman/audio/nour/` — **28 مقطعًا مكتملة** بصوت voice-00 (3.5 MB): 12 نشيدًا (`ar-alif/ar-ba/ar-meem/ar-dal-chant` · `num-1..4-chant` · `en-s/a/t/i-chant`) و16 قصة (`ar-a-p/ar-a-c/ar-b-p/ar-b-c/ar-d-p` · `ar-m-p/ar-m-c/ar-d-c` · `num-1..4-s` · `en-s/a/t/i-s`). الإنجليزي بنفس الراوي (`language=en`) فلا صوت ثانٍ.
+- **الصور**: `public/salman/art/nour/*.png` — **17 رسمة** شفافة ≤ 256 px بـ96 لونًا (**≈ 193 KB** مجتمعة من سقف البرنامج ≤ 1 MB): دفعة الطيار 4 (جبل · باب · مسجد · ديك) + حروف P3 (تمر · ثوب · حبل) + **دفعة الإنجليزية 10** (شمس · نملة · عش · زيتون · قدر · صخرة · مصباح · سحابة · طوب · باقة). و**إعادة الاستخدام**: الجمل والبعير في العربية، وسبع كلمات إنجليزية من مكتبة التطبيق القائمة (`animals/camel` · `animals/elephant` · `animals/dog` · `animals/bee` · `badges/tree` · `gifts/flower` · `count/fish`) + `nour/door` للنون… لا نبنِ ما نملكه. لا يُجسَّد نبي ولا صحابي ولا ملك.
+- **إعادة التوليد**: `python3 tools/salman-process-nour.py <name> …` من صور `.work/<name>-raw.png` (خارج Git) (يقرأ الخام من `.work/` خارج Git: إزالة البياض من الحواف، قصّ، تصغير، تكميم).
+- **الصوت**: `public/salman/audio/nour/` — **68 مقطعًا، منها 0 غير مسجَّل**، بصوت voice-00 وحده (≈ 10.9 MB): 18 وحدة عربية (36: نشيد + قصتان × 18 حرفًا) · 18 صوتًا إنجليزيًا (36) · 4 أرقام (8 مع الطيار) · والراوي نفسه للإنجليزية (`language=en`) فلا صوت ثانٍ.
 - **قاعدة الرايات**: `python3 tools/salman-voice-flags.py` تضبط `voiced` في `src/salman/data/nour.js` من وجود الملفات فعلًا، وتُنسّق الملف؛ فالمقطع غير الموجود يبقى `voiced: false` ويرجع التطبيق إلى صوت المتصفح.
 - **المطابقة في الاختبارات**: `tests/salman-nour.test.mjs` يفشل إن أُعلن ملف غير موجود أو كان أصغر من 1000 بايت.
