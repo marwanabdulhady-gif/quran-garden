@@ -168,13 +168,16 @@ export function numberItems() {
     const o = COUNT_OBJECTS[i % COUNT_OBJECTS.length];
     const obj = o.emoji;
     const distractor = n >= 20 ? n - 1 : n + 1;
+    const num = String(n).padStart(2, '0');
     return {
-      id: `math-n-${String(n).padStart(2, '0')}`,
+      id: `math-n-${num}`,
       garden: 'math',
       title: `العدّ حتى ${toArabicNumeral(n)}`,
       source: 'count',
       paragraphs: [`عُدّ معي: ${Array(n).fill(obj).join(' ')}`],
       countArt: { n, object: o.art, emoji: o.emoji },
+      // مقاطع أسئلة العدّ (voice-00): المرحلة الأولى 1–10 مسجَّلة، والمرحلة الثانية 11–20 تُسجَّل ثم تُربط.
+      ...(n <= 10 ? { audio: `count/math-n-${num}` } : {}),
       question: {
         prompt: 'كم عددها؟',
         choices: [toArabicNumeral(n), toArabicNumeral(distractor)],
