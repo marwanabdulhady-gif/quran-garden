@@ -3,6 +3,9 @@ import sys
 from collections import deque
 from PIL import Image
 
+# تنبيه: الصور الخام للحيوانات (animal-<slug>.png) فُقدت بعد إعادة تهيئة البيئة
+# ولا نسخة لها خارج Git. الملفات المعالجة موجودة في public/salman/art/animals/.
+# لإعادة المعالجة يلزم توفير الخام في هذا المسار أولًا.
 SRC = '/home/user/recovery/raw'
 DST = '/home/user/quran-garden/public/salman/art/animals'
 MAX = 256

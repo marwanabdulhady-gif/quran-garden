@@ -175,10 +175,9 @@
 | `/home/user/recovery/raw/count-*.png` | صور العدّ الخام الخمس (apple، star، flower، fish، egg)، وهي المصدر لـ `public/salman/art/count/` |
 | `/home/user/recovery/raw/animal-<slug>.png` | **مفقودة** بعد إعادة التهيئة. لا توجد نسخة خارج Git |
 | `tools/salman-process-animals.py` | يقرأ من `raw/animal-<slug>.png`، لذلك **لن يعمل** حتى تُعاد الصور الخام |
-| `/home/user/recovery/venv/` | بايثون مع Pillow، أُعيد إنشاؤه (`python3 -m venv` ثم `pip install pillow`) |
-| `/home/user/recovery/chrome/` | أداة الفحص دون إنترنت (puppeteer-core@23، @sparticuz/chromium@131)، أُعيد تثبيتها |
-| `/home/user/recovery/chrome/offline-check-run.mjs` | نسخة من `tools/salman-offline-check.mjs` تُشغَّل من داخل مجلد الأداة |
-| `/home/user/recovery/libs/lib/` | مكتبات Chromium، أُعيد استخراجها من `al2023.tar.br` و`al2.tar.br` |
+| `/home/user/recovery/venv/`، `/home/user/recovery/chrome/`، `/home/user/recovery/libs/lib/` | تُعاد تهيئتها بسكربت واحد: `bash tools/salman-setup-checks.sh` (بايثون مع Pillow، وChromium وpuppeteer-core، ومكتبات Chromium). |
+| `tools/salman-visual-check.mjs` | فحص المتصفح لصور العدّ (يفتح درس «العدّ حتى ١»، ويتأكد أن الصور تحمّلت). يُنسخ إلى `/home/user/recovery/chrome/` ويُشغَّل من هناك |
+| `tools/salman-offline-check.mjs` | فحص دون إنترنت (196 مدخلًا في الكاش، نجح في V2) |
 | `/home/user/recovery/sheet-count.png`، `apple-check.png` | لوحة مراجعة رسوم العدّ، وفحص تفاحة بعد إعادة المعالجة |
 
 ## 8. الأدلة الأخرى
