@@ -16,6 +16,7 @@
     "format:check": "prettier --check \"src/**/*.{js,jsx}\" \"tests/**/*.{js,mjs,jsx}\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

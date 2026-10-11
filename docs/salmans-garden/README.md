@@ -61,3 +61,11 @@ npm run test:ssr       # دخان SSR لكل الشاشات
 - لا توجد مؤقتات ولا لوحات متصدّرين ولا عقوبة على الخطأ.
 
 - [screenshots/](screenshots/README.md): لقطات شاشة التطبيق (11 شاشة) مع فهرس.
+
+## النسخ الاحتياطي بحساب Google (Supabase) — اختياري
+
+- المشروع: Supabase `quran-garden` (`dsjazywixcqzwwjnhzzf`, سنغافورة). جدول واحد `public.family_progress`: صف لكل عائلة (`user_id`) فيه حالة الغابة (`salman`) وحالة رحلة القرآن (`quran`)، مع RLS: كل حساب يقرأ ويكتب صفّه فقط.
+- الكود: `src/salman/lib/cloud.js` (تُحمَّل مكتبة Supabase عند الحاجة فقط) و`src/salman/CloudSync.jsx` (قسم «☁️ النسخ الاحتياطي» في وضع ولي الأمر).
+- بلا دخول: كل شيء محلي وأوفلاين كما كان. بعد الدخول: أول مزامنة تأخذ النسخة الأكثر تقدّمًا، ثم رفع تلقائي بعد ٤ ثوانٍ من أي تغيير.
+- المفتاح في الكود هو المفتاح العام (`sb_publishable_…`) — الحماية من RLS، ولا يوجد مفتاح خدمة في الواجهة.
+- **إعداد مطلوب مرة واحدة في لوحة Supabase:** Authentication → Sign In / Providers → Google (Client ID + Secret من Google Cloud)، وAuthentication → URL Configuration: Site URL ‎`https://huroof-play.vercel.app` وإضافة نفس الرابط في Redirect URLs.

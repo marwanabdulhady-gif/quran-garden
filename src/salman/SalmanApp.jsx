@@ -23,6 +23,8 @@ import { FATIHA } from './data/fatiha.js';
 import { pickSession } from './lib/session.js';
 import { countVisit, riyadhHour, visitGate } from './lib/parent.js';
 import ParentArea from './ParentArea.jsx';
+import OrbitMap from './OrbitMap.jsx';
+import { getClient, hasSession, upload } from './lib/cloud.js';
 import Play from '../huroof/components/Play.jsx';
 import '../huroof/huroof.css';
 import QuranJourney from '../App.jsx';
@@ -288,6 +290,8 @@ function parentOf(screen) {
 }
 
 const HOME = { name: 'home' };
+// ألوان الكواكب (محطة لكل لون)
+const STATION_COLORS = ['#6366f1', '#22c55e', '#f97316', '#0ea5e9', '#e11d48', '#a855f7', '#eab308'];
 // حديقة القرآن: ثلاثة أقسام في مكان واحد
 const QURAN_VIEWS = [
   { id: 'journey', label: '🎧 رحلة القرآن' },
@@ -312,6 +316,8 @@ function hashOf(screen) {
       return `#/nour/${screen.garden}/${encodeURIComponent(screen.unitId)}`;
     case 'badges':
       return '#/badges';
+    case 'parent':
+      return '#/parent';
     default:
       return '#/';
   }
@@ -323,6 +329,7 @@ export function screenFromHash(hash = '') {
   const [a, b, c] = parts;
   if (a === 'quran') return { name: 'quran', view: QURAN_VIEWS.some((v) => v.id === b) ? b : 'journey' };
   if (a === 'badges') return { name: 'badges' };
+  if (a === 'parent') return { name: 'parent' }; // العودة من دخول Google
   if (a === 'nour' && NOUR_UNITS[c]) return { name: 'day', garden: NOUR_UNITS[c].garden, unitId: c };
   if (a === 'math' || a === 'english') return { name: 'garden', garden: a };
   if (a === 'arabic') {
@@ -390,7 +397,16 @@ export default function SalmanApp() {
 
   useEffect(() => {
     saveState(state);
+    // إن دخل ولي الأمر بحساب Google: نرفع نسخة إلى السحابة بعد ثوانٍ من آخر تغيير
+    if (!hasSession()) return undefined;
+    const t = setTimeout(() => upload().catch(() => {}), 4000);
+    return () => clearTimeout(t);
   }, [state]);
+
+  // العودة من دخول Google (?code=…): نُكمل الدخول فورًا حتى لو لم يفتح ولي الأمر صفحته بعد
+  useEffect(() => {
+    if (/[?&]code=/.test(globalThis.location?.search || '')) getClient().catch(() => {});
+  }, []);
 
   // التاريخ: كل انتقال يُسجَّل، فزر الرجوع في الهاتف والمتصفح يرجع خطوة داخل الغابة
   useEffect(() => {
@@ -760,11 +776,33 @@ export default function SalmanApp() {
         <main className="sg-app" dir="rtl">
           {celebrateLayer}
           {views}
+          <OrbitMap
+            label="مستويات السور"
+            guideArt={assetUrl(MASCOTS.salman)}
+            stations={QURAN_LEVELS.map((lvl) => ({
+              id: lvl.level,
+              title: lvl.title,
+              color: STATION_COLORS[(lvl.level + 1) % STATION_COLORS.length],
+              onOpen: () => document.getElementById(`sg-level-${lvl.level}`)?.scrollIntoView({ behavior: 'smooth' }),
+              items: lvl.surahs.map((sid) => ({ key: sid, label: SURAHS[sid].name, done: !!state.learnedSurahs[sid] })),
+            }))}
+            onItem={(st, it) => {
+              setOpenSurah(it.key);
+              setTimeout(
+                () => document.getElementById(`sg-surah-${it.key}`)?.scrollIntoView({ behavior: 'smooth' }),
+                50
+              );
+            }}
+          />
           {QURAN_LEVELS.map((lvl) => {
             const unlocked = levelUnlocked(state, lvl.level);
             const done = levelDone(state, lvl.level);
             return (
-              <section key={lvl.level} className={unlocked ? 'sg-level' : 'sg-level is-locked'}>
+              <section
+                key={lvl.level}
+                id={`sg-level-${lvl.level}`}
+                className={unlocked ? 'sg-level' : 'sg-level is-locked'}
+              >
                 <h2 className="sg-level-title">
                   {done ? '🏆 ' : unlocked ? '✨ ' : '🔒 '}
                   {lvl.title}
@@ -776,7 +814,7 @@ export default function SalmanApp() {
                   const open = openSurah === sid;
                   const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
                   return (
-                    <article key={sid} className="sg-surah">
+                    <article key={sid} id={`sg-surah-${sid}`} className="sg-surah">
                       <button type="button" className="sg-row" onClick={() => setOpenSurah(open ? null : sid)}>
                         <span>{learned ? '✅' : '📜'}</span>
                         <span>
@@ -925,31 +963,23 @@ export default function SalmanApp() {
     if (id === 'arabic') {
       content = (
         <>
-          <h2 className="sg-section">رحلة الحروف · ٧ محطات</h2>
-          <ol className="sg-path">
-            {HUROOF_LEVELS.map((l) => {
-              const best = state.huroof?.[l.id] || 0;
-              const done = best >= l.letters.length;
-              return (
-                <li key={l.id}>
-                  <button
-                    type="button"
-                    className={done ? 'sg-station is-done' : 'sg-station'}
-                    onClick={() => go({ name: 'station', level: l.id })}
-                  >
-                    <span className="sg-station-num">{done ? '✓' : toArabicNumeral(l.id)}</span>
-                    <span className="sg-station-body">
-                      <strong>{l.title}</strong>
-                      <span className="sg-station-letters-row">{l.letters.join('  ')}</span>
-                    </span>
-                    <span className="sg-station-stars">
-                      ⭐ {toArabicNumeral(best)}/{toArabicNumeral(l.letters.length)}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
+          <h2 className="sg-section">رحلة الحروف · ٧ كواكب</h2>
+          <OrbitMap
+            label="رحلة الحروف"
+            guideArt={assetUrl(MASCOTS.hoopoe)}
+            stations={HUROOF_LEVELS.map((l) => ({
+              id: l.id,
+              title: l.title,
+              color: STATION_COLORS[(l.id - 1) % STATION_COLORS.length],
+              onOpen: () => go({ name: 'station', level: l.id }),
+              items: l.letters.map((L) => {
+                const mine = items.filter((it) => it.letter === L);
+                const storiesDone = mine.length > 0 && mine.every((it) => state.doneStories[it.id]);
+                return { key: L, label: L, done: unitCompleted(state, UNIT_BY_LETTER[L]) || storiesDone };
+              }),
+            }))}
+            onItem={(st, it) => go({ name: 'letter', letter: it.key, level: st.id })}
+          />
         </>
       );
     } else if (id === 'math') {

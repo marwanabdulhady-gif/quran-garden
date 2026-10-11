@@ -1,6 +1,7 @@
 // شاشة ولي الأمر لحديقة سلمان: قفل بـ PIN، وحدّ الزيارات، وساعات الهدوء، وتقرير الحدائق.
 // منفصلة عن الطفل: لا تُفتح إلا برمز، وتُقفل تلقائيًا عند الخروج من الشاشة.
 import React, { useState } from 'react';
+import CloudSync from './CloudSync.jsx';
 import { GARDENS } from './data/gardens.js';
 import { CATALOG, toArabicNumeral } from './lib/catalog.js';
 import {
@@ -203,6 +204,8 @@ export default function ParentArea({ state, setState, onBack }) {
           </section>
         </>
       )}
+
+      <CloudSync />
 
       <section className="sg-level">
         <h2 className="sg-level-title">تقرير الحدائق</h2>
