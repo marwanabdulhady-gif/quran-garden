@@ -15,6 +15,7 @@ import {
   levelDone,
   levelUnlocked,
   GIFTS,
+  recordDay,
 } from './lib/gamify.js';
 import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
 import { QURAN_LEVELS, SURAHS } from './data/quran.js';
@@ -33,6 +34,9 @@ import { ANIMALS } from './data/animals.js';
 import { loadState, saveState } from './lib/store.js';
 import { canSpeak, speak } from './lib/speech.js';
 import { playClip, playStory, assetUrl } from './lib/voice.js';
+import LetterDay from './LetterDay.jsx';
+import { NOUR_UNITS, UNIT_BY_LETTER, gardenUnits } from './data/nour.js';
+import { unitCompleted } from './lib/letterday.js';
 import { sfx } from './lib/sfx.js';
 
 const CONFETTI_COLORS = ['#f43f5e', '#fbbf24', '#10b981', '#38bdf8', '#a78bfa', '#fb923c'];
@@ -266,6 +270,7 @@ function tabOf(screen) {
   if (screen.name === 'garden') return screen.garden;
   if (['station', 'play', 'letter'].includes(screen.name)) return 'arabic';
   if (screen.name === 'lesson') return screen.garden;
+  if (screen.name === 'day') return screen.garden;
   if (screen.name === 'quran') return 'quran';
   return 'home';
 }
@@ -275,6 +280,11 @@ function parentOf(screen) {
   if (screen.name === 'letter') return screen.level ? { name: 'station', level: screen.level } : ARABIC_HOME;
   if (screen.name === 'station' || screen.name === 'play') return ARABIC_HOME;
   if (screen.name === 'lesson') return screen.from || { name: 'garden', garden: screen.garden };
+  if (screen.name === 'day') {
+    const unit = NOUR_UNITS[screen.unitId];
+    if (unit && unit.garden === 'arabic') return { name: 'letter', letter: unit.letter };
+    return { name: 'garden', garden: (unit && unit.garden) || 'arabic' };
+  }
   return HOME;
 }
 
@@ -299,6 +309,8 @@ function hashOf(screen) {
       return `#/arabic/${screen.level}/play`;
     case 'letter':
       return `#/arabic/letter/${encodeURIComponent(screen.letter)}`;
+    case 'day':
+      return `#/nour/${screen.garden}/${encodeURIComponent(screen.unitId)}`;
     case 'badges':
       return '#/badges';
     default:
@@ -312,6 +324,7 @@ export function screenFromHash(hash = '') {
   const [a, b, c] = parts;
   if (a === 'quran') return { name: 'quran', view: QURAN_VIEWS.some((v) => v.id === b) ? b : 'journey' };
   if (a === 'badges') return { name: 'badges' };
+  if (a === 'nour' && NOUR_UNITS[c]) return { name: 'day', garden: NOUR_UNITS[c].garden, unitId: c };
   if (a === 'math' || a === 'english') return { name: 'garden', garden: a };
   if (a === 'arabic') {
     if (b === 'letter' && ANIMALS[c]) return { name: 'letter', letter: c };
@@ -595,6 +608,39 @@ export default function SalmanApp() {
     );
   }
 
+  // ---------- يوم الوحدة (حدائق النور): سبع خطوات، ثم نجوم ومراجعة ----------
+  if (screen.name === 'day') {
+    const unit = NOUR_UNITS[screen.unitId];
+    if (!unit) return null;
+    const g = GARDENS[unit.garden];
+    const finishDay = (steps) => {
+      const r = recordDay(state, { unitId: unit.id, garden: unit.garden, dayKey: today, steps });
+      setState(r.state);
+      sfx('levelUp');
+      setCelebrate({
+        emoji: unit.keyEmoji,
+        title: 'أكملت يوم الوحدة!',
+        sub: `${unit.glyph} · ${unit.keyWord}${r.earned ? ` · +${toArabicNumeral(r.earned)} ⭐` : ''}`,
+        clip: 'garden-grow',
+      });
+      if (unit.garden === 'arabic') replace({ name: 'letter', letter: unit.letter });
+      else replace({ name: 'garden', garden: unit.garden });
+    };
+    return (
+      <>
+        {celebrateLayer}
+        <LetterDay
+          unit={unit}
+          color={g.color}
+          backdrop={BACKGROUNDS[unit.garden]}
+          dayIndex={0}
+          onExit={back}
+          onDone={finishDay}
+        />
+      </>
+    );
+  }
+
   if (screen.name === 'play') {
     const level = HUROOF_LEVELS.find((l) => l.id === screen.level) || HUROOF_LEVELS[0];
     const next = HUROOF_LEVELS.find((l) => l.id === level.id + 1);
@@ -759,6 +805,16 @@ export default function SalmanApp() {
             {letter} … {animal.word}
           </p>
         </section>
+        {UNIT_BY_LETTER[letter] && (
+          <button
+            type="button"
+            className="sg-btn sg-btn-main sg-visit"
+            style={{ background: GARDENS.arabic.color }}
+            onClick={() => go({ name: 'day', garden: 'arabic', unitId: UNIT_BY_LETTER[letter] })}
+          >
+            🌿 {unitCompleted(state, UNIT_BY_LETTER[letter]) ? 'يوم الحرف (راجعه)' : 'ابدأ يوم الحرف'}
+          </button>
+        )}
         <h2 className="sg-section">قصص الحرف</h2>
         <ul className="sg-cards">
           {items.map((it) => (
@@ -869,8 +925,29 @@ export default function SalmanApp() {
         </>
       );
     } else if (id === 'math') {
+      const days = gardenUnits('math');
       content = (
         <>
+          <h2 className="sg-section">أيام الأرقام · ١–٤</h2>
+          <ul className="sg-nour-row">
+            {days.map((u) => {
+              const done = unitCompleted(state, u.id);
+              return (
+                <li key={u.id}>
+                  <button
+                    type="button"
+                    className={done ? 'sg-nour-card is-done' : 'sg-nour-card'}
+                    style={{ '--g': g.color }}
+                    onClick={() => go({ name: 'day', garden: 'math', unitId: u.id })}
+                  >
+                    <span className="sg-nour-glyph">{u.glyph}</span>
+                    <span className="sg-nour-label">{u.keyWord}</span>
+                    <span aria-hidden="true">{done ? '✅' : '🌱'}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
           <h2 className="sg-section">قصص العدّ</h2>
           {cards(items.filter((it) => it.source !== 'count'))}
           <h2 className="sg-section">نعدّ من ١ إلى ٢٠</h2>
@@ -898,8 +975,42 @@ export default function SalmanApp() {
         </>
       );
     } else {
+      const days = gardenUnits('english');
       content = (
         <>
+          <h2 className="sg-section">
+            {`Letter Days · ${[...new Set(days.map((u) => u.group ?? 1))]
+              .map((g) =>
+                days
+                  .filter((u) => (u.group ?? 1) === g)
+                  .map((u) => u.sound)
+                  .join(' ')
+              )
+              .join(' · ')}`}
+          </h2>
+          <ul className="sg-nour-row">
+            {days.map((u) => {
+              const done = unitCompleted(state, u.id);
+              return (
+                <li key={u.id}>
+                  <button
+                    type="button"
+                    className={done ? 'sg-nour-card is-done' : 'sg-nour-card'}
+                    style={{ '--g': g.color }}
+                    onClick={() => go({ name: 'day', garden: 'english', unitId: u.id })}
+                  >
+                    <span className="sg-nour-glyph" lang="en">
+                      {u.glyph}
+                    </span>
+                    <span className="sg-nour-label" lang="en">
+                      {u.keyWord}
+                    </span>
+                    <span aria-hidden="true">{done ? '✅' : '🌱'}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
           <h2 className="sg-section">Phonics · الأصوات</h2>
           {cards(items)}
         </>

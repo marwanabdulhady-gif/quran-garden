@@ -11,8 +11,9 @@ import { PARENT_DEFAULTS, sanitizeParent } from './parent.js';
 // مفتاح التخزين ثابت، ورقم المخطط داخل الحالة (v) يتغيّر مع الترحيل.
 // v1: بلا Leitner. v2: skills (سجل Leitner لكل عنصر) و daily (عدّاد الجديد لكل حديقة في اليوم).
 // v3: visitLog (عدد الزيارات في اليوم) و parent (PIN وحد الزيارات وساعات الهدوء). الترحيل إضافة فقط، بقيم افتراضية.
+// v4: nour (أيام «حدائق النور»: أي وحدة أُكملت وأي خطوات أُنجزت). إضافة فقط، بلا تغيير لأي بيانات سابقة.
 export const STORAGE_KEY = 'salman-garden-v1';
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 // مراحل نمو الحديقة حسب عدد النجوم
 export const GROWTH = [
@@ -175,6 +176,7 @@ export function createState() {
     visitLog: { day: null, count: 0 },
     parent: { ...PARENT_DEFAULTS },
     huroof: {},
+    nour: {},
   };
 }
 
@@ -273,7 +275,21 @@ export function normalizeState(raw) {
     visitLog: normalizeVisitLog(raw.visitLog),
     parent: sanitizeParent(raw.parent),
     huroof: normalizeHuroof(raw.huroof),
+    nour: normalizeNour(raw.nour),
   };
+}
+
+// أيام «حدائق النور»: { [unitId]: { day, done: [stepId], completed } }
+function normalizeNour(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [unitId, rec] of Object.entries(raw)) {
+    if (!/^[a-z]{2,5}-[\w\u0600-\u06FF-]+$/.test(unitId) || !rec || typeof rec !== 'object') continue;
+    const day = typeof rec.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(rec.day) ? rec.day : null;
+    const done = Array.isArray(rec.done) ? rec.done.filter((s) => typeof s === 'string').slice(0, 12) : [];
+    out[unitId] = { day, done, completed: !!rec.completed };
+  }
+  return out;
 }
 
 // لعبة «مغامرة الحروف» داخل حديقة الحروف: أفضل عدد نجوم لكل مستوى { [levelId]: stars }
@@ -349,6 +365,21 @@ export function recordSurah(state, { surahId, dayKey }) {
   };
   const awarded = awardBadges(next);
   return { state: awarded.state, earned: 2, newBadges: awarded.newly };
+}
+
+// إكمال يوم وحدة في «حدائق النور»: نجمتان مرة واحدة عند أول إكمال، ويُحفظ تقدّم الخطوات دائمًا.
+export function recordDay(state, { unitId, garden, dayKey, steps = [] }) {
+  const prev = (state.nour || {})[unitId] || { day: null, done: [], completed: false };
+  const firstTime = !prev.completed;
+  const earned = firstTime ? 2 : 0;
+  let next = firstTime ? addStars(state, garden, earned) : state;
+  next = {
+    ...next,
+    nour: { ...(state.nour || {}), [unitId]: { day: dayKey, done: steps.slice(0, 12), completed: true } },
+    streak: updateStreak(state.streak, dayKey),
+  };
+  const awarded = awardBadges(next);
+  return { state: awarded.state, earned, newBadges: awarded.newly };
 }
 
 // نهاية الزيارة اليومية: هدية جديدة + شارة أول زيارة إن لزم

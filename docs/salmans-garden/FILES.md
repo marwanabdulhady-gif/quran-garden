@@ -153,6 +153,7 @@
 | الملف | الدور |
 | --- | --- |
 | `docs/salmans-garden/source/alphabet-with-the-companions.md`، `alphabet-with-the-final-prophet.md` | نصّا الكتابين (Markdown)، والمصدر الذي بُنيت منه قصص الحروف |
+| `docs/salmans-garden/source/additions-fa-and-numbers.md` | الإضافات المُطوَّرة: قصة الفاء الناقصة من كتاب الصحابة، وقصص الأرقام ١–١٢ و١٠٠، مع سجل تحقق التخريج |
 | `docs/salmans-garden/source/README.md` | تحذير: النصوص غير مُدقَّقة |
 | `tools/build_salman_stories.py` | `python3 tools/build_salman_stories.py --write` |
 | `tools/salman-process-scenes.py` | معالجة رسوم العدّ (`count`) ومشاهد القصص (`scene`) حسب VISUALS.md |
@@ -186,6 +187,8 @@
 - `docs/salmans-garden/APP.md`: وصف التطبيق وما هو معلّق.
 - `docs/salmans-garden/ASSETS.md`: الأصول وما تبقّى منها.
 - `docs/salmans-garden/PROPOSAL.md`: الاقتراح المعتمد.
+- `docs/salmans-garden/PLAN-ISLAMIC-PHONICS.md`: خطة «حدائق النور» للحدائق الثلاث (معتمدة 2026-10-11).
+- `docs/salmans-garden/CONTENT-REVIEW.md`: بروتوكول المراجعة وضمان الجودة وسجل القصص.
 - `docs/salmans-garden/README.md`: فهرس الوثائق.
 
 ## 3.4 مشاهد القصص (V2، 16 من 20 حتى الآن)

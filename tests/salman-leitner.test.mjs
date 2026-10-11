@@ -191,8 +191,8 @@ describe('اختيار الجلسة (pickSession)', () => {
 
 describe('الترحيل من v1 إلى v2', () => {
   it('الإصدار الحالي 3', () => {
-    expect(SCHEMA_VERSION).toBe(3);
-    expect(createState().v).toBe(3);
+    expect(SCHEMA_VERSION).toBe(4);
+    expect(createState().v).toBe(4);
   });
 
   it('القصص المكتملة تصبح عناصر متعلَّمة تحتاج مراجعة، وتبقى النجوم والأوسمة', () => {
@@ -208,7 +208,7 @@ describe('الترحيل من v1 إلى v2', () => {
       badges: { 'first-star': true },
     };
     const s = normalizeState(v1);
-    expect(s.v).toBe(3);
+    expect(s.v).toBe(4);
     expect(s.stars).toBe(7);
     expect(s.gardens.arabic).toBe(5);
     expect(s.badges['first-star']).toBe(true);
