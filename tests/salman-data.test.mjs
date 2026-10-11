@@ -55,10 +55,10 @@ describe('قصص العربية (من الكتابين)', () => {
 });
 
 describe('قصص الرياضيات والإنجليزية', () => {
-  it('كل قصة رياضيات عدّها ضمن 1–10 وسؤالها له خياران صحيحان', () => {
+  it('كل قصة رياضيات عدّها ضمن 1–20 وسؤالها له خياران صحيحان', () => {
     for (const m of MATH_STORIES) {
       expect(m.count).toBeGreaterThanOrEqual(1);
-      expect(m.count).toBeLessThanOrEqual(10);
+      expect(m.count).toBeLessThanOrEqual(20);
     }
     for (const item of CATALOG.math) {
       expect(item.question.choices).toHaveLength(2);

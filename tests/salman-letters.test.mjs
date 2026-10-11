@@ -67,8 +67,8 @@ describe('المرحلة C: الأرقام 1–20', () => {
     });
   });
 
-  it('الرياضيات تضم القصص الأربع والأرقام العشرة', () => {
-    expect(CATALOG.math).toHaveLength(24);
+  it('الرياضيات تضم أسئلة الأرقام 1–20 وقصصها (20 + 20)', () => {
+    expect(CATALOG.math).toHaveLength(40);
     expect(CATALOG.math.filter((i) => i.source === 'count')).toHaveLength(20);
   });
 });
