@@ -188,7 +188,7 @@
 - `docs/salmans-garden/PROPOSAL.md`: الاقتراح المعتمد.
 - `docs/salmans-garden/README.md`: فهرس الوثائق.
 
-## 3.4 مشاهد القصص (V2، 11 من 20 حتى الآن)
+## 3.4 مشاهد القصص (V2، 16 من 20 حتى الآن)
 
 ملفات JPG بقياس 800×450، تُعرض فوق نص القصة. تُولَّد من مصادر PNG خام في `/home/user/recovery/raw/scenes/` (لا تُحفظ في Git، وتُفقد عند إعادة تهيئة البيئة). الأداة: `tools/salman-process-scenes.py scene <id>`.
 
@@ -205,4 +205,9 @@
 | `math-s09` | الكرات التسع | 9 كرات | `public/salman/art/stories/math-s09.jpg` |
 | `math-s14` | السمكات في البحيرة | 14 سمكة | `public/salman/art/stories/math-s14.jpg` |
 | `math-s16` | حبّات الفول | 16 حبة | `public/salman/art/stories/math-s16.jpg` |
+| `math-s08` | نوافذ البيت | 8 نوافذ | `public/salman/art/stories/math-s08.jpg` |
+| `math-s11` | أحد عشر قلمًا | 11 قلمًا | `public/salman/art/stories/math-s11.jpg` |
+| `math-s15` | النجوم الكثيرة | 15 نجمة | `public/salman/art/stories/math-s15.jpg` |
+| `math-s18` | الورود الحمراء | 18 وردة | `public/salman/art/stories/math-s18.jpg` |
+| `math-s20` | بالونات العيد | 20 بالونًا | `public/salman/art/stories/math-s20.jpg` |
 

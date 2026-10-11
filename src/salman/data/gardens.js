@@ -79,6 +79,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s08',
+    scene: true,
     title: 'نوافذ البيت',
     count: 8,
     clip: true,
@@ -94,6 +95,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s11',
+    scene: true,
     title: 'أحد عشر قلمًا',
     count: 11,
     clip: true,
@@ -123,6 +125,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s15',
+    scene: true,
     clip: true,
     title: 'النجوم الكثيرة',
     count: 15,
@@ -145,6 +148,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s18',
+    scene: true,
     clip: true,
     title: 'الورود الحمراء',
     count: 18,
@@ -159,6 +163,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s20',
+    scene: true,
     clip: true,
     title: 'بالونات العيد',
     count: 20,

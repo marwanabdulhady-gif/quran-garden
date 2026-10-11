@@ -52,7 +52,7 @@ describe('مشاهد قصص العدّ (V2)', () => {
     }
   });
 
-  it('المشاهد المقبولة حتى الآن أحد عشر، وكل مشهد مُعلَّم في gardens.js', () => {
+  it('المشاهد المقبولة حتى الآن ستة عشر، وكل مشهد مُعلَّم في gardens.js', () => {
     expect(scenes.map((i) => i.id).sort()).toEqual(
       [
         'math-01',
@@ -63,9 +63,14 @@ describe('مشاهد قصص العدّ (V2)', () => {
         'math-s02',
         'math-s04',
         'math-s06',
+        'math-s08',
         'math-s09',
+        'math-s11',
         'math-s14',
+        'math-s15',
         'math-s16',
+        'math-s18',
+        'math-s20',
       ].sort()
     );
   });
