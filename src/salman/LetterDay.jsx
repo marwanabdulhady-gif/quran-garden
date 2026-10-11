@@ -14,6 +14,15 @@ const dirOf = (lang) => (lang === 'en' ? 'ltr' : 'rtl');
 // لغة العرض: الإنجليزية LTR، والعربية والأرقام RTL
 const unitLang = (unit) => (unit.garden === 'english' ? 'en' : 'ar');
 
+// تشغيل مقطع من المكتبة بمساره العام (public/...): نُجرّده إلى مفتاح playStory
+const playAsset = (path) =>
+  playStory(
+    String(path)
+      .replace(/^salman\/audio\//, '')
+      .replace(/\.mp3$/, ''),
+    ''
+  );
+
 // تمييز الكلمة المفتاحية داخل نص القصة
 function highlight(text, keyWord) {
   if (!keyWord) return [text];
@@ -214,6 +223,11 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
               onClick={sayChant}
             >
               🎵 اسمع النشيد وردّده
+            </button>
+          )}
+          {unit.letterAudio && (
+            <button type="button" className="sg-btn sg-btn-soft" onClick={() => playAsset(unit.letterAudio)}>
+              🔤 اسمع الحرف مع صورته
             </button>
           )}
           <p className="sg-sub" lang="ar">

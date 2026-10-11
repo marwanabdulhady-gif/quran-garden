@@ -14,10 +14,10 @@ import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DATA = ROOT / 'src/salman/data/nour.js'
+DATA_FILES = [ROOT / 'src/salman/data/nour.js', ROOT / 'src/salman/data/nour-letters.js']
 AUDIO = ROOT / 'public/salman/audio/nour'
 
-STORY_IDS = re.compile(r"id: '((?:ar-[a-z]-[pc]|num-\d-s|en-[a-z]-s))',\n")
+STORY_IDS = re.compile(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-[a-z]-s))',\n")
 UNIT_IDS = re.compile(r"id: '((?:ar-[^\']+|num-\d|en-[a-z]))',\n(?:    clip: '([^']+)',\n)?")
 CHANTS = re.compile(r"chant: \{\s*(?:voiced: (?:true|false),\s*)?")
 STORY_TAIL = re.compile(r"(review: '[^']*',\n)(?:        voiced: (?:true|false),\n)?")
@@ -28,8 +28,8 @@ def clip_exists(name: str) -> bool:
     return path.is_file() and path.stat().st_size > 1000
 
 
-def main() -> int:
-    text = DATA.read_text(encoding='utf-8')
+def process_file(path: pathlib.Path) -> tuple[int, int]:
+    text = path.read_text(encoding='utf-8')
     on, off = 0, 0
 
     # مقاطع الأناشيد: nour/<clip>-chant.mp3
@@ -48,7 +48,7 @@ def main() -> int:
     text = CHANTS.sub(chant_sub, text)
 
     # قصص: nour/<storyId>.mp3 — نضبط voiced ونُعيد ترتيب (review · voiced · note) بلا تكرار
-    stories = list(re.finditer(r"id: '((?:ar-[a-z]-[pc]|num-\d-s|en-[a-z]-s))',\n", text))
+    stories = list(re.finditer(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-[a-z]-s))',\n", text))
     for sid in reversed(stories):
         ok = clip_exists(sid.group(1))
         on, off = (on + 1, off) if ok else (on, off + 1)
@@ -70,10 +70,21 @@ def main() -> int:
             block += f"        note: '{note}',\n"
         text = text[: review.start()] + block + text[tail:]
 
-    DATA.write_text(text, encoding='utf-8')
+    path.write_text(text, encoding='utf-8')
     # نُعيد التنسيق حتى يبقى `npm run format:check` أخضر
     if '--no-format' not in sys.argv:
-        subprocess.run(['npx', 'prettier', '--write', str(DATA)], check=False, capture_output=True)
+        subprocess.run(['npx', 'prettier', '--write', str(path)], check=False, capture_output=True)
+    return on, off
+
+
+def main() -> int:
+    on = off = 0
+    for path in DATA_FILES:
+        if not path.is_file():
+            print(f'!! {path} غير موجود', file=sys.stderr)
+            continue
+        a, b = process_file(path)
+        on, off = on + a, off + b
     print(f'voiced: true → {on} · voiced: false → {off}')
     return 0
 

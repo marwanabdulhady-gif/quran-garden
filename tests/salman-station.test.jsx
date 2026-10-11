@@ -127,14 +127,14 @@ describe('المحطة الأولى — مسح كامل للوحدات الاث�
       expect(state.nour[unit.id], `${unit.id} لم تُحفظ`).toMatchObject({ day: '2026-10-11', completed: true });
       expect(state.nour[unit.id].done.length, `${unit.id}: الخطوات`).toBeGreaterThanOrEqual(5);
     }
-    expect(Object.keys(state.nour)).toHaveLength(12);
+    expect(Object.keys(state.nour)).toHaveLength(16);
   });
 
   it('النجوم: نجمتان لكل وحدة مكتملة، موزّعة على الحدائق الثلاث', () => {
     let state = null;
     for (const unit of UNITS) state = playUnit(unit);
-    expect(state.gardens).toMatchObject({ arabic: 8, math: 8, english: 8 });
-    expect(state.stars).toBe(24);
+    expect(state.gardens).toMatchObject({ arabic: 16, math: 8, english: 8 });
+    expect(state.stars).toBe(32);
     expect(state.streak.current).toBe(1);
   });
 

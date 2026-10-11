@@ -28,12 +28,17 @@ const PUBLIC = path.join(ROOT, 'public');
 const UNITS = Object.values(NOUR_UNITS);
 
 describe('حدائق النور — المحتوى', () => {
-  it('المحطة الأولى: 4 وحدات في كل حديقة (12 وحدة)', () => {
-    expect(gardenUnits('arabic').map((u) => u.letter)).toEqual(['أ', 'ب', 'م', 'د']);
+  it('المحطة الأولى 4 وحدات لكل حديقة، وحروف P3 تُضاف بترتيب الألفباء', () => {
+    // الألفباء: الدفعة الأولى (أ ب) ثم P3 (ت ث ج ح) ثم بقية الطيار (د م)
+    expect(gardenUnits('arabic').map((u) => u.letter)).toEqual(['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'د', 'م']);
     expect(gardenUnits('math').map((u) => u.n)).toEqual([1, 2, 3, 4]);
     expect(gardenUnits('english').map((u) => u.sound)).toEqual(['s', 'a', 't', 'i']);
-    expect(UNITS).toHaveLength(12);
-    expect(NOUR_ORDER.arabic).toHaveLength(4);
+    expect(UNITS).toHaveLength(16);
+    expect(NOUR_ORDER.arabic).toHaveLength(8);
+    // ترتيب «اليوم التالي» يتبع الألفباء دائمًا
+    const seq = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
+    const letters = gardenUnits('arabic').map((u) => u.letter);
+    expect(letters).toEqual([...letters].sort((a, b) => seq.indexOf(a) - seq.indexOf(b)));
   });
 
   it('كل وحدة فيها عناصر الطريقة السبعة: قصة، حركة، نشيد، صيد، تتبّع، لعبة، عمل', () => {
@@ -115,15 +120,32 @@ describe('حدائق النور — المحتوى', () => {
       expect(u.trace.glyph, u.id).toBe(u.letter);
       expect(u.clip, u.id).toBeTruthy();
     }
-    // صور الأشياء الأربع هي وحدها المستخدمة في المحطة
-    const sprites = new Set(UNITS.map((u) => (u.art || '').split('/').pop()).filter(Boolean));
-    expect([...sprites].sort()).toEqual(['door.png', 'mosque.png', 'mountain.png', 'rooster.png']);
+    // الصور: إما رسمة الموجودة في المكتبة (animals) أو صورة مقصودة في nour
+    const arts = UNITS.map((u) => u.art || '');
+    const own = new Set(arts.filter((a) => a.includes('/nour/')).map((a) => a.split('/').pop()));
+    expect([...own].sort()).toEqual([
+      'dates.png',
+      'door.png',
+      'garment.png',
+      'mosque.png',
+      'mountain.png',
+      'rooster.png',
+      'rope.png',
+    ]);
+    // الحدائق الثلاث تستخدم صورًا مُعلَنة فقط
+    for (const u of gardenUnits('arabic')) {
+      expect(
+        ['salman/art/nour/', 'salman/art/animals/'].some((p) => u.art.startsWith(p)),
+        u.id + ': ' + u.art
+      ).toBe(true);
+    }
   });
 
   it('كل ملف صورة أو صوت مُعلَن في الوحدات موجود في public/', () => {
     const problems = [];
     for (const u of UNITS) {
       if (u.art && !fs.existsSync(path.join(PUBLIC, u.art))) problems.push(u.art);
+      if (u.letterAudio && !fs.existsSync(path.join(PUBLIC, u.letterAudio))) problems.push(u.letterAudio);
       for (const s of u.stories)
         if (s.voiced && !fs.existsSync(path.join(PUBLIC, `salman/audio/nour/${s.id}.mp3`)))
           problems.push(`${s.id}.mp3`);

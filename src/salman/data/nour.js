@@ -6,6 +6,8 @@
 //
 // حالة المراجعة لكل قصة: 'ok' ✅ (قوبل على sunnah.com) · 'note' 🟡 (مقبول مع ملاحظة) · 'pending' ⬜.
 
+import { LETTER_UNITS } from './nour-letters.js';
+
 export const REVIEW = { ok: 'ok', note: 'note', pending: 'pending' };
 
 // خطوات اليوم السبع: هي نفسها لكل حديقة (حرف أو رقم أو صوت).
@@ -29,6 +31,7 @@ const arabic = [
     keyWord: 'أُحُد',
     keyEmoji: '⛰️',
     art: 'salman/art/nour/mountain.png',
+    letterAudio: 'salman/audio/letters/letter-01.mp3',
     action: { emoji: '👂', text: 'ضع كفّك خلف أذنك كأنك تسمع الأذان' },
     chant: {
       voiced: true,
@@ -82,6 +85,7 @@ const arabic = [
     keyWord: 'بَاب',
     keyEmoji: '🚪',
     art: 'salman/art/nour/door.png',
+    letterAudio: 'salman/audio/letters/letter-02.mp3',
     action: { emoji: '✊', text: 'اطرق الباب في الهواء: طَك طَك' },
     chant: { voiced: true, lines: ['بَ … بَ … بَاب', 'أَطْرُقُ وَأَسْتَأْذِنُ'], text: 'بَ، بَ، باب. أطرق وأستأذن.' },
     trace: { script: 'ar', glyph: 'ب', hint: 'القوس أولًا من اليمين إلى اليسار، ثم النقطة تحته' },
@@ -131,6 +135,7 @@ const arabic = [
     keyWord: 'مَسْجِد',
     keyEmoji: '🕌',
     art: 'salman/art/nour/mosque.png',
+    letterAudio: 'salman/audio/letters/letter-24.mp3',
     action: { emoji: '🙌', text: 'ارفع يديك واصنع قبةً فوق رأسك' },
     chant: {
       voiced: true,
@@ -184,6 +189,7 @@ const arabic = [
     keyWord: 'دِيك',
     keyEmoji: '🐓',
     art: 'salman/art/nour/rooster.png',
+    letterAudio: 'salman/audio/letters/letter-08.mp3',
     action: { emoji: '🐓', text: 'حرّك ذراعيك كالجناحين وقل: كوكوكو' },
     chant: { voiced: true, lines: ['دَ … دَ … دِيك', 'يُوقِظُنَا لِلصَّلَاةِ'], text: 'دَ، دَ، ديك. يوقظنا للصلاة.' },
     trace: { script: 'ar', glyph: 'د', hint: 'قوسٌ صغير من فوق، ثم ننزل به إلى اليسار' },
@@ -560,21 +566,27 @@ const english = [
 
 const withGarden = (list, garden) => list.map((u) => ({ ...u, garden }));
 
+// ترتيب الحروف الهجائي: يحكم تسلسل «اليوم التالي» في حديقة الحروف، فأي دفعة جديدة
+// (P3/P4) تُدمج هنا وتأخذ مكانها تلقائيًا بلا ترقيع للترتيب.
+const LETTER_SEQUENCE = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
+const byLetter = (a, b) => LETTER_SEQUENCE.indexOf(a.letter) - LETTER_SEQUENCE.indexOf(b.letter);
+const arabicUnits = [...arabic, ...LETTER_UNITS].sort(byLetter);
+
 export const NOUR_UNITS = Object.fromEntries(
-  [...withGarden(arabic, 'arabic'), ...withGarden(math, 'math'), ...withGarden(english, 'english')].map((u) => [
+  [...withGarden(arabicUnits, 'arabic'), ...withGarden(math, 'math'), ...withGarden(english, 'english')].map((u) => [
     u.id,
     u,
   ])
 );
 
-// ترتيب الوحدات داخل كل حديقة (المحطة الأولى = أول 4 وحدات)
+// ترتيب الوحدات داخل كل حديقة (حديقة الحروف بترتيب الألفباء، والبقية بترتيبها)
 export const NOUR_ORDER = {
-  arabic: arabic.map((u) => u.id),
+  arabic: arabicUnits.map((u) => u.id),
   math: math.map((u) => u.id),
   english: english.map((u) => u.id),
 };
 
-export const UNIT_BY_LETTER = Object.fromEntries(arabic.map((u) => [u.letter, u.id]));
+export const UNIT_BY_LETTER = Object.fromEntries(arabicUnits.map((u) => [u.letter, u.id]));
 
 export function nourUnit(id) {
   return NOUR_UNITS[id] || null;
