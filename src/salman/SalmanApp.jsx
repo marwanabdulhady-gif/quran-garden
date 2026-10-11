@@ -11,9 +11,15 @@ import {
   newAllowed,
   recordStory,
   recordHuroofLevel,
+  recordSurah,
+  levelDone,
+  levelUnlocked,
   GIFTS,
 } from './lib/gamify.js';
 import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
+import { QURAN_LEVELS, SURAHS } from './data/quran.js';
+import { JUZ30 } from '../juz30.js';
+import { FATIHA } from './data/fatiha.js';
 import { pickSession } from './lib/session.js';
 import { countVisit, riyadhHour, visitGate } from './lib/parent.js';
 import ParentArea from './ParentArea.jsx';
@@ -273,6 +279,12 @@ function parentOf(screen) {
 }
 
 const HOME = { name: 'home' };
+// حديقة القرآن: ثلاثة أقسام في مكان واحد
+const QURAN_VIEWS = [
+  { id: 'journey', label: '🎧 رحلة القرآن' },
+  { id: 'stories', label: '📖 قصص السور' },
+  { id: 'levels', label: '📗 المستويات' },
+];
 const ARABIC_HOME = { name: 'garden', garden: 'arabic' };
 
 function hashOf(screen) {
@@ -280,7 +292,7 @@ function hashOf(screen) {
     case 'garden':
       return `#/${screen.garden}`;
     case 'quran':
-      return '#/quran';
+      return screen.view && screen.view !== 'journey' ? `#/quran/${screen.view}` : '#/quran';
     case 'station':
       return `#/arabic/${screen.level}`;
     case 'play':
@@ -298,7 +310,7 @@ export function screenFromHash(hash = '') {
   if (hash.startsWith('#garden=')) return { name: 'quran' }; // رابط استرجاع حديقة القرآن
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   const [a, b, c] = parts;
-  if (a === 'quran') return { name: 'quran' };
+  if (a === 'quran') return { name: 'quran', view: QURAN_VIEWS.some((v) => v.id === b) ? b : 'journey' };
   if (a === 'badges') return { name: 'badges' };
   if (a === 'math' || a === 'english') return { name: 'garden', garden: a };
   if (a === 'arabic') {
@@ -361,6 +373,7 @@ export default function SalmanApp() {
   const [state, setState] = useState(() => loadState());
   const [screen, setScreen] = useState(() => screenFromHash(globalThis.location?.hash));
   const [celebrate, setCelebrate] = useState(null);
+  const [openSurah, setOpenSurah] = useState(null);
   const today = dayKeyFrom();
 
   useEffect(() => {
@@ -607,12 +620,129 @@ export default function SalmanApp() {
   // ---------- شاشات الحدائق (مع شريط الحدائق) ----------
   let body;
   if (screen.name === 'quran') {
-    // حديقة القرآن هي رحلة القرآن نفسها: الاستماع والترديد والحفظ والكلمات
-    body = (
-      <div className="sg-quran-tab">
-        <QuranJourney embedded />
+    // حديقة القرآن: رحلة الاستماع والحفظ + قصص السور + مستويات السور، بأقسام في أعلى الحديقة
+    const view = screen.view || 'journey';
+    const views = (
+      <div className="sg-segments" role="tablist" aria-label="أقسام حديقة القرآن">
+        {QURAN_VIEWS.map((v) => (
+          <button
+            key={v.id}
+            type="button"
+            role="tab"
+            aria-selected={view === v.id}
+            className={view === v.id ? 'sg-segment is-active' : 'sg-segment'}
+            onClick={() => view !== v.id && replace({ name: 'quran', view: v.id })}
+          >
+            {v.label}
+          </button>
+        ))}
       </div>
     );
+    if (view === 'journey') {
+      body = (
+        <div className="sg-quran-tab">
+          {views}
+          <QuranJourney embedded />
+        </div>
+      );
+    } else if (view === 'stories') {
+      const items = gardenItems('quran');
+      const freshLeft = newAllowed(state, 'quran', today);
+      body = (
+        <main className="sg-app" dir="rtl">
+          {celebrateLayer}
+          {views}
+          <section
+            className="sg-garden-hero"
+            style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS.quran)})`, '--g': GARDENS.quran.color }}
+          >
+            <img className="sg-hero-mascot" src={assetUrl(MASCOTS[GARDEN_MASCOT.quran])} alt="" />
+            <span className="sg-hero-badge">📖 قصص السور · {toArabicNumeral(items.length)}</span>
+          </section>
+          <ul className="sg-cards">
+            {items.map((it) => (
+              <ItemCard
+                key={it.id}
+                item={it}
+                state={state}
+                freshLeft={freshLeft}
+                onOpen={(item, fresh) => openItem(item, fresh, screen)}
+              />
+            ))}
+          </ul>
+        </main>
+      );
+    } else {
+      body = (
+        <main className="sg-app" dir="rtl">
+          {celebrateLayer}
+          {views}
+          {QURAN_LEVELS.map((lvl) => {
+            const unlocked = levelUnlocked(state, lvl.level);
+            const done = levelDone(state, lvl.level);
+            return (
+              <section key={lvl.level} className={unlocked ? 'sg-level' : 'sg-level is-locked'}>
+                <h2 className="sg-level-title">
+                  {done ? '🏆 ' : unlocked ? '✨ ' : '🔒 '}
+                  {lvl.title}
+                </h2>
+                {!unlocked && <p className="sg-sub">افتح المستوى السابق أولًا 🌱</p>}
+                {lvl.surahs.map((sid) => {
+                  const su = SURAHS[sid];
+                  const learned = !!state.learnedSurahs[sid];
+                  const open = openSurah === sid;
+                  const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
+                  return (
+                    <article key={sid} className="sg-surah">
+                      <button type="button" className="sg-row" onClick={() => setOpenSurah(open ? null : sid)}>
+                        <span>{learned ? '✅' : '📜'}</span>
+                        <span>
+                          سورة {su.name} · {toArabicNumeral(su.ayahs)} آيات
+                        </span>
+                      </button>
+                      {open && (
+                        <div className="sg-verses" lang="ar">
+                          {verses ? verses.join(' ۝ ') : 'النص يُضاف قريبًا.'}
+                        </div>
+                      )}
+                      {unlocked && !learned && (
+                        <button
+                          type="button"
+                          className="sg-btn sg-btn-main"
+                          onClick={() => {
+                            const wasDone = levelDone(state, lvl.level);
+                            const r = recordSurah(state, { surahId: sid, dayKey: today });
+                            setState(r.state);
+                            sfx('levelUp');
+                            if (!wasDone && levelDone(r.state, lvl.level)) {
+                              setCelebrate({
+                                emoji: '📗',
+                                title: 'مستوى مكتمل!',
+                                sub: lvl.title,
+                                clip: 'level-unlock',
+                              });
+                            } else {
+                              setCelebrate({
+                                emoji: '📜',
+                                title: 'سورة محفوظة!',
+                                sub: `سورة ${su.name}`,
+                                clip: 'surah-learned',
+                              });
+                            }
+                          }}
+                        >
+                          حفظتها ✓ (+⭐⭐)
+                        </button>
+                      )}
+                    </article>
+                  );
+                })}
+              </section>
+            );
+          })}
+        </main>
+      );
+    }
   } else if (screen.name === 'letter') {
     const letter = screen.letter;
     const animal = ANIMALS[letter];
@@ -893,7 +1023,9 @@ export default function SalmanApp() {
   }
 
   return (
-    <div className={screen.name === 'quran' ? 'sg-shell is-quran' : 'sg-shell'}>
+    <div
+      className={screen.name === 'quran' && (screen.view || 'journey') === 'journey' ? 'sg-shell is-quran' : 'sg-shell'}
+    >
       {body}
       <TabBar active={tab} onTab={onTab} />
     </div>

@@ -92,6 +92,35 @@ describe('الحدائق الأربع في موقع واحد', () => {
     expect(screen.getByRole('navigation', { name: 'الحدائق' })).toBeTruthy();
   });
 
+  it('حديقة القرآن فيها الأقسام الثلاثة: الاستماع والحفظ، قصص السور، مستويات السور', () => {
+    render(<SalmanApp />);
+    tab('القرآن');
+    const tabs = screen.getAllByRole('tab');
+    expect(tabs.map((t) => t.textContent)).toEqual(['🎧 رحلة القرآن', '📖 قصص السور', '📗 المستويات']);
+    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
+  });
+
+  it('قصص السور الـ13 داخل حديقة القرآن، والقصة تفتح وترجع للقصص', () => {
+    render(<SalmanApp />);
+    tab('القرآن');
+    fireEvent.click(screen.getByRole('tab', { name: '📖 قصص السور' }));
+    expect(location.hash).toBe('#/quran/stories');
+    const cards = document.querySelectorAll('.sg-cards .sg-card');
+    expect(cards).toHaveLength(13);
+    fireEvent.click(screen.getByText('سورة الفاتحة').closest('button'));
+    expect(screen.getByText('ما اسم السورة اللي قصتها هذه؟')).toBeTruthy();
+  });
+
+  it('مستويات السور داخل حديقة القرآن: الأول مفتوح والثاني مقفل حتى يكتمل الأول', () => {
+    render(<SalmanApp />);
+    tab('القرآن');
+    fireEvent.click(screen.getByRole('tab', { name: '📗 المستويات' }));
+    expect(location.hash).toBe('#/quran/levels');
+    expect(screen.getByText(/المستوى الأول/)).toBeTruthy();
+    const second = screen.getByText(/المستوى الثاني/).closest('section');
+    expect(within(second).getByText(/افتح المستوى السابق أولًا/)).toBeTruthy();
+  });
+
   it('رابط مباشر إلى حديقة يفتحها (يعمل مع زر الرجوع والمشاركة)', () => {
     history.replaceState(null, '', '/#/arabic/3');
     render(<SalmanApp />);
