@@ -26,3 +26,7 @@ Thumbs.db
 
 # Misc
 *.tsbuildinfo
+
+# Python bytecode from tools/
+__pycache__/
+*.pyc

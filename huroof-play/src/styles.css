@@ -1,0 +1,650 @@
+/* مغامرة الحروف — نظام التصميم. RTL، موبايل أولًا، أهداف لمس ≥ 48px. */
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-400-arabic.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-700-arabic.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-900-arabic.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+:root {
+  --sky-1: #e0f2fe;
+  --sky-2: #bae6fd;
+  --sun: #fbbf24;
+  --ink: #0f172a;
+  --muted: #475569;
+  --brand: #0284c7;
+  --brand-dark: #075985;
+  --ok: #16a34a;
+  --ok-soft: #dcfce7;
+  --warn: #f97316;
+  --warn-soft: #ffedd5;
+  --card: #ffffff;
+  --radius: 22px;
+  --shadow: 0 10px 25px -12px rgba(2, 132, 199, 0.45);
+  font-family:
+    'Cairo',
+    'Segoe UI',
+    system-ui,
+    -apple-system,
+    sans-serif;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  background: linear-gradient(180deg, var(--sky-1) 0%, #f0fdf4 100%);
+  min-height: 100vh;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.screen {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ---------- عناصر مشتركة ---------- */
+.btn {
+  min-height: 48px;
+  padding: 10px 20px;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-weight: 900;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn.primary {
+  background: var(--brand);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.btn.primary:hover {
+  background: var(--brand-dark);
+}
+
+.btn.ghost {
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--brand-dark);
+  border-color: var(--brand);
+}
+
+.btn.big {
+  min-height: 56px;
+  font-size: 1.2rem;
+  padding: 12px 28px;
+}
+
+.btn:focus-visible,
+.tile:focus-visible,
+input:focus-visible {
+  outline: 4px solid var(--sun);
+  outline-offset: 3px;
+}
+
+.pill {
+  background: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 900;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.topbar h1 {
+  font-size: 1.3rem;
+  font-weight: 900;
+}
+
+/* ---------- الترحيب ---------- */
+.welcome {
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+}
+
+.welcome-hero {
+  position: relative;
+  width: min(300px, 80vw);
+  height: 150px;
+}
+
+.hero-letter,
+.hero-animal {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  animation: float 4s ease-in-out infinite;
+}
+
+.hero-letter {
+  width: 84px;
+  height: 84px;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--brand);
+  top: 30px;
+  right: 0;
+}
+
+.hero-letter.alt {
+  right: 108px;
+  top: 0;
+  animation-delay: -1s;
+}
+
+.hero-letter.alt2 {
+  right: 216px;
+  top: 40px;
+  animation-delay: -2s;
+}
+
+.hero-animal {
+  width: 64px;
+  height: 64px;
+  font-size: 2.4rem;
+  top: 10px;
+  left: 0;
+  animation-delay: -0.5s;
+}
+
+.hero-animal.alt {
+  left: 90px;
+  top: 90px;
+}
+
+.hero-animal.alt2 {
+  left: 200px;
+  top: 20px;
+}
+
+.title {
+  font-size: clamp(2rem, 7vw, 2.8rem);
+  font-weight: 900;
+  color: var(--brand-dark);
+}
+
+.tagline {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--brand);
+}
+
+.lead {
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.9;
+  max-width: 520px;
+}
+
+.chips {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.chips li {
+  background: #fff;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 700;
+  color: var(--brand-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.name-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(420px, 100%);
+  background: var(--card);
+  padding: 18px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.name-form label {
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.name-form input {
+  min-height: 52px;
+  border-radius: 14px;
+  border: 2px solid #bae6fd;
+  padding: 10px 14px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 0.9rem;
+  max-width: 480px;
+  line-height: 1.8;
+}
+
+/* ---------- خريطة المستويات ---------- */
+.hello {
+  font-weight: 700;
+  color: var(--brand-dark);
+  font-size: 1.1rem;
+}
+
+.level-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.level-card {
+  width: 100%;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--card);
+  border: 2px solid #bae6fd;
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: start;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.level-card:hover:not(:disabled) {
+  border-color: var(--brand);
+}
+
+.level-card.done {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+
+.level-card.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+.level-num {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sun);
+  font-weight: 900;
+  flex-shrink: 0;
+}
+
+.level-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+.level-goal {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.level-state {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+/* ---------- شاشة اللعب ---------- */
+.play-title {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.play-title .sub {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.instruction {
+  text-align: center;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  padding: 10px 14px;
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tile {
+  min-height: 72px;
+  width: 100%;
+  border-radius: 20px;
+  border: 3px solid transparent;
+  background: var(--card);
+  box-shadow: 0 6px 14px -8px rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  transition:
+    transform 0.12s ease,
+    border-color 0.12s ease,
+    background 0.2s ease;
+  touch-action: none; /* السحب ما يعملش scroll على الموبايل */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.tile:disabled {
+  cursor: default;
+}
+
+.tile.letter {
+  border-color: #7dd3fc;
+}
+
+.tile.letter .glyph {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--brand-dark);
+  line-height: 1.2;
+}
+
+.tile.letter.selected {
+  border-color: var(--sun);
+  background: #fffbeb;
+  transform: scale(1.04);
+}
+
+.tile.letter.dragging {
+  opacity: 0.35;
+}
+
+.tile.letter.placed {
+  background: var(--ok-soft);
+  border-color: var(--ok);
+  opacity: 0.7;
+}
+
+.tile.animal {
+  flex-direction: column;
+  min-height: 120px;
+  padding: 10px;
+}
+
+.tile.animal .emoji {
+  font-size: 2.6rem;
+  line-height: 1.1;
+}
+
+.tile.animal .art {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.18));
+}
+
+.tile.animal .word {
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.tile.animal.droppable {
+  border-style: dashed;
+  border-color: var(--brand);
+}
+
+.tile.animal.hint {
+  animation: pulse 1.2s ease-in-out infinite;
+  border-color: var(--sun);
+}
+
+.tile.animal.filled {
+  background: var(--ok-soft);
+  border-color: var(--ok);
+}
+
+.tile.animal.celebrate {
+  animation: bounce 0.6s ease;
+}
+
+.filled-letter {
+  position: absolute;
+  top: 6px;
+  inset-inline-start: 8px;
+  background: var(--ok);
+  color: #fff;
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.wobble {
+  display: inline-block;
+  animation: wobble 0.45s ease;
+}
+
+.progress {
+  text-align: center;
+  font-weight: 900;
+  color: var(--brand-dark);
+}
+
+.drag-ghost {
+  position: fixed;
+  width: 72px;
+  height: 72px;
+  margin: -36px 0 0 -36px;
+  border-radius: 50%;
+  background: var(--sun);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  font-size: 2.2rem;
+  font-weight: 900;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ---------- نهاية المستوى ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 40;
+}
+
+.done-card {
+  background: #fff;
+  border-radius: 28px;
+  padding: 28px 22px;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.done-emoji {
+  font-size: 3.6rem;
+}
+
+.done-card h2 {
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.done-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* ---------- الحركات ---------- */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(251, 191, 36, 0);
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes wobble {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (min-width: 720px) {
+  .tile.letter .glyph {
+    font-size: 3.4rem;
+  }
+  .tile.animal .emoji {
+    font-size: 3.2rem;
+  }
+  .tile.animal .art {
+    width: 120px;
+    height: 120px;
+  }
+}
