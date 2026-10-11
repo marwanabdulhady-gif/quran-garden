@@ -135,6 +135,11 @@ export default function Daily({ go }) {
 
       <div className="tafakkur">
         <span className="t-card-kicker">📅 تأمل الأسبوع</span>
+        {tCard.img && (
+          <div className="tafa-img" aria-hidden="true">
+            <img src={tCard.img} alt="" loading="lazy" />
+          </div>
+        )}
         <h3>
           {tCard.emoji} {tCard.title} — {tCard.question}
         </h3>

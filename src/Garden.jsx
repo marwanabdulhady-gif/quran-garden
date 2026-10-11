@@ -164,7 +164,7 @@ export default function Garden({ go }) {
               say(`${d.emoji} ${d.name} · ${d.desc}`, d.x, d.y);
             }}
           >
-            {d.emoji}
+            {d.img ? <img src={d.img} alt={d.name} /> : d.emoji}
           </div>
         ))}
 
@@ -357,7 +357,7 @@ export default function Garden({ go }) {
         >
           <span className="ico">📖</span>
           كلماتي
-          <span className="sub">٣٠ كلمة</span>
+          <span className="sub">٥٠ كلمة</span>
         </button>
         <button
           className="nav-pill"
