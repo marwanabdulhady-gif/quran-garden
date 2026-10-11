@@ -1,21 +1,31 @@
-# Salman's Garden — Islamic Phonics plan ("حروف النور")
+# Salman's Garden — «حدائق النور»: one Islamic learning method for Arabic, Math and English
 
 > **Status: plan for review. Nothing here is implemented.** Code starts only after you approve the decisions in §12.
-> Scope: the Arabic garden first. The same method then applies to the English and Math gardens.
-> Sources: `source/alphabet-with-the-final-prophet.md` (28 letters) and `source/alphabet-with-the-companions.md` (27 chapters).
+> Scope: **all three gardens equally.** Arabic is «حروف النور», Math is «أرقام النور», and English is «Letters of Light». Each one gets the same story-led method, not just phonics.
+> Sources:
+> - `source/alphabet-with-the-final-prophet.md` (28 letters)
+> - `source/alphabet-with-the-companions.md` (27 chapters)
+> - `source/additions-fa-and-numbers.md` (**new**: the missing ف companion story and the number stories, researched and sourced)
 
 ---
 
 ## 1. The idea in one paragraph
 
-Jolly Phonics works because each sound gets **a story, an action, a picture, a song and a letter shape**, taught in a fixed order. The child then uses the sounds right away to **blend** and **segment** real words. We keep that method and make the content Islamic:
+Jolly Phonics works because every unit of learning gets **a story, an action, a picture, a song and a shape to trace**, taught in a fixed order. The child then *uses* it right away. We keep that method, make the content Islamic, and apply it to **all three gardens**:
 
-- Every Arabic letter gets **two stories**: one from the Prophet ﷺ's life (final-prophet book) and one about a companion (companions book).
-- Every letter also gets an **action**, a short **chant**, a **picture**, a **tracing path** and one small **good deed** the child does at home.
+| | Arabic «حروف النور» | Math «أرقام النور» | English «Letters of Light» |
+|---|---|---|---|
+| Unit | a letter sound (بَ) | a number (٣) | a sound (/s/) |
+| Story | a Prophet ﷺ story + a companion story, from the two books | a Quran or hadith story where the number really appears, e.g. ٣ = he drank in three breaths (Muslim 2028) | a Quran story in simple English, e.g. /s/ = Sulaiman and the ant (an-Naml 18) |
+| Action | a gesture (knock on the door for باب) | fingers showing the number | a gesture |
+| Chant | 2 lines, voice only | a counting chant | 2 lines, voice only |
+| Trace | letter body, then dots | ١٢٣ and 123 | lowercase letter |
+| Use it | blend and segment words | count, compare, add | blend and segment words |
+| Good deed | from the book's «فكرة تربوية» | from the story (drink in 3 breaths) | from the story (be gentle with ants) |
 
-The English and Math gardens reuse the same lesson shape and the same game engines.
+All three share **the same 7-step daily lesson (§4)**, **the same game engines (§6)**, **the same story rules (§7)** and **the same art rules (§8)**. Only the content changes.
 
-> **Note on the name "Jolly Phonics":** it's a trademark, and its stories, actions and songs are copyrighted. We use the *method* (synthetic phonics, multi-sensory, fixed order), which is public teaching practice. All our stories, actions, chants and art are original, so the app never says "Jolly Phonics". Working name: **حروف النور** (the Letters of Light).
+> **Note on the name "Jolly Phonics":** it's a trademark, and its stories, actions and songs are copyrighted. We use the *method* (synthetic phonics, multi-sensory, fixed order), which is public teaching practice. All our stories, actions, chants and art are original, so the app never says "Jolly Phonics". Working name for the whole method: **حدائق النور** (the Gardens of Light).
 
 ---
 
@@ -61,9 +71,9 @@ The **letters-adventure game** (drag the letter to its friend) follows the same 
 
 ---
 
-## 4. One letter, one "Letter Day" (the daily 10 minutes)
+## 4. One unit, one day: the same 7 steps for a letter, a number or an English sound (the daily 10 minutes)
 
-A new letter is taught on one day, then reviewed over the next days (Leitner, as now). Every new-letter day has the same 7 steps. The child learns the routine and feels safe.
+A new unit (an Arabic letter, a number or an English sound) is taught on one day, then reviewed over the next days (Leitner, as now). Every new-unit day has the same 7 steps; the example below is the letter ب. The child learns the routine and feels safe.
 
 | # | Step | Time | What happens |
 |---|---|---|---|
@@ -105,7 +115,7 @@ Key words and stories come from the two books (story summaries checked against t
 | ظ | ظَ | Patience in the shade of the Ka'bah (ظل) | Uqbah ibn Amir (ظلام) | Shade your eyes with your hand | Be patient when someone is unkind |
 | ع | عَ | The dua he taught his uncle al-Abbas (عم) | Mu'adh ibn Jabal (عالم) | Arms open for a hug | Learn the dua «اللهم إني أسألك العافية» |
 | غ | غَ | The two trees in the valley (غصن) | Abu Bakr and Abu Sa'id (غضب) | Gargle sound + bend a branch | When angry: sit down and stay quiet |
-| ف | فَ | His brave night ride (فرس) | **⚠️ No chapter in the companions book. Needs a source story.** | Gallop | Be brave and help |
+| ف | فَ | His brave night ride (فرس) | **Added:** Anas ibn Malik, «أنت مع من أحببت» (فَرَح), Bukhari 3688, Muslim 2639. See `source/additions-fa-and-numbers.md` | Gallop | Make a «tree of those we love» |
 | ق | قَ | Usayd ibn Hudayr's recitation (قرآن) | Abdullah ibn Mas'ud (قرآن) | Open your hands like a mushaf | Listen to one ayah |
 | ك | كَ | The man who gave water to a thirsty dog (كلب) | The Prophet's scribe (كاتب) | Paws holding a bucket | Give an animal water |
 | ل | لَ | The guest and the milk (لبن) | Aisha (لعب) | Drink from a cup | Don't fill your tummy too much |
@@ -116,7 +126,7 @@ Key words and stories come from the two books (story summaries checked against t
 | ي | يَ | Starting with the right (يمين) | Abdullah ibn Ja'far (يتيم) | Raise your right hand | Start with the right |
 
 Gaps and checks from the sources:
-- **ف** has no companion chapter. A source story needs to be chosen by the reviewing teacher. **I won't invent one.**
+- **ف** has no companion chapter in the book. **Filled** with an authentic story in the book's style: Anas ibn Malik and «أنت مع من أحببت» (key word فَرَح; Bukhari 3688, Muslim 2639). The alternative is Sa'd ibn Abi Waqqas, «فِدَاكَ أبي وأمي» (Bukhari 4059, Muslim 2411), but its context is battle, so it fits ages 4–6 less well. Both are in `source/additions-fa-and-numbers.md` with their sources. The story fits the book's closing section «نحبهم حتى نكون في الآخرة معهم».
 - **غ** has two companion stories. Use one on Day 2 and the other on a review day.
 - **ن / ه** page order in the scanned companions book needs checking against the printed copy (already noted in `source/README.md`).
 - **ص** has the same key word in both books (صلاة), so the child gets two angles on one word. Good.
@@ -166,7 +176,7 @@ Today the app shows the books' paragraphs almost as transcribed. They're long, a
 - "Talk about it at dinner": 2 questions.
 
 **Writing and review process (unchanged rule: nothing is voiced before review):**
-1. I draft the child version from the source, for all 56 stories (28 Prophet ﷺ stories + 28 companion stories: ف has none, غ has two).
+1. I draft the child version from the source, for all 57 Arabic stories (28 Prophet ﷺ stories + 29 companion stories: the 27 book chapters, a second story for غ, and the added ف story), plus 12 Math and 42 English stories.
 2. A teacher or scholar checks the meaning and the hadith wording. I mark each story `approved` or `needs-change`.
 3. Only approved stories are voiced (voice-00) and illustrated.
 
@@ -190,13 +200,13 @@ Today the app shows the books' paragraphs almost as transcribed. They're long, a
 | Asset | Count | Notes |
 |---|---|---|
 | Letter card (big letter + key-word picture) | 28 | Reuse the 28 animals where the key word is an animal (جمل، ديك، ذئب، كلب، فرس) |
-| Story panels | 28 × 2 stories × 3 panels = 168 | **Phase it:** 1 hero panel per story first (56), the other 2 later |
+| Story panels | 28 × 2 stories × 3 panels = 168 | **Phase it:** 1 hero panel per Arabic story first (57), the other 2 later |
 | Action icons (mascot doing the action) | 28 | Small, 2 frames: a simple loop, not video |
 | Sound-hunt scenes | 7 (one per station) | One big scene per station that holds items for its 4 letters, reused for review |
 | Tracing paths | 28 + harakat | **SVG vector paths, not images**: stroke order, start dot, arrows |
 | Good-deed stickers | ~25 | For the good-deed tree |
 
-**Budget note:** image generation has been about 10 images per turn, so the 56 hero panels take about 6 turns and all 168 panels about 17. That's why the plan starts with a pilot (§11).
+**Budget note:** image generation has been about 10 images per turn, so the 57 Arabic hero panels take about 6 turns and all 168 panels about 17. That's why the plan starts with a pilot (§11).
 
 ### 8.4 Screen layouts (no code, just the look)
 - **Story screen:** a full-width panel on top (16:9), large narrated text below with the key word in coral, page dots, and a big 🔊 replay.
@@ -205,42 +215,74 @@ Today the app shows the books' paragraphs almost as transcribed. They're long, a
 
 ---
 
-## 9. English garden: the same method, original content
+## 9. English garden «Letters of Light»: the same method, with Islamic stories
 
 - **Sounds:** move from today's 25 single letters to the full synthetic-phonics set of **42 sounds in 7 groups**, in the standard teaching order: s a t i p n · c k e h r m d · g o u l f b · ai j oa ie ee or · z w ng v oo oo · y x ch sh th th · qu ou oi ue er ar.
   - That order is public teaching practice. **The stories, actions and songs are ours.**
-- **Stories:** the 25 current stories stay where their sound matches. New stories are short and set in a Muslim family's everyday life: salaam, sharing, the masjid, Eid, wudu, kindness to animals. Example: «s — Sami says salaam to the sun as it rises».
-- **Actions and chants:** original, voice-only, the same rules as Arabic.
+- **Stories: Quran stories told in simple English**, so English carries the same values as Arabic. Each sound's story is a Quran story whose key word starts with that sound. The first two groups:
+
+| Sound | Key word | Story (source) | Action | Good deed |
+|---|---|---|---|---|
+| s | Sulaiman / ants | The ant warns the others and Sulaiman smiles (an-Naml 18–19) | Wiggle fingers like marching ants, "sss" | Be gentle with small creatures |
+| a | Adam | Allah taught Adam the names of all things (al-Baqarah 31) | Point to things and name them | Learn one new word |
+| t | tree | Maryam shakes the palm tree and dates fall (Maryam 25) | Shake a tree trunk | Eat dates, say bismillah |
+| i | Ibrahim & Ismail | Building the Ka'bah together (al-Baqarah 127) | Stack bricks with both hands | Help Baba build or fix something |
+| p | pen | "He taught by the pen" (al-Alaq 4) | Write in the air | Draw or write something kind |
+| n | Nuh | Building the ark and the animals boarding (Hud 37–44) | Hammer, "n-n-n" | Be patient |
+| c / k | cave / Ka'bah | The young men in the cave (al-Kahf 10) | Hands make a cave | Make dua when worried |
+| e | elephant | The army of the elephant and the birds (al-Fil) | Swing your arm like a trunk | Allah protects His House |
+| h | hoopoe | The hoopoe brings news to Sulaiman (an-Naml 20–22) | Flap wings, "h-h-h" | Tell the truth |
+| r | rain | Allah sends blessed rain from the sky (Qaf 9) | Wiggle fingers down like rain | Say the dua when it rains |
+| m | Musa | The sea parts for Musa (ash-Shu'ara 63) | Hands part like the sea | Trust Allah |
+| d | Dawud | The mountains and birds praise Allah with Dawud (Saba 10) | Hands up, sway | Say SubhanAllah |
+
+  - The other 30 sounds are drafted the same way in P0. Sounds that are hard to match to a Quran word (ng, x, qu …) use everyday Muslim family life instead (a king's ring, a box of gifts for Eid, the Queen of Saba for qu).
+  - The 25 current English stories are kept as **extra reading stories** for blending practice.
+- **Never depict** prophets: the same art rules as §8.2. We show the ants, the ark, the palm tree, the sea and the birds.
+- **Actions and chants:** original and voice-only.
 - **Tricky words:** I, the, he, she, me, we, be, was, to, do, are, all … taught as picture words.
 - **Same engines** (§6): hunt, trace, train (s-a-t), sound boxes, memory, odd one out.
 - **Voice:** voice-00 in English, which is still untested. Proposal: audition 3 sounds before producing 42.
 
 ---
 
-## 10. Math garden: the same method
+## 10. Math garden «أرقام النور»: the same method, with authentic stories
 
-Each number gets a **mini story** from Islamic daily life, an **action** (fingers), a **trace path** (both ١٢٣ and 123) and a **hunt scene**. Examples:
+Each number gets the same full treatment as a letter:
+- a **story** from the Quran or authentic hadith where the number really appears;
+- a **finger action** and a **counting chant**;
+- **tracing** of both ١٢٣ and 123;
+- a **hunt scene** and a **good deed**.
 
-| Number | Story idea | Real-life link |
-|---|---|---|
-| ١ | One Allah: we say «قل هو الله أحد» | Raise one finger (the tashahhud finger) |
-| ٢ | Two hands for wudu | Wash both hands |
-| ٣ | Three dates at iftar | Count dates at the table |
-| ٥ | Five prayers in the day | The prayer chart |
-| ٧ | Seven days of the week, Friday is Jumu'ah | Week calendar |
-| ١٠ | Ten fingers that make dhikr | Count tasbeeh on the fingers |
-| … to ٢٠ | Rak'ahs, the 30 juz' (later), the months … | — |
+The full texts, written in the books' style, are in `source/additions-fa-and-numbers.md`. All of them were researched, and every source is listed.
 
-Stations:
-1. 1–5
-2. 6–10
-3. 11–20
-4. More / less
-5. Number bonds to 10
-6. Shapes in the masjid: the dome, the arch, the minaret
-7. Patterns: Islamic geometric patterns, *copying and continuing a pattern*
+| Number | Story | Source | Good deed |
+|---|---|---|---|
+| ١ | «قل هو الله أحد», one finger in tashahhud | al-Ikhlas 1 | Recite al-Ikhlas |
+| ٢ | «ركعتا الفجر خير من الدنيا وما فيها» | Muslim 725 | Count two rak'ahs |
+| ٣ | He ﷺ drank in three breaths | Muslim 2028, Bukhari 5631 | Drink in 3 breaths |
+| ٤ | Ibrahim and the four birds | al-Baqarah 260 | Count 4 birds outside |
+| ٥ | The five rights of a Muslim (and five prayers) | Bukhari 1240, Muslim 2162 | Return the salaam, say «يرحمك الله» |
+| ٦ | The heavens and earth in six days | al-A'raf 54 | Count 6 things Allah made |
+| ٧ | Seven in the shade of Allah: «شاب نشأ في عبادة الله» | Bukhari & Muslim (Muslim 1031) | Love your friends for Allah |
+| ٨ | Eight gates of Jannah, one called ar-Rayyan | Bukhari (number to verify) | Draw 8 doors |
+| ٩ | Nine clear signs to Musa | al-Isra 101 | Fold fingers and count |
+| ١٠ | A good deed is worth ten | al-An'am 160 | 1 deed = 10 stars (first taste of multiplying) |
+| ١١ | Yusuf's eleven stars | Yusuf 4 | Count 11 stars |
+| ١٢ | Twelve springs from the rock (and 12 months) | al-Baqarah 60, at-Tawbah 36 | Share water fairly |
+| ١٣–٢٠ | The current counting stories (squirrel, stars, roses …), each with a good deed added | — | — |
+| ١٠٠ (later) | «إني لأستغفر الله في اليوم مائة مرة» | Muslim 2702 | Count istighfar in tens |
 
-The current math stories and the 16 scene images are reused.
+Stations, each built from 4 number days:
+1. ١–٤
+2. ٥–٨
+3. ٩–١٢
+4. ١٣–٢٠ (counting stories)
+5. More / less and comparing
+6. Number bonds to 10, "fair sharing" (the 12 springs)
+7. Shapes and patterns in the masjid: the dome, the arch, the minaret, geometric patterns
+
+The current math stories and their 16 scene images are reused in station 4 and in review days.
 
 ---
 
@@ -248,20 +290,20 @@ The current math stories and the 16 scene images are reused.
 
 | Phase | What | Output | Gate |
 |---|---|---|---|
-| **P0 — Content** | Child versions of the stories for station 1 (ا ب م د), actions, chants, good deeds | `content/letters/*.md`, reviewed | Teacher or scholar review signed off |
+| **P0 — Content** | Child versions for the first station of each garden: Arabic ا ب م د, Math ١–٤, English s a t i (actions, chants, good deeds) | `content/{arabic,math,english}/*.md`, reviewed | Teacher or scholar review signed off |
 | **P1 — Engines** | Hunt, trace, train and sound boxes as data-driven components (match already exists) | Shared engine module + tests | All 4 engines work by tap and keyboard |
-| **P2 — Pilot station 1** | Full Letter Day for ا ب م د: stories, panels (hero only), actions, tracing, games | Station 1 playable end-to-end | **Salman plays 4 Letter Days**, and we watch what works |
+| **P2 — Pilot: station 1 in all three gardens** | Full daily lessons for ا ب م د · ١–٤ · s a t i: stories, hero panels, actions, tracing, games | The first station of each garden playable end-to-end | **Salman plays a week** (Arabic, Math and English days), and we watch what works |
 | **P3 — Arabic 2–7** | Repeat P0 and P2 for the other 24 letters, in batches of 4 | 28 letters | Real-child gate per station |
 | **P4 — Arabic 8–10** | Harakat, madd, tanween, shadda, ال, special words | Blending stations | Child reads 10 real words |
-| **P5 — English** | 42 sounds in 7 groups, same engines | English stations | Gate per group |
-| **P6 — Math** | Number stories and stations 1–7 | Math stations | Gate per station |
+| **P5 — English 2–7** | The remaining sounds of the 42, same engines | English stations | Gate per group |
+| **P6 — Math 2–7** | Number days ٥–٢٠ and stations 5–7 | Math stations | Gate per station |
 | **P7 — Panels 2 and 3** | The remaining story panels | Full storybooks | — |
 
-Rough effort for station 1:
-- 8 child stories
-- 8 hero panels + 4 action icons + 1 hunt scene
-- ~30 audio clips: sounds with 3 harakat, words, chants, stories
-- 4 engines
+Rough effort for the pilot (station 1 × 3 gardens):
+- 16 child stories: 8 Arabic, 4 Math, 4 English
+- 16 hero panels + 12 action icons + 3 hunt scenes
+- ~60 audio clips
+- 4 engines, shared by all three gardens
 
 ---
 
@@ -270,8 +312,9 @@ Rough effort for station 1:
 1. **Letter order:** switch to the phonics groups in §3, or keep the alphabet? *(I recommend phonics groups.)*
 2. **Chants:** voice only, no instruments, and no musical beat? *(I recommend voice only, with clapping allowed.)*
 3. **Depiction rules** in §8.2: approve as written?
-4. **The ف companion story:** who chooses the source story?
-5. **Story review:** who is the teacher or scholar for the 56 child versions and the hadith wording?
-6. **English:** move to 42 sounds and 7 groups? *(I recommend yes.)*
-7. **Name:** «حروف النور» for the method inside the app, or another name?
-8. **Pilot first:** build station 1 fully (P0–P2) before anything else? *(I recommend yes.)*
+4. **The ف companion story:** approve Anas «فَرَح» (recommended) or Sa'd «فِدَاء»? Both are in `source/additions-fa-and-numbers.md`.
+5. **Story review:** who is the teacher or scholar for the stories (57 Arabic, 12 Math and 42 English) and the hadith wording?
+6. **English:** move to 42 sounds and 7 groups, with Quran stories told in English (§9)? *(I recommend yes.)*
+7. **Math:** approve the number stories ١–١٢ (§10) and the 7 math stations?
+8. **Name:** «حدائق النور», with «حروف النور» · «أرقام النور» · «Letters of Light», or other names?
+9. **Pilot first:** build station 1 of all three gardens (P0–P2) before anything else? *(I recommend yes.)*
