@@ -34,3 +34,5 @@ npm run test:ssr       # دخان SSR لكل الشاشات
 - لا تُعدَّل ملفات حديقة القرآن (`src/App.jsx` وباقي `src/` خارج `src/salman/`، و`src/store.js`، و`PLAN.md`).
 - المحتوى المولّد لا يُعدَّل يدويًا: `src/salman/data/stories.generated.js` و`journey/index.html`.
 - لا توجد مؤقتات ولا لوحات متصدّرين ولا عقوبة على الخطأ.
+
+- [screenshots/](screenshots/README.md): لقطات شاشة التطبيق (11 شاشة) مع فهرس.
