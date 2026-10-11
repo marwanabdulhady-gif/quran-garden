@@ -3,7 +3,15 @@ import { describe, it, expect } from 'vitest';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { NOUR_UNITS, NOUR_ORDER, DAY_STEPS, REVIEW, gardenUnits, nourUnit } from '../src/salman/data/nour.js';
+import {
+  NOUR_UNITS,
+  NOUR_ORDER,
+  MATH_STATIONS,
+  DAY_STEPS,
+  REVIEW,
+  gardenUnits,
+  nourUnit,
+} from '../src/salman/data/nour.js';
 import {
   dayPlan,
   storyFor,
@@ -31,7 +39,8 @@ describe('حدائق النور — المحتوى', () => {
   it('المحطة الأولى 4 وحدات لكل حديقة، وحروف P3 تُضاف بترتيب الألفباء', () => {
     // الألفباء: الدفعة الأولى (أ ب) ثم P3 (ت ث ج ح) ثم بقية الطيار (د م)
     expect(gardenUnits('arabic').map((u) => u.letter)).toEqual(['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'د', 'م']);
-    expect(gardenUnits('math').map((u) => u.n)).toEqual([1, 2, 3, 4]);
+    // الأرقام: المحطات الأربع كاملة ١–٢٠ بترتيب العدد
+    expect(gardenUnits('math').map((u) => u.n)).toEqual([...Array(20)].map((_, i) => i + 1));
     // الإنجليزية: المجموعة الأولى كاملة من تسلسل الفونيكس (s a t i p n)
     expect(gardenUnits('english').map((u) => u.sound)).toEqual([
       's',
@@ -60,8 +69,9 @@ describe('حدائق النور — المحتوى', () => {
       'or',
     ]);
     expect([...new Set(gardenUnits('english').map((u) => u.group))]).toEqual([1, 2, 3, 4]);
-    expect(UNITS).toHaveLength(36);
+    expect(UNITS).toHaveLength(52);
     expect(NOUR_ORDER.arabic).toHaveLength(8);
+    expect(NOUR_ORDER.math).toHaveLength(20);
     // ترتيب «اليوم التالي» يتبع الألفباء دائمًا
     const seq = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
     const letters = gardenUnits('arabic').map((u) => u.letter);
@@ -153,6 +163,54 @@ describe('حدائق النور — المحتوى', () => {
     expect(nourUnit('en-r').related.unitId).toBe('num-3');
     expect(nourUnit('en-l').related.unitId).toBe('ar-م');
     expect(nourUnit('en-ie').related.unitId).toBe('ar-ج');
+  });
+
+  it('أرقام النور: أربع محطات (٤ · ٤ · ٤ · ٨) والرمز هو العدد بالأرقام العربية', () => {
+    const math = gardenUnits('math');
+    expect(MATH_STATIONS.map((s) => s.id)).toEqual([1, 2, 3, 4]);
+    expect(MATH_STATIONS.map((s) => s.units.length)).toEqual([4, 4, 4, 8]);
+    // كل وحدة في محطتها، والمحطات تغطّي الحديقة كلها بلا تكرار ولا ثغرة
+    expect(MATH_STATIONS.flatMap((s) => s.units)).toEqual(math.map((u) => u.id));
+    const arabicNumeral = (n) => String(n).replace(/\d/g, (d) => '٠١٢٣٤٥٦٧٨٩'[Number(d)]);
+    for (const u of math) {
+      expect(u.id, u.id).toBe(`num-${u.n}`);
+      expect(u.glyph, u.id).toBe(arabicNumeral(u.n));
+      expect(u.trace.latin, u.id).toBe(String(u.n));
+      // رمز من خانتين لا يسع لوح التتبّع بالحجم الكامل، فلا بد من حجم مُصغَّر في البيانات
+      if (u.glyph.length > 1) expect(u.trace.size, `${u.id}: حجم رمز التتبّع`).toBeLessThan(132);
+    }
+  });
+
+  it('أرقام النور ٥–٢٠: كلمة العدد في النشيد، والعشرة أوّلًا في صناديق ما فوق العشرة', () => {
+    for (const u of gardenUnits('math').filter((x) => x.n >= 5)) {
+      expect(u.chant.lines.join(' '), `${u.id}: كلمة العدد في النشيد`).toContain(u.keyWord);
+      // الأعداد ١١–٢٠ تُبنى «عَشَرَة وكذا»: الصندوق الأول عشرة دائمًا
+      if (u.n > 10) expect(u.boxes.tiles[0], `${u.id}: العشرة أولًا`).toBe('١٠');
+      // القطار تسلسل تصاعدي ينتهي بعدد اليوم
+      expect(u.train.result, `${u.id}: نتيجة القطار`).toBe(u.glyph);
+      expect(u.train.tiles[u.train.tiles.length - 1], `${u.id}: آخر بلاطة`).toBe(u.glyph);
+      // لا بلاطتين متطابقتين، وإلا صار الترتيب حظًّا لا تعلّمًا
+      for (const round of [u.train, u.boxes]) {
+        if (u.n !== 20) expect(new Set(round.tiles).size, `${u.id}: بلاطات مكرّرة`).toBe(round.tiles.length);
+      }
+    }
+  });
+
+  it('أرقام النور: قصص ٥–١٢ لها سند ورابط، وقصص العدّ ١٣–٢٠ مُعلَنة أنها أصلية', () => {
+    for (const u of gardenUnits('math')) {
+      const story = u.stories[0];
+      expect(story.id, u.id).toBe(`${u.id}-s`);
+      if (u.n <= 12) {
+        expect(['quran', 'hadith'], `${u.id}: نوع القصة`).toContain(story.from);
+        expect(story.url, `${u.id}: رابط المصدر`).toMatch(/^https:\/\/(sunnah\.com|quran\.com)\//);
+      } else {
+        // قصص العدّ أصلية للتطبيق: لا تُنسب إلى قرآن ولا حديث، وتُصرّح بأنها غير منقولة
+        expect(story.from, u.id).toBe('count');
+        expect(story.url, u.id).toBeUndefined();
+        expect(story.ref, u.id).toMatch(/غير منقولة/);
+        expect(story.text, `${u.id}: لا اقتباس بلا سند`).not.toMatch(/[﴿«]/);
+      }
+    }
   });
 
   it('اتساق الحدائق: كل حديقة بلغتها وبأدواتها', () => {

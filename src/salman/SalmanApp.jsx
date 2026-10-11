@@ -36,7 +36,7 @@ import { loadState, saveState } from './lib/store.js';
 import { canSpeak, speak } from './lib/speech.js';
 import { playClip, playStory, assetUrl } from './lib/voice.js';
 import LetterDay from './LetterDay.jsx';
-import { NOUR_UNITS, NOUR_ORDER, UNIT_BY_LETTER, gardenUnits } from './data/nour.js';
+import { NOUR_UNITS, NOUR_ORDER, UNIT_BY_LETTER, MATH_STATIONS, gardenUnits } from './data/nour.js';
 import { unitCompleted } from './lib/letterday.js';
 import { sfx } from './lib/sfx.js';
 
@@ -1085,29 +1085,46 @@ export default function SalmanApp() {
         </>
       );
     } else if (id === 'math') {
-      const days = gardenUnits('math');
+      const stations = MATH_STATIONS.map((st) => ({ ...st, days: st.units.map((uid) => NOUR_UNITS[uid]) }));
       content = (
         <>
-          <h2 className="sg-section">أيام الأرقام · ١–٤</h2>
-          <ul className="sg-nour-row">
-            {days.map((u) => {
-              const done = unitCompleted(state, u.id);
-              return (
-                <li key={u.id}>
-                  <button
-                    type="button"
-                    className={done ? 'sg-nour-card is-done' : 'sg-nour-card'}
-                    style={{ '--g': g.color }}
-                    onClick={() => go({ name: 'day', garden: 'math', unitId: u.id })}
-                  >
-                    <span className="sg-nour-glyph">{u.glyph}</span>
-                    <span className="sg-nour-label">{u.keyWord}</span>
-                    <span aria-hidden="true">{done ? '✅' : '🌱'}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          <h2 className="sg-section">أيام الأرقام · ١–٢٠</h2>
+          {stations.map((st) => {
+            const first = st.days[0];
+            const last = st.days[st.days.length - 1];
+            const doneCount = st.days.filter((u) => unitCompleted(state, u.id)).length;
+            return (
+              <section key={st.id} className="sg-numstation">
+                <h3 className="sg-numstation-head">
+                  <span>
+                    المحطة {toArabicNumeral(st.id)} · {first.glyph}–{last.glyph}
+                  </span>
+                  <span className="sg-numstation-count" aria-label={`اكتمل ${doneCount} من ${st.days.length}`}>
+                    {toArabicNumeral(doneCount)} / {toArabicNumeral(st.days.length)}
+                  </span>
+                </h3>
+                <ul className="sg-nour-row">
+                  {st.days.map((u) => {
+                    const done = unitCompleted(state, u.id);
+                    return (
+                      <li key={u.id}>
+                        <button
+                          type="button"
+                          className={done ? 'sg-nour-card is-done' : 'sg-nour-card'}
+                          style={{ '--g': g.color }}
+                          onClick={() => go({ name: 'day', garden: 'math', unitId: u.id })}
+                        >
+                          <span className="sg-nour-glyph">{u.glyph}</span>
+                          <span className="sg-nour-label">{u.keyWord}</span>
+                          <span aria-hidden="true">{done ? '✅' : '🌱'}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            );
+          })}
           <h2 className="sg-section">قصص العدّ</h2>
           {cards(items.filter((it) => it.source !== 'count'))}
           <h2 className="sg-section">نعدّ من ١ إلى ٢٠</h2>

@@ -13,6 +13,13 @@
 | `src/salman/ParentArea.jsx` | منطقة الوالدين (PIN، الحد اليومي، ساعات الهدوء) |
 | `src/salman/salman.css`، `src/salman/effects.css` | التنسيق والتأثيرات |
 | `src/salman/data/gardens.js` | قصص العدّ (20) وقصص الفونيكس (25) وتعريف الحدائق |
+| `src/salman/data/nour.js` | «حدائق النور»: خطوات اليوم السبع، وحدات الطيار (أ ب م د · ١–٤)، وسجل الوحدات `NOUR_UNITS` وترتيبها و`MATH_STATIONS` |
+| `src/salman/data/nour-letters.js` | وحدات حروف النور الإضافية (P3) |
+| `src/salman/data/nour-english.js` | وحدات Letters of Light (المجموعات 1–4) |
+| `src/salman/data/nour-numbers.js` | **أيام الأرقام ٥–٢٠** (P6a): 16 وحدة بسبع خطوات، محطات 2–4 |
+| `src/salman/LetterDay.jsx` | شاشة «يوم الحرف/الرقم» بخطواتها السبع |
+| `src/salman/Engines.jsx` | المحركات المشتركة: الصيد · لوح التتبّع · القطار/الصناديق · مشهد القصة |
+| `src/salman/lib/letterday.js` | منطق اليوم النقي: الخطوات، والتصحيح، والاكتمال، والوحدة التالية |
 | `src/salman/data/animals.js` | الحروف الـ28 والحيوانات (الكلمة، الإيموجي، slug، علامات الصورة والمقطع) |
 | `src/salman/data/stories.generated.js` | قصص الحروف العربية (56 قصة، **مسودة**)، مُولَّد |
 | `src/salman/data/quran.js` | السور والمستويات وقصص القرآن (مسودات، بلا صوت) |

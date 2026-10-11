@@ -1,4 +1,5 @@
-// «حدائق النور» — محتوى المحطة الأولى (الطيار): العربية ا ب م د · الرياضيات ١–٤ · الإنجليزية s a t i.
+// «حدائق النور» — فهرس المحتوى: العربية (نور-letters) · الرياضيات ١–٢٠ (nour-numbers) · الإنجليزية (nour-english).
+// البداية كانت المحطة الأولى (الطيار): العربية ا ب م د · الرياضيات ١–٤ · الإنجليزية s a t i.
 // الطريقة: docs/salmans-garden/PLAN-ISLAMIC-PHONICS.md §4 (الدرس اليومي بسبع خطوات).
 // المصادر: كتابا الحروف (docs/salmans-garden/source/*.md) + additions-fa-and-numbers.md.
 // المراجعة: docs/salmans-garden/CONTENT-REVIEW.md — لا صوت ولا عرض للطفل قبل صفّ مراجعة.
@@ -7,6 +8,7 @@
 // حالة المراجعة لكل قصة: 'ok' ✅ (قوبل على sunnah.com) · 'note' 🟡 (مقبول مع ملاحظة) · 'pending' ⬜.
 
 import { LETTER_UNITS } from './nour-letters.js';
+import { NUMBER_UNITS } from './nour-numbers.js';
 import { ENGLISH_UNITS } from './nour-english.js';
 
 export const REVIEW = { ok: 'ok', note: 'note', pending: 'pending' };
@@ -234,12 +236,14 @@ const arabic = [
   },
 ];
 
-// ---------- الرياضيات: أرقام النور ١–٤ ----------
+// ---------- الرياضيات: أرقام النور ١–٤ (المحطة الأولى) ----------
 // النظام نفسه: قصة من القرآن أو السنة يقابلها الرقم + عمل اليوم + لعبة.
+// بقية المحطات (٥–٢٠) في nour-numbers.js، وتُدمج هنا بترتيب العدد.
 const math = [
   {
     id: 'num-1',
     n: 1,
+    station: 1,
     keyWord: 'أَحَد',
     keyEmoji: '☝️',
     action: { emoji: '☝️', text: 'ارفع إصبعًا واحدًا' },
@@ -278,6 +282,7 @@ const math = [
   {
     id: 'num-2',
     n: 2,
+    station: 1,
     keyWord: 'رَكْعَتَان',
     keyEmoji: '🕋',
     action: { emoji: '🙌', text: 'ارفع إصبعين: هذه ركعة وهذه ركعة' },
@@ -316,6 +321,7 @@ const math = [
   {
     id: 'num-3',
     n: 3,
+    station: 1,
     keyWord: 'ثَلَاثَة',
     keyEmoji: '💧',
     action: { emoji: '💧', text: 'اشرب ثلاث مرات، ونفَسك خارج الكوب' },
@@ -354,6 +360,7 @@ const math = [
   {
     id: 'num-4',
     n: 4,
+    station: 1,
     keyWord: 'أَرْبَعَة',
     keyEmoji: '🐦',
     action: { emoji: '🐦', text: 'ارفع أربعة أصابع، وحرّكها كالطيور' },
@@ -402,18 +409,28 @@ const LETTER_SEQUENCE = 'أبتثجحخدذرزسشصضطظعغفقكلمنهو�
 const byLetter = (a, b) => LETTER_SEQUENCE.indexOf(a.letter) - LETTER_SEQUENCE.indexOf(b.letter);
 const arabicUnits = [...arabic, ...LETTER_UNITS].sort(byLetter);
 
+// الأرقام: المحطة الأولى (١–٤) هنا، وبقية المحطات في nour-numbers.js — والترتيب بالعدد نفسه
+// حتى تأخذ أي دفعة جديدة مكانها تلقائيًا بلا ترقيع.
+const mathUnits = [...math, ...NUMBER_UNITS].sort((a, b) => a.n - b.n);
+
 export const NOUR_UNITS = Object.fromEntries(
-  [...withGarden(arabicUnits, 'arabic'), ...withGarden(math, 'math'), ...withGarden(ENGLISH_UNITS, 'english')].map(
+  [...withGarden(arabicUnits, 'arabic'), ...withGarden(mathUnits, 'math'), ...withGarden(ENGLISH_UNITS, 'english')].map(
     (u) => [u.id, u]
   )
 );
 
-// ترتيب الوحدات داخل كل حديقة (حديقة الحروف بترتيب الألفباء، والبقية بترتيبها)
+// ترتيب الوحدات داخل كل حديقة (حديقة الحروف بترتيب الألفباء، والأرقام بترتيب العدد)
 export const NOUR_ORDER = {
   arabic: arabicUnits.map((u) => u.id),
-  math: math.map((u) => u.id),
+  math: mathUnits.map((u) => u.id),
   english: ENGLISH_UNITS.map((u) => u.id),
 };
+
+// محطات حديقة الأرقام: أربع وحدات لكل محطة (١–٤ · ٥–٨ · ٩–١٢) ثم محطة قصص العدّ (١٣–٢٠).
+export const MATH_STATIONS = [...new Set(mathUnits.map((u) => u.station))].map((id) => ({
+  id,
+  units: mathUnits.filter((u) => u.station === id).map((u) => u.id),
+}));
 
 export const UNIT_BY_LETTER = Object.fromEntries(arabicUnits.map((u) => [u.letter, u.id]));
 

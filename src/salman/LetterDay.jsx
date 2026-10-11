@@ -23,6 +23,15 @@ const playAsset = (path) =>
     ''
   );
 
+// سطر «من أين القصة؟» تحت عنوانها في باب الحكاية
+const STORY_FROM = {
+  prophet: 'قصة من حياة النبي ﷺ',
+  companions: 'قصة من أصحاب النبي ﷺ',
+  quran: 'قصة من القرآن',
+  hadith: 'قصة من الحديث',
+  count: 'قصة عدٍّ من الحديقة',
+};
+
 // تمييز الكلمة المفتاحية داخل نص القصة
 function highlight(text, keyWord) {
   if (!keyWord) return [text];
@@ -139,15 +148,7 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
             </button>
           )}
           <p className="sg-sub" lang={lang}>
-            {chosen.from === 'prophet'
-              ? 'قصة من حياة النبي ﷺ'
-              : chosen.from === 'companions'
-                ? 'قصة من أصحاب النبي ﷺ'
-                : chosen.from === 'quran'
-                  ? 'قصة من القرآن'
-                  : chosen.from === 'hadith'
-                    ? 'قصة من الحديث'
-                    : 'A story from the Quran'}
+            {STORY_FROM[chosen.from] || 'A story from the Quran'}
           </p>
         </section>
       )}

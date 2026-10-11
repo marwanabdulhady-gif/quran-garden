@@ -20,6 +20,9 @@ export function dayPlan(unit, { dayIndex = 0 } = {}) {
   return DAY_STEPS.map((step) => {
     if (step.id === 'story' || step.id === 'door') return { ...step, story };
     if (step.id === 'sound') return { ...step, action: unit.action, chant: unit.chant, sound: unit.sound || null };
+    // في حديقة الأرقام لا نصيد صوتًا بل عددًا — نفس المحرّك باسم يفهمه الطفل
+    if (step.id === 'hunt' && unit.garden === 'math')
+      return { ...step, title: 'صيد العدد', hint: 'ننقر ما عدده مثل عددنا', hunt: unit.hunt };
     if (step.id === 'hunt') return { ...step, hunt: unit.hunt };
     if (step.id === 'trace') return { ...step, trace: unit.trace };
     if (step.id === 'play') {

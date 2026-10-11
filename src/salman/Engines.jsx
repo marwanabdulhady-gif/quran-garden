@@ -83,6 +83,8 @@ export function TracePad({ trace, color, onDone }) {
   const isArabic = trace.script === 'ar';
   const font = isArabic ? 'Amiri, serif' : 'Cairo, sans-serif';
   const startDot = trace.dot || (isArabic ? { x: 100, y: 34 } : { x: 62, y: 44 });
+  // الرمز ذو الخانتين (١٠ … ٢٠) لا يسع باللوح الكامل، فتُصغَّر خانته في البيانات
+  const glyphSize = trace.size || (isArabic ? 150 : 132);
 
   const pointFrom = (e) => {
     const rect = ref.current.getBoundingClientRect();
@@ -134,7 +136,7 @@ export function TracePad({ trace, color, onDone }) {
           x="100"
           y={isArabic ? 112 : 108}
           textAnchor="middle"
-          fontSize={isArabic ? 150 : 132}
+          fontSize={glyphSize}
           fontFamily={font}
           fill="none"
           stroke="#cbd5e1"
