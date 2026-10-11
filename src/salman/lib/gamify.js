@@ -174,6 +174,7 @@ export function createState() {
     daily: { day: null, newByGarden: {} },
     visitLog: { day: null, count: 0 },
     parent: { ...PARENT_DEFAULTS },
+    huroof: {},
   };
 }
 
@@ -271,7 +272,19 @@ export function normalizeState(raw) {
     daily: normalizeDaily(raw.daily),
     visitLog: normalizeVisitLog(raw.visitLog),
     parent: sanitizeParent(raw.parent),
+    huroof: normalizeHuroof(raw.huroof),
   };
+}
+
+// لعبة «مغامرة الحروف» داخل حديقة الحروف: أفضل عدد نجوم لكل مستوى { [levelId]: stars }
+function normalizeHuroof(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object') return out;
+  for (const [id, n] of Object.entries(raw)) {
+    const v = Number(n);
+    if (/^\d+$/.test(id) && Number.isFinite(v) && v >= 0) out[id] = Math.min(Math.floor(v), 4);
+  }
+  return out;
 }
 
 // يضيف الأوسمة الجديدة إلى الحالة ويعيد قائمة بما فُتح الآن
@@ -303,6 +316,22 @@ export function recordStory(state, { storyId, garden, firstTry, dayKey }) {
   next = {
     ...next,
     doneStories: { ...state.doneStories, [storyId]: true },
+    streak: updateStreak(state.streak, dayKey),
+  };
+  const awarded = awardBadges(next);
+  return { state: awarded.state, earned, newBadges: awarded.newly };
+}
+
+// إنهاء مستوى في «مغامرة الحروف». النجوم تُضاف لحديقة الحروف بقدر التحسّن فقط،
+// فإعادة المستوى بنفس النتيجة لا تعطي نجومًا جديدة.
+export function recordHuroofLevel(state, { levelId, stars, dayKey }) {
+  const best = (state.huroof || {})[levelId] || 0;
+  const earned = Math.max(0, Math.min(stars, 4) - best);
+  if (!earned) return { state, earned: 0, newBadges: [] };
+  let next = addStars(state, 'arabic', earned);
+  next = {
+    ...next,
+    huroof: { ...(state.huroof || {}), [levelId]: best + earned },
     streak: updateStreak(state.streak, dayKey),
   };
   const awarded = awardBadges(next);

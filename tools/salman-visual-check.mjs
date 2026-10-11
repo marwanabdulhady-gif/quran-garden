@@ -29,7 +29,7 @@ const pageErrors = [];
 page.on('pageerror', (e) => pageErrors.push(e.message));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-await page.goto(`${BASE}/salman.html`, { waitUntil: 'networkidle0', timeout: 60000 });
+await page.goto(`${BASE}/`, { waitUntil: 'networkidle0', timeout: 60000 });
 await page.evaluate((s) => localStorage.setItem('salman-garden-v1', JSON.stringify(s)), seed);
 await page.reload({ waitUntil: 'networkidle0', timeout: 60000 });
 

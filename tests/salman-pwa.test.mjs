@@ -3,39 +3,32 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
-const manifest = JSON.parse(readFileSync(resolve(root, 'public/salman.webmanifest'), 'utf-8'));
+const config = readFileSync(resolve(root, 'vite.config.js'), 'utf-8');
 
-describe('Salman PWA manifest', () => {
-  it('starts at salman.html, not at the Quran app', () => {
-    expect(manifest.start_url).toBe('/salman.html');
-    expect(manifest.id).toBe('/salman.html');
-    expect(manifest.name).toContain('سلمان');
+// موقع واحد: الغابة (الحدائق الأربع) على «/» ورحلة القرآن الكاملة على «/quran.html»
+describe('one site, one PWA', () => {
+  it('builds the forest at / and the Quran journey at /quran.html', () => {
+    expect(config).toContain("main: resolve(root, 'index.html')");
+    expect(config).toContain("quran: resolve(root, 'quran.html')");
+    expect(readFileSync(resolve(root, 'index.html'), 'utf-8')).toContain('/src/salman/main.jsx');
+    expect(readFileSync(resolve(root, 'quran.html'), 'utf-8')).toContain('/src/main.jsx');
   });
 
-  it('is RTL Arabic and standalone', () => {
-    expect(manifest.lang).toBe('ar');
-    expect(manifest.dir).toBe('rtl');
-    expect(manifest.display).toBe('standalone');
+  it('keeps the old /salman.html address working as a redirect to /', () => {
+    const html = readFileSync(resolve(root, 'public/salman.html'), 'utf-8');
+    expect(html).toContain("location.replace('/')");
   });
 
-  it('references icons that exist in public/', () => {
-    for (const icon of manifest.icons) {
-      expect(existsSync(resolve(root, 'public', icon.src)), icon.src).toBe(true);
-    }
-    expect(manifest.icons.some((i) => i.purpose === 'maskable')).toBe(true);
+  it('has one manifest that starts at / with Salman icons that exist', () => {
+    expect(config).toContain("start_url: '/'");
+    expect(config).toContain('غابة سلمان');
+    const icons = [...config.matchAll(/src: '(salman\/icons\/[^']+)'/g)].map((m) => m[1]);
+    expect(icons.length).toBe(3);
+    for (const icon of icons) expect(existsSync(resolve(root, 'public', icon)), icon).toBe(true);
   });
-});
 
-describe('Salman offline precache wiring', () => {
-  const config = readFileSync(resolve(root, 'vite.config.js'), 'utf-8');
-
-  it('precaches mp3 and webmanifest so Salman clips and manifest work offline', () => {
+  it('precaches mp3 and webmanifest so clips and the manifest work offline', () => {
     expect(config).toMatch(/globPatterns:.*mp3/);
     expect(config).toMatch(/globPatterns:.*webmanifest/);
-  });
-
-  it('rewrites the manifest link in salman.html to the Salman manifest', () => {
-    expect(config).toContain('/salman.webmanifest');
-    expect(config).toContain('salman-manifest-link');
   });
 });

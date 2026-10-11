@@ -44,33 +44,9 @@ export const LEVELS = [
   { id: 7, title: 'قمة النجوم', goal: 'ن ه و ي', letters: ['ن', 'ه', 'و', 'ي'] },
 ];
 
-// الرسومات المولّدة الجاهزة (public/media/animals/<slug>.png). أي حيوان مش هنا بيظهر بالإيموجي لحد ما ترسم.
-// tests/content.test.js بيتأكد إن كل ملف هنا موجود فعلًا على القرص.
-export const ILLUSTRATED = new Set([
-  'lion',
-  'duck',
-  'crocodile',
-  'fox',
-  'camel',
-  'horse',
-  'sheep',
-  'bear',
-  'wolf',
-  'raccoon',
-  'giraffe',
-  'turtle',
-  'chimpanzee',
-  'eagle',
-  'frog',
-  'peacock',
-  'deer',
-  'sparrow',
-  'gorilla',
-  'elephant',
-]);
-
+// رسومات الحيوانات الـ28 كلها موجودة في public/salman/art/animals (نفس رسومات حديقة الحروف).
 export function artPathFor(slug) {
-  return ILLUSTRATED.has(slug) ? `media/animals/${slug}.png` : null;
+  return `salman/art/animals/${slug}.png`;
 }
 
 // يبني بيانات كل مستوى من الجدولين السابقين: pairs = [{ letter, word, emoji, slug, image }]
