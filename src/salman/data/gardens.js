@@ -239,6 +239,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-11',
+    clip: true,
     title: 'Kim and the Kite',
     sound: 'k',
     text: 'Kim flies a kite. It goes k, k, k. k is the sound of kite and kid. c in cat says the same sound.',
@@ -246,6 +247,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-12',
+    clip: true,
     title: 'Ed and the Egg',
     sound: 'e',
     text: 'Ed has an egg. Eh, eh, eh. e is the sound in egg and bed.',
@@ -253,6 +255,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-13',
+    clip: true,
     title: 'Uncle and the Umbrella',
     sound: 'u',
     text: 'Uncle has an umbrella. Uh, uh, uh. u is the sound in up and sun.',
@@ -260,6 +263,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-14',
+    clip: true,
     title: 'Rabbit Runs',
     sound: 'r',
     text: 'A rabbit runs in the red grass. Rrr, rrr, rrr. r is the sound of rabbit and red.',
@@ -267,6 +271,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-15',
+    clip: true,
     title: 'Hen and the Hat',
     sound: 'h',
     text: 'A hen wears a hat. Hhh, hhh, hhh. h is the sound of hen and hat.',
@@ -274,6 +279,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-16',
+    clip: true,
     title: 'Ben and the Ball',
     sound: 'b',
     text: 'Ben kicks a big ball. Buh, buh, buh. b is the sound of ball and bed.',
@@ -281,6 +287,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-17',
+    clip: true,
     title: 'Fox and the Fig',
     sound: 'f',
     text: 'A fox finds a fig. Fff, fff, fff. f is the sound of fox and fig.',
@@ -288,6 +295,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-18',
+    clip: true,
     title: 'Lily and the Lamp',
     sound: 'l',
     text: 'Lily has a lamp. Lll, lll, lll. l is the sound of lamp and leaf.',
@@ -295,6 +303,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-19',
+    clip: true,
     title: 'Jack and the Jam',
     sound: 'j',
     text: 'Jack eats jam. Juh, juh, juh. j is the sound of jam and jet.',
@@ -302,6 +311,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-20',
+    clip: true,
     title: 'Victor and the Van',
     sound: 'v',
     text: 'A van is very big. Vvv, vvv, vvv. v is the sound of van and vest.',
