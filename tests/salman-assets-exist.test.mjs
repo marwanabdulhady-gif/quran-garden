@@ -37,9 +37,11 @@ function collectReferences() {
   for (const item of [...CATALOG.arabic, ...CATALOG.math, ...CATALOG.english]) {
     if (item.audio) refs.add(`salman/audio/${item.audio}.mp3`);
   }
-  // أيقونات التطبيق المثبّت (manifest)
-  const manifest = JSON.parse(fs.readFileSync(path.join(PUBLIC, 'salman.webmanifest'), 'utf8'));
-  for (const icon of manifest.icons) refs.add(icon.src.replace(/^\//, ''));
+  // أيقونات التطبيق المثبّت (manifest الموقع في vite.config.js)
+  const config = fs.readFileSync(path.join(PUBLIC, '..', 'vite.config.js'), 'utf8');
+  for (const m of config.matchAll(/src: '(salman\/icons\/[^']+)'/g)) refs.add(m[1]);
+  // صوت لعبة «مغامرة الحروف»
+  for (const f of fs.readdirSync(path.join(PUBLIC, 'huroof', 'audio'))) refs.add(`huroof/audio/${f}`);
   return [...refs].sort();
 }
 

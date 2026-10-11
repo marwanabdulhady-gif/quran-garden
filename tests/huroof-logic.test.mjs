@@ -10,8 +10,8 @@ import {
   shuffle,
   starsEarned,
   HINT_AFTER_MISSES,
-} from '../src/game/logic.js';
-import { LEVEL_DATA } from '../src/data/index.js';
+} from '../src/huroof/game/logic.js';
+import { LEVEL_DATA } from '../src/huroof/data/index.js';
 
 const level1 = LEVEL_DATA[0]; // أ ب ت ث → أسد بطة تمساح ثعلب
 const fresh = () => createLevelState(level1, () => 0.5);

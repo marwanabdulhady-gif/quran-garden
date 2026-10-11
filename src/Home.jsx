@@ -246,9 +246,14 @@ export default function Home({ go }) {
         <span className="hd hd4">🦋</span>
       </div>
       <div className="home-head">
-        <span className="chip">
-          {g.icon} {g.text}
-        </span>
+        <div className="home-chips">
+          <a className="chip forest-link" href="/">
+            🌳 الحدائق الأربع
+          </a>
+          <span className="chip">
+            {g.icon} {g.text}
+          </span>
+        </div>
         <div style={{ height: 10 }} />
         <Logo />
         <div className="home-hello">أهلاً بكم — مَن بطل رحلتنا اليوم؟</div>

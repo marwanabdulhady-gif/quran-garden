@@ -1,6 +1,49 @@
 /* حديقة سلمان — أنماط مستقلة (بادئة sg-) لا تؤثر على حديقة القرآن.
    قواعد الواجهة من الاقتراح §1: زر لا يقل عن 72px، ومسافة 16px بين الأزرار، عمقين فقط. */
 
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-400-arabic.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-400-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-700-arabic.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-700-latin.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-900-arabic.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+  unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF;
+}
+@font-face {
+  font-family: 'Cairo';
+  src: url('/fonts/Cairo-900-latin.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+2000-206F;
+}
+
 :root {
   --sg-bg: #ecfdf5;
   --sg-ink: #134e4a;
@@ -14,9 +57,13 @@
 
 body {
   margin: 0;
-  background: linear-gradient(180deg, #ecfdf5, #d1fae5);
+  background:
+    radial-gradient(circle at 15% 0%, rgba(253, 224, 71, 0.25), transparent 40%),
+    radial-gradient(circle at 100% 30%, rgba(125, 211, 252, 0.25), transparent 45%),
+    linear-gradient(180deg, #f0fdf4 0%, #dcfce7 100%);
+  min-height: 100vh;
   color: var(--sg-ink);
-  font-family: system-ui, 'Segoe UI', Tahoma, sans-serif;
+  font-family: 'Cairo', system-ui, 'Segoe UI', Tahoma, sans-serif;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -497,4 +544,477 @@ body {
   object-fit: cover;
   border-radius: 16px;
   margin: 0 0 12px;
+}
+
+/* ================= تصميم الغابة الموحّد (الحدائق الأربع في موقع واحد) ================= */
+.sg-title {
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.sg-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 900;
+  box-shadow: 0 4px 14px -6px rgba(19, 78, 74, 0.35);
+}
+
+/* الترحيب */
+.sg-welcome {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 12px 30px -18px rgba(19, 78, 74, 0.45);
+  backdrop-filter: blur(4px);
+}
+.sg-welcome-mascot {
+  width: 96px;
+  height: 120px;
+  object-fit: contain;
+  flex: none;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.15));
+}
+.sg-welcome-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+.sg-welcome-text .sg-title,
+.sg-welcome-text .sg-sub {
+  text-align: start;
+}
+.sg-hello {
+  margin: 0;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+/* بطاقات الحدائق الأربع */
+.sg-gardens {
+  gap: 14px;
+}
+.sg-garden {
+  --g: #10b981;
+  position: relative;
+  padding: 0;
+  gap: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 26px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--g) 55%, transparent),
+    0 14px 26px -16px color-mix(in srgb, var(--g) 80%, black);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.sg-garden:hover {
+  transform: translateY(-3px);
+}
+.sg-garden:active {
+  transform: scale(0.97);
+}
+.sg-garden:focus-visible,
+.sg-card:focus-visible,
+.sg-letter:focus-visible,
+.sg-number:focus-visible,
+.sg-feature:focus-visible,
+.sg-shortcut:focus-visible {
+  outline: 4px solid #fbbf24;
+  outline-offset: 3px;
+}
+.sg-garden-scene {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 100%;
+  height: 112px;
+  background-size: cover;
+  background-position: center;
+}
+.sg-garden-scene .sg-garden-art {
+  height: 92px;
+  margin-bottom: -6px;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.2));
+}
+.sg-garden-emoji {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+}
+.sg-garden-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px 14px;
+}
+.sg-garden-name {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: color-mix(in srgb, var(--g) 70%, #0f172a);
+}
+.sg-garden-meta {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* الزر الرئيسي */
+.sg-btn-main {
+  background: linear-gradient(180deg, #34d399, #10b981);
+  box-shadow:
+    0 5px 0 #059669,
+    0 14px 24px -12px #059669;
+  transition: transform 0.12s ease;
+}
+.sg-btn-main:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #059669;
+}
+.sg-visit {
+  animation: sg-glow 2.6s ease-in-out infinite;
+}
+@keyframes sg-glow {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.08);
+  }
+}
+
+/* اختصارات */
+.sg-shortcuts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sg-shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 64px;
+  padding: 10px;
+  border: 0;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--sg-ink);
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -10px rgba(19, 78, 74, 0.5);
+}
+.sg-parent-link {
+  align-self: center;
+  min-height: 48px;
+  margin-top: 4px;
+  padding: 8px 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* صفحة الحديقة */
+.sg-garden-hero {
+  position: relative;
+  height: 190px;
+  border-radius: 28px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  box-shadow: 0 16px 30px -18px color-mix(in srgb, var(--g) 80%, black);
+}
+.sg-garden-hero .sg-hero-plant {
+  height: 140px;
+  margin-bottom: 8px;
+}
+.sg-hero-mascot {
+  position: absolute;
+  bottom: -14px;
+  inset-inline-end: 10px;
+  height: 104px;
+  width: auto;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.2));
+}
+.sg-garden-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.sg-garden-head .sg-bar {
+  max-width: 260px;
+}
+.sg-section {
+  margin: 8px 0 0;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+/* نشاط مميّز */
+.sg-feature {
+  --g: #10b981;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 84px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 24px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--g) 22%, white), color-mix(in srgb, var(--g) 8%, white));
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--g) 45%, transparent);
+  color: var(--sg-ink);
+  font: inherit;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sg-feature-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 18px;
+  background: #fff;
+  font-size: 1.8rem;
+  box-shadow: 0 4px 10px -6px rgba(0, 0, 0, 0.3);
+}
+.sg-feature-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+.sg-feature-text strong {
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+.sg-feature-text span {
+  font-size: 0.92rem;
+  opacity: 0.8;
+}
+.sg-feature-go {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: color-mix(in srgb, var(--g) 75%, black);
+}
+
+/* بطاقات القصص */
+.sg-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.sg-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 132px;
+  padding: 12px;
+  border: 0;
+  border-radius: 22px;
+  background: #fff;
+  color: var(--sg-ink);
+  font: inherit;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 8px 18px -12px rgba(19, 78, 74, 0.55);
+  overflow: hidden;
+}
+.sg-card.is-done {
+  background: #f0fdf4;
+}
+.sg-card.is-locked {
+  opacity: 0.55;
+  cursor: default;
+}
+.sg-card-art {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 14px;
+}
+.sg-card-icon {
+  font-size: 2.2rem;
+}
+.sg-card-glyph {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: #fef9c3;
+  color: #a16207;
+  font-size: 2rem;
+  font-weight: 900;
+  box-shadow: inset 0 -4px 0 #fde68a;
+}
+.sg-card-title {
+  line-height: 1.4;
+}
+.sg-card-done {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+/* شبكة الحروف */
+.sg-letters,
+.sg-numbers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.sg-letter,
+.sg-number {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 20px;
+  background: #fff;
+  color: #be123c;
+  font: inherit;
+  cursor: pointer;
+  box-shadow:
+    inset 0 -4px 0 #fecdd3,
+    0 6px 14px -10px rgba(190, 18, 60, 0.6);
+}
+.sg-letter.is-done,
+.sg-number.is-done {
+  background: #fff1f2;
+}
+.sg-letter-glyph {
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.sg-letter-dots {
+  display: flex;
+  gap: 4px;
+}
+.sg-letter-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fecdd3;
+}
+.sg-letter-dots i.is-on {
+  background: #e11d48;
+}
+.sg-number {
+  color: #15803d;
+  font-size: 1.6rem;
+  font-weight: 900;
+  box-shadow:
+    inset 0 -4px 0 #bbf7d0,
+    0 6px 14px -10px rgba(21, 128, 61, 0.6);
+}
+.sg-number.is-done {
+  background: #f0fdf4;
+}
+.sg-number:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* صفحة الحرف */
+.sg-letter-hero {
+  --g: #fb7185;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  justify-items: center;
+  padding: 16px;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #fff1f2, #ffe4e6);
+  box-shadow: inset 0 0 0 2px #fecdd3;
+}
+.sg-letter-big {
+  font-size: 5.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #e11d48;
+}
+.sg-letter-animal {
+  height: 120px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.15));
+}
+.sg-letter-word {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #9f1239;
+}
+
+@media (min-width: 520px) {
+  .sg-letters,
+  .sg-numbers {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .sg-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sg-visit {
+    animation: none;
+  }
+  .sg-garden,
+  .sg-btn-main {
+    transition: none;
+  }
 }

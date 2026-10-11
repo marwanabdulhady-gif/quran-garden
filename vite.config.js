@@ -3,51 +3,31 @@ import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
 import { resolve } from 'node:path';
-import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 
-// صفحة سلمان تستخدم manifest خاص بها (تبدأ من salman.html، لا من حديقة القرآن).
-// يُعدَّل الملف المبني بعد كل الحقن الذي يضيفه PWA plugin.
-const salmanManifest = {
-  name: 'salman-manifest-link',
-  apply: 'build',
-  writeBundle(options) {
-    const dir = options.dir ?? resolve(root, 'dist');
-    const file = resolve(dir, 'salman.html');
-    const html = readFileSync(file, 'utf-8');
-    const next = html.replace(
-      /<link rel="manifest" href="[^"]*">/,
-      '<link rel="manifest" href="/salman.webmanifest">',
-    );
-    if (next === html) throw new Error('salman-manifest-link: manifest tag not found in salman.html');
-    writeFileSync(file, next, 'utf-8');
-  },
-};
-
 export default defineConfig({
-  // نقطتا دخول: التطبيق الأصلي (index.html) وحديقة سلمان (salman.html) — كل واحد مستقل
+  // موقع واحد: الغابة (الحدائق الأربع) على «/»، ورحلة حديقة القرآن الكاملة على «/quran.html»
   build: {
     rollupOptions: {
       input: {
         main: resolve(root, 'index.html'),
-        salman: resolve(root, 'salman.html'),
+        quran: resolve(root, 'quran.html'),
       },
     },
   },
   plugins: [
     react(),
-    salmanManifest,
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
         id: '/',
-        name: 'حديقة القرآن — رحلة أبطال القرآن',
-        short_name: 'حديقة القرآن',
+        name: 'غابة سلمان — الحدائق الأربع',
+        short_name: 'غابة سلمان',
         description:
-          'رحلة تفاعلية للأطفال للاستماع إلى القرآن والتدرّب على الحفظ، مع التكرار والمراجعة والأوسمة — وتشتغل حتى بدون إنترنت.',
+          'غابة من أربع حدائق للأطفال: القرآن والحروف والأرقام والإنجليزية، بقصص وألعاب ونجوم — وتشتغل حتى بدون إنترنت.',
         lang: 'ar',
         dir: 'rtl',
         theme_color: '#10b981',
@@ -57,9 +37,9 @@ export default defineConfig({
         start_url: '/',
         scope: '/',
         icons: [
-          { src: 'pwa-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'pwa-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'pwa-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'salman/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'salman/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'salman/icons/icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

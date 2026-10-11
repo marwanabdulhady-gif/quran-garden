@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { LEVELS, LEVEL_DATA, ANIMALS, ALL_LETTERS } from '../src/data/index.js';
-import { initialLetter } from '../src/game/logic.js';
+import { LEVELS, LEVEL_DATA, ANIMALS, ALL_LETTERS } from '../src/huroof/data/index.js';
+import { initialLetter } from '../src/huroof/game/logic.js';
 
 // الأبجدية العربية (28 حرفًا) — الشكل المنفرد الذي يُعرض للطفل
 const ARABIC_ALPHABET = [
@@ -88,7 +88,7 @@ describe('محتوى اللعبة', () => {
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ILLUSTRATED, artPathFor } from '../src/data/levels.js';
+import { artPathFor } from '../src/huroof/data/levels.js';
 
 const PUBLIC_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
@@ -99,23 +99,13 @@ describe('الرسومات المولّدة', () => {
     expect(new Set(slugs).size).toBe(slugs.length);
   });
 
-  it('كل رسمة مسجلة في ILLUSTRATED موجودة فعلًا كـ PNG شفاف 384px', () => {
-    ILLUSTRATED.forEach((slug) => {
-      const file = path.join(PUBLIC_DIR, 'media', 'animals', `${slug}.png`);
-      expect(fs.existsSync(file), `${file} مفقود`).toBe(true);
-      const head = fs.readFileSync(file).subarray(0, 24);
-      // PNG signature + IHDR width/height (big-endian)
-      expect(head.subarray(1, 4).toString('ascii')).toBe('PNG');
-      expect(head.readUInt32BE(16)).toBe(384);
-      expect(head.readUInt32BE(20)).toBe(384);
-    });
-  });
-
-  it('الحيوانات اللي ليس لها رسمة بتاخد image=null (fallback للإيموجي)', () => {
+  it('كل حيوان في اللعبة له رسمة PNG موجودة (رسومات حديقة الحروف المشتركة)', () => {
     LEVEL_DATA.flatMap((l) => l.pairs).forEach((p) => {
       const slug = Object.values(ANIMALS).find((a) => a.word === p.word).slug;
       expect(p.image).toBe(artPathFor(slug));
-      if (!ILLUSTRATED.has(slug)) expect(p.image).toBeNull();
+      const file = path.join(PUBLIC_DIR, p.image);
+      expect(fs.existsSync(file), `${file} مفقود`).toBe(true);
+      expect(fs.readFileSync(file).subarray(1, 4).toString('ascii')).toBe('PNG');
     });
   });
 });

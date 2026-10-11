@@ -50,6 +50,7 @@ function letterItem(L, distractorLetter) {
   const item = {
     id: `ar-m-${num}`,
     garden: 'arabic',
+    letter: L.letter,
     title: `الحرف ${L.letter}`,
     source: 'match',
     paragraphs: [`الحرف ${L.letter} يبدأ به اسم حيوان. ابحث عنه!`],
@@ -74,6 +75,7 @@ function arabicItems() {
       items.push({
         id: st.id,
         garden: 'arabic',
+        letter: L.letter,
         title: st.title,
         source: st.source,
         // مسودة: النصوص من OCR/PDF غير مُدقَّقة، وقرار المستخدم: تبقى في التطبيق مع تنبيه حتى التدقيق

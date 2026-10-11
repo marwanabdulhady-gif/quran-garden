@@ -1,4 +1,4 @@
-// مشغّل مقاطع التعليق الصوتي المولّدة (public/audio/narration/*.mp3).
+// مشغّل مقاطع التعليق الصوتي المولّدة (public/huroof/audio/*.mp3).
 // لو المقطع ما اشتغلش (متصفح بيمنع التشغيل التلقائي، أو الملف مفقود) بيرجع للنطق بالمتصفح بنفس النص.
 import { speak } from './speech.js';
 
@@ -27,7 +27,7 @@ const FILE_BY_CLIP = {
 };
 
 export function clipUrl(clip) {
-  return `${import.meta.env.BASE_URL}audio/narration/${FILE_BY_CLIP[clip]}.mp3`;
+  return `${import.meta.env.BASE_URL}huroof/audio/${FILE_BY_CLIP[clip]}.mp3`;
 }
 
 export function playClip(clip) {

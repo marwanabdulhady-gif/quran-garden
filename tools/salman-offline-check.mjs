@@ -22,7 +22,7 @@ page.on('pageerror', (e) => pageErrors.push(e.message));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const result = { checks: {} };
 
-await page.goto(`${BASE}/salman.html`, { waitUntil: 'networkidle0', timeout: 60000 });
+await page.goto(`${BASE}/`, { waitUntil: 'networkidle0', timeout: 60000 });
 result.checks.swRegistered = await page.evaluate(async () => {
   const reg = await navigator.serviceWorker.ready;
   return !!reg.active;
@@ -58,7 +58,7 @@ result.checks.samplesCached = await page.evaluate(async (urls) => {
 
 // قطع الشبكة ثم فتح التطبيق من الكاش
 await page.setOfflineMode(true);
-await page.goto(`${BASE}/salman.html`, { waitUntil: 'domcontentloaded', timeout: 60000 });
+await page.goto(`${BASE}/`, { waitUntil: 'domcontentloaded', timeout: 60000 });
 await page.waitForFunction(() => document.body.innerText.includes('غابة سلمان'), { timeout: 30000 }).then(
   () => (result.checks.offlineHome = true),
   () => (result.checks.offlineHome = false),

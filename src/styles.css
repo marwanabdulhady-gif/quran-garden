@@ -3793,3 +3793,16 @@ button.stat-card {
 .home.night .home-deco .hd4 {
   display: none;
 }
+
+/* الرجوع إلى الغابة (الحدائق الأربع) — الصفحة الرئيسية للموقع */
+.home-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.chip.forest-link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
