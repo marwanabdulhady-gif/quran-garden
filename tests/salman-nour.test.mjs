@@ -46,9 +46,15 @@ describe('حدائق النور — المحتوى', () => {
       'r',
       'm',
       'd',
+      'g',
+      'o',
+      'u',
+      'l',
+      'f',
+      'b',
     ]);
-    expect([...new Set(gardenUnits('english').map((u) => u.group))]).toEqual([1, 2]);
-    expect(UNITS).toHaveLength(24);
+    expect([...new Set(gardenUnits('english').map((u) => u.group))]).toEqual([1, 2, 3]);
+    expect(UNITS).toHaveLength(30);
     expect(NOUR_ORDER.arabic).toHaveLength(8);
     // ترتيب «اليوم التالي» يتبع الألفباء دائمًا
     const seq = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
@@ -127,6 +133,7 @@ describe('حدائق النور — المحتوى', () => {
     expect(nourUnit('en-n').related.unitId).toBe('ar-ج');
     expect(nourUnit('en-ck').related.unitId).toBe('ar-ج');
     expect(nourUnit('en-r').related.unitId).toBe('num-3');
+    expect(nourUnit('en-l').related.unitId).toBe('ar-م');
   });
 
   it('اتساق الحدائق: كل حديقة بلغتها وبأدواتها', () => {
