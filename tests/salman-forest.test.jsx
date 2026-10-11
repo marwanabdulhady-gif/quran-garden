@@ -57,8 +57,10 @@ describe('الحدائق الأربع في موقع واحد', () => {
     render(<SalmanApp />);
     tab('الحروف');
     expect(location.hash).toBe('#/arabic');
-    const stations = document.querySelectorAll('.sg-station');
+    const stations = document.querySelectorAll('.sg-planet');
     expect(stations).toHaveLength(7);
+    // كل كوكب تدور حوله حروفه الأربعة (28 حرفًا)
+    expect(document.querySelectorAll('.sg-moon')).toHaveLength(28);
     fireEvent.click(stations[0]);
     expect(location.hash).toBe('#/arabic/1');
     expect(screen.getByText(/العب: صِل الحرف بصديقه/)).toBeTruthy();
@@ -68,7 +70,7 @@ describe('الحدائق الأربع في موقع واحد', () => {
   it('اللعبة تُفتح من المحطة نفسها (بلا خريطة مستويات منفصلة)', () => {
     render(<SalmanApp />);
     tab('الحروف');
-    fireEvent.click(document.querySelector('.sg-station'));
+    fireEvent.click(document.querySelector('.sg-planet'));
     fireEvent.click(screen.getByText(/العب: صِل الحرف بصديقه/).closest('button'));
     expect(document.querySelector('.hp-root .play')).toBeTruthy();
     expect(screen.queryByText('خريطة المستويات')).toBeNull();
@@ -77,7 +79,7 @@ describe('الحدائق الأربع في موقع واحد', () => {
   it('الحرف يفتح صفحته وقصصه، وزر الرجوع يرجع للمحطة', () => {
     render(<SalmanApp />);
     tab('الحروف');
-    fireEvent.click(document.querySelector('.sg-station'));
+    fireEvent.click(document.querySelector('.sg-planet'));
     fireEvent.click(screen.getByRole('button', { name: 'الحرف ب' }));
     expect(screen.getByText('قصص الحرف')).toBeTruthy();
     expect(document.querySelectorAll('.sg-cards li').length).toBeGreaterThanOrEqual(2);
@@ -116,8 +118,10 @@ describe('الحدائق الأربع في موقع واحد', () => {
     tab('القرآن');
     fireEvent.click(screen.getByRole('tab', { name: '📗 المستويات' }));
     expect(location.hash).toBe('#/quran/levels');
-    expect(screen.getByText(/المستوى الأول/)).toBeTruthy();
-    const second = screen.getByText(/المستوى الثاني/).closest('section');
+    expect(screen.getByRole('heading', { name: /المستوى الأول/ })).toBeTruthy();
+    // خريطة الكواكب: ٣ مستويات، وسورها تدور حولها
+    expect(document.querySelectorAll('.sg-planet')).toHaveLength(3);
+    const second = screen.getByRole('heading', { name: /المستوى الثاني/ }).closest('section');
     expect(within(second).getByText(/افتح المستوى السابق أولًا/)).toBeTruthy();
   });
 
@@ -138,5 +142,32 @@ describe('الحدائق الأربع في موقع واحد', () => {
     render(<SalmanApp />);
     tab('English');
     expect(screen.getByText(/Phonics/)).toBeTruthy();
+  });
+});
+
+describe('مفتوحة دائمًا: لا «غدًا»، وبعد الإنجاز ننتقل إلى التالي', () => {
+  it('لا قفل يومي: حتى بعد فتح عناصر جديدة كثيرة اليوم تبقى كل البطاقات مفتوحة', () => {
+    const s = normalizeState({
+      ...createState(),
+      daily: { day: DAY, newByGarden: { quran: 99, arabic: 99, math: 99, english: 99 } },
+    });
+    window.localStorage.setItem('salman-garden-v1', JSON.stringify(s));
+    history.replaceState(null, '', '/#/quran/stories');
+    render(<SalmanApp />);
+    const cards = [...document.querySelectorAll('.sg-cards .sg-card')];
+    expect(cards).toHaveLength(13);
+    expect(cards.every((c) => !c.disabled)).toBe(true);
+    expect(screen.queryByText(/غدًا/)).toBeNull();
+  });
+
+  it('بعد الإجابة الصحيحة يظهر «التالي» ويفتح البطاقة التالية مباشرة', () => {
+    history.replaceState(null, '', '/#/quran/stories');
+    render(<SalmanApp />);
+    fireEvent.click(screen.getByText('سورة الفاتحة').closest('button'));
+    const right = screen.getAllByRole('button').find((b) => b.textContent.trim() === 'الفاتحة');
+    fireEvent.click(right);
+    const next = screen.getByText(/التالي: سورة الناس/);
+    fireEvent.click(next);
+    expect(screen.getByRole('heading', { level: 2, name: 'سورة الناس' })).toBeTruthy();
   });
 });

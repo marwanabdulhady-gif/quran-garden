@@ -8,7 +8,6 @@ import {
   growthStage,
   answerItem,
   exposeItem,
-  newAllowed,
   recordStory,
   recordHuroofLevel,
   recordSurah,
@@ -24,6 +23,8 @@ import { FATIHA } from './data/fatiha.js';
 import { pickSession } from './lib/session.js';
 import { countVisit, riyadhHour, visitGate } from './lib/parent.js';
 import ParentArea from './ParentArea.jsx';
+import OrbitMap from './OrbitMap.jsx';
+import { getClient, hasSession, upload } from './lib/cloud.js';
 import Play from '../huroof/components/Play.jsx';
 import '../huroof/huroof.css';
 import QuranJourney from '../App.jsx';
@@ -35,7 +36,7 @@ import { loadState, saveState } from './lib/store.js';
 import { canSpeak, speak } from './lib/speech.js';
 import { playClip, playStory, assetUrl } from './lib/voice.js';
 import LetterDay from './LetterDay.jsx';
-import { NOUR_UNITS, UNIT_BY_LETTER, gardenUnits } from './data/nour.js';
+import { NOUR_UNITS, NOUR_ORDER, UNIT_BY_LETTER, gardenUnits } from './data/nour.js';
 import { unitCompleted } from './lib/letterday.js';
 import { sfx } from './lib/sfx.js';
 
@@ -199,14 +200,14 @@ function greeting() {
 }
 
 // بطاقة قصة أو تمرين داخل الحديقة
-function ItemCard({ item, state, freshLeft, onOpen }) {
+// بطاقة مفتوحة دائمًا: لا «غدًا» ولا قفل يومي، والطفل يكمل ما يريد
+function ItemCard({ item, state, onOpen }) {
   const done = !!state.doneStories[item.id];
   const fresh = !state.skills[item.id];
-  const locked = fresh && freshLeft <= 0;
-  const cls = ['sg-card', done ? 'is-done' : '', locked ? 'is-locked' : ''].filter(Boolean).join(' ');
+  const cls = done ? 'sg-card is-done' : 'sg-card';
   return (
     <li>
-      <button type="button" className={cls} disabled={locked} onClick={() => onOpen(item, fresh)}>
+      <button type="button" className={cls} onClick={() => onOpen(item, fresh)}>
         {item.art ? (
           <img className="sg-card-art" src={assetUrl(item.art)} alt="" loading="lazy" />
         ) : item.lang === 'en' ? (
@@ -219,7 +220,7 @@ function ItemCard({ item, state, freshLeft, onOpen }) {
           </span>
         )}
         <span className="sg-card-title" lang={item.lang || 'ar'}>
-          {locked ? 'غدًا 🌙' : item.title}
+          {item.title}
         </span>
         {done && (
           <span className="sg-card-done" aria-label="مكتملة">
@@ -270,7 +271,7 @@ function tabOf(screen) {
   if (screen.name === 'garden') return screen.garden;
   if (['station', 'play', 'letter'].includes(screen.name)) return 'arabic';
   if (screen.name === 'lesson') return screen.garden;
-  if (screen.name === 'day') return screen.garden;
+  if (screen.name === 'day' || screen.name === 'dayDone') return screen.garden;
   if (screen.name === 'quran') return 'quran';
   return 'home';
 }
@@ -280,7 +281,7 @@ function parentOf(screen) {
   if (screen.name === 'letter') return screen.level ? { name: 'station', level: screen.level } : ARABIC_HOME;
   if (screen.name === 'station' || screen.name === 'play') return ARABIC_HOME;
   if (screen.name === 'lesson') return screen.from || { name: 'garden', garden: screen.garden };
-  if (screen.name === 'day') {
+  if (screen.name === 'day' || screen.name === 'dayDone') {
     const unit = NOUR_UNITS[screen.unitId];
     if (unit && unit.garden === 'arabic') return { name: 'letter', letter: unit.letter };
     return { name: 'garden', garden: (unit && unit.garden) || 'arabic' };
@@ -289,6 +290,8 @@ function parentOf(screen) {
 }
 
 const HOME = { name: 'home' };
+// ألوان الكواكب (محطة لكل لون)
+const STATION_COLORS = ['#6366f1', '#22c55e', '#f97316', '#0ea5e9', '#e11d48', '#a855f7', '#eab308'];
 // حديقة القرآن: ثلاثة أقسام في مكان واحد
 const QURAN_VIEWS = [
   { id: 'journey', label: '🎧 رحلة القرآن' },
@@ -313,6 +316,8 @@ function hashOf(screen) {
       return `#/nour/${screen.garden}/${encodeURIComponent(screen.unitId)}`;
     case 'badges':
       return '#/badges';
+    case 'parent':
+      return '#/parent';
     default:
       return '#/';
   }
@@ -324,6 +329,7 @@ export function screenFromHash(hash = '') {
   const [a, b, c] = parts;
   if (a === 'quran') return { name: 'quran', view: QURAN_VIEWS.some((v) => v.id === b) ? b : 'journey' };
   if (a === 'badges') return { name: 'badges' };
+  if (a === 'parent') return { name: 'parent' }; // العودة من دخول Google
   if (a === 'nour' && NOUR_UNITS[c]) return { name: 'day', garden: NOUR_UNITS[c].garden, unitId: c };
   if (a === 'math' || a === 'english') return { name: 'garden', garden: a };
   if (a === 'arabic') {
@@ -391,7 +397,16 @@ export default function SalmanApp() {
 
   useEffect(() => {
     saveState(state);
+    // إن دخل ولي الأمر بحساب Google: نرفع نسخة إلى السحابة بعد ثوانٍ من آخر تغيير
+    if (!hasSession()) return undefined;
+    const t = setTimeout(() => upload().catch(() => {}), 4000);
+    return () => clearTimeout(t);
   }, [state]);
+
+  // العودة من دخول Google (?code=…): نُكمل الدخول فورًا حتى لو لم يفتح ولي الأمر صفحته بعد
+  useEffect(() => {
+    if (/[?&]code=/.test(globalThis.location?.search || '')) getClient().catch(() => {});
+  }, []);
 
   // التاريخ: كل انتقال يُسجَّل، فزر الرجوع في الهاتف والمتصفح يرجع خطوة داخل الغابة
   useEffect(() => {
@@ -475,9 +490,10 @@ export default function SalmanApp() {
     setState((s) => exposeItem(s, { itemId: item.id, garden: item.garden, dayKey: today }));
   };
 
-  const openItem = (item, fresh, from) => {
+  // فتح قصة/تمرين. list = ترتيب البطاقات التي فُتح منها، ليعرف زر «التالي» ما بعده
+  const openItem = (item, fresh, from, list = []) => {
     if (fresh) showItem(item);
-    go({ name: 'lesson', garden: item.garden, itemId: item.id, from });
+    go({ name: 'lesson', garden: item.garden, itemId: item.id, from, list: list.map((x) => x.id) });
   };
 
   // ---------- زيارة اليوم ----------
@@ -588,8 +604,19 @@ export default function SalmanApp() {
   }
 
   if (screen.name === 'lesson') {
-    const item = gardenItems(screen.garden).find((it) => it.id === screen.itemId);
+    const all = gardenItems(screen.garden);
+    const item = all.find((it) => it.id === screen.itemId);
     const g = GARDENS[screen.garden];
+    // بعد الإجابة: ننتقل مباشرة إلى البطاقة التالية في نفس القائمة، وفي آخرها نرجع
+    const list = screen.list || [];
+    const nextId = list[list.indexOf(screen.itemId) + 1];
+    const nextItem = list.includes(screen.itemId) && nextId ? all.find((it) => it.id === nextId) : null;
+    const goNext = () => {
+      setCelebrate(null);
+      if (!nextItem) return back();
+      if (!state.skills[nextItem.id]) showItem(nextItem);
+      replace({ ...screen, itemId: nextItem.id });
+    };
     return (
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
@@ -600,8 +627,8 @@ export default function SalmanApp() {
             item={item}
             onCorrect={(firstTry) => credit(item, firstTry)}
             onMiss={() => missItem(item)}
-            onContinue={back}
-            continueLabel="رجوع ➜"
+            onContinue={goNext}
+            continueLabel={nextItem ? `التالي: ${nextItem.title} ➜` : 'أحسنت! رجوع للحديقة ➜'}
           />
         )}
       </main>
@@ -617,14 +644,9 @@ export default function SalmanApp() {
       const r = recordDay(state, { unitId: unit.id, garden: unit.garden, dayKey: today, steps });
       setState(r.state);
       sfx('levelUp');
-      setCelebrate({
-        emoji: unit.keyEmoji,
-        title: 'أكملت يوم الوحدة!',
-        sub: `${unit.glyph} · ${unit.keyWord}${r.earned ? ` · +${toArabicNumeral(r.earned)} ⭐` : ''}`,
-        clip: 'garden-grow',
-      });
-      if (unit.garden === 'arabic') replace({ name: 'letter', letter: unit.letter });
-      else replace({ name: 'garden', garden: unit.garden });
+      playClip('garden-grow');
+      // بعد الإنجاز: شاشة «أحسنت» وفيها زر كبير إلى الوحدة التالية مباشرة
+      replace({ name: 'dayDone', garden: unit.garden, unitId: unit.id, earned: r.earned });
     };
     return (
       <>
@@ -638,6 +660,39 @@ export default function SalmanApp() {
           onDone={finishDay}
         />
       </>
+    );
+  }
+
+  // ---------- أحسنت! ثم التالي مباشرة ----------
+  if (screen.name === 'dayDone') {
+    const unit = NOUR_UNITS[screen.unitId];
+    if (!unit) return null;
+    const g = GARDENS[unit.garden];
+    const order = NOUR_ORDER[unit.garden] || [];
+    const next = NOUR_UNITS[order[order.indexOf(unit.id) + 1]];
+    return (
+      <main className="sg-app sg-reward sg-done" dir="rtl" style={{ '--g': g.color }}>
+        <Confetti />
+        <Mascot name={GARDEN_MASCOT[unit.garden]} className="sg-bounce" bubble="أحسنت يا بطل!" />
+        <p className="sg-done-glyph">{unit.glyph}</p>
+        <h1 className="sg-title">أكملت «{unit.keyWord}» 🎉</h1>
+        {screen.earned > 0 && <p className="sg-sub">+{toArabicNumeral(screen.earned)} ⭐</p>}
+        {next ? (
+          <button
+            type="button"
+            className="sg-btn sg-btn-main sg-next-btn"
+            onClick={() => replace({ name: 'day', garden: next.garden, unitId: next.id })}
+          >
+            <span className="sg-next-glyph">{next.glyph}</span>
+            <span>التالي: {next.keyWord} ➜</span>
+          </button>
+        ) : (
+          <p className="sg-sub">🏆 أكملت كل وحدات {g.name}!</p>
+        )}
+        <button type="button" className="sg-btn sg-btn-soft" onClick={() => replace(parentOf(screen))}>
+          رجوع إلى {g.name}
+        </button>
+      </main>
     );
   }
 
@@ -693,7 +748,6 @@ export default function SalmanApp() {
       );
     } else if (view === 'stories') {
       const items = gardenItems('quran');
-      const freshLeft = newAllowed(state, 'quran', today);
       body = (
         <main className="sg-app" dir="rtl">
           {celebrateLayer}
@@ -711,8 +765,7 @@ export default function SalmanApp() {
                 key={it.id}
                 item={it}
                 state={state}
-                freshLeft={freshLeft}
-                onOpen={(item, fresh) => openItem(item, fresh, screen)}
+                onOpen={(item, fresh) => openItem(item, fresh, screen, items)}
               />
             ))}
           </ul>
@@ -723,11 +776,33 @@ export default function SalmanApp() {
         <main className="sg-app" dir="rtl">
           {celebrateLayer}
           {views}
+          <OrbitMap
+            label="مستويات السور"
+            guideArt={assetUrl(MASCOTS.salman)}
+            stations={QURAN_LEVELS.map((lvl) => ({
+              id: lvl.level,
+              title: lvl.title,
+              color: STATION_COLORS[(lvl.level + 1) % STATION_COLORS.length],
+              onOpen: () => document.getElementById(`sg-level-${lvl.level}`)?.scrollIntoView({ behavior: 'smooth' }),
+              items: lvl.surahs.map((sid) => ({ key: sid, label: SURAHS[sid].name, done: !!state.learnedSurahs[sid] })),
+            }))}
+            onItem={(st, it) => {
+              setOpenSurah(it.key);
+              setTimeout(
+                () => document.getElementById(`sg-surah-${it.key}`)?.scrollIntoView({ behavior: 'smooth' }),
+                50
+              );
+            }}
+          />
           {QURAN_LEVELS.map((lvl) => {
             const unlocked = levelUnlocked(state, lvl.level);
             const done = levelDone(state, lvl.level);
             return (
-              <section key={lvl.level} className={unlocked ? 'sg-level' : 'sg-level is-locked'}>
+              <section
+                key={lvl.level}
+                id={`sg-level-${lvl.level}`}
+                className={unlocked ? 'sg-level' : 'sg-level is-locked'}
+              >
                 <h2 className="sg-level-title">
                   {done ? '🏆 ' : unlocked ? '✨ ' : '🔒 '}
                   {lvl.title}
@@ -739,7 +814,7 @@ export default function SalmanApp() {
                   const open = openSurah === sid;
                   const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
                   return (
-                    <article key={sid} className="sg-surah">
+                    <article key={sid} id={`sg-surah-${sid}`} className="sg-surah">
                       <button type="button" className="sg-row" onClick={() => setOpenSurah(open ? null : sid)}>
                         <span>{learned ? '✅' : '📜'}</span>
                         <span>
@@ -793,7 +868,6 @@ export default function SalmanApp() {
     const letter = screen.letter;
     const animal = ANIMALS[letter];
     const items = gardenItems('arabic').filter((it) => it.letter === letter);
-    const freshLeft = newAllowed(state, 'arabic', today);
     body = (
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
@@ -822,8 +896,7 @@ export default function SalmanApp() {
               key={it.id}
               item={it}
               state={state}
-              freshLeft={freshLeft}
-              onOpen={(item, fresh) => openItem(item, fresh, screen)}
+              onOpen={(item, fresh) => openItem(item, fresh, screen, items)}
             />
           ))}
         </ul>
@@ -879,17 +952,10 @@ export default function SalmanApp() {
     const items = gardenItems(id);
     const stars = gardenStars(id);
     const stage = growthStage(stars);
-    const freshLeft = newAllowed(state, id, today);
     const cards = (list) => (
       <ul className="sg-cards">
         {list.map((it) => (
-          <ItemCard
-            key={it.id}
-            item={it}
-            state={state}
-            freshLeft={freshLeft}
-            onOpen={(item, fresh) => openItem(item, fresh, screen)}
-          />
+          <ItemCard key={it.id} item={it} state={state} onOpen={(item, fresh) => openItem(item, fresh, screen, list)} />
         ))}
       </ul>
     );
@@ -897,31 +963,23 @@ export default function SalmanApp() {
     if (id === 'arabic') {
       content = (
         <>
-          <h2 className="sg-section">رحلة الحروف · ٧ محطات</h2>
-          <ol className="sg-path">
-            {HUROOF_LEVELS.map((l) => {
-              const best = state.huroof?.[l.id] || 0;
-              const done = best >= l.letters.length;
-              return (
-                <li key={l.id}>
-                  <button
-                    type="button"
-                    className={done ? 'sg-station is-done' : 'sg-station'}
-                    onClick={() => go({ name: 'station', level: l.id })}
-                  >
-                    <span className="sg-station-num">{done ? '✓' : toArabicNumeral(l.id)}</span>
-                    <span className="sg-station-body">
-                      <strong>{l.title}</strong>
-                      <span className="sg-station-letters-row">{l.letters.join('  ')}</span>
-                    </span>
-                    <span className="sg-station-stars">
-                      ⭐ {toArabicNumeral(best)}/{toArabicNumeral(l.letters.length)}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
+          <h2 className="sg-section">رحلة الحروف · ٧ كواكب</h2>
+          <OrbitMap
+            label="رحلة الحروف"
+            guideArt={assetUrl(MASCOTS.hoopoe)}
+            stations={HUROOF_LEVELS.map((l) => ({
+              id: l.id,
+              title: l.title,
+              color: STATION_COLORS[(l.id - 1) % STATION_COLORS.length],
+              onOpen: () => go({ name: 'station', level: l.id }),
+              items: l.letters.map((L) => {
+                const mine = items.filter((it) => it.letter === L);
+                const storiesDone = mine.length > 0 && mine.every((it) => state.doneStories[it.id]);
+                return { key: L, label: L, done: unitCompleted(state, UNIT_BY_LETTER[L]) || storiesDone };
+              }),
+            }))}
+            onItem={(st, it) => go({ name: 'letter', letter: it.key, level: st.id })}
+          />
         </>
       );
     } else if (id === 'math') {
@@ -956,17 +1014,22 @@ export default function SalmanApp() {
               .filter((it) => it.source === 'count')
               .map((it, i) => {
                 const done = !!state.doneStories[it.id];
-                const locked = !state.skills[it.id] && freshLeft <= 0;
                 return (
                   <li key={it.id}>
                     <button
                       type="button"
                       className={done ? 'sg-number is-done' : 'sg-number'}
-                      disabled={locked}
                       aria-label={it.title}
-                      onClick={() => openItem(it, !state.skills[it.id], screen)}
+                      onClick={() =>
+                        openItem(
+                          it,
+                          !state.skills[it.id],
+                          screen,
+                          items.filter((x) => x.source === 'count')
+                        )
+                      }
                     >
-                      {locked ? '🌙' : toArabicNumeral(i + 1)}
+                      {toArabicNumeral(i + 1)}
                     </button>
                   </li>
                 );

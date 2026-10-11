@@ -9,10 +9,12 @@ import { skillState } from './leitner.js';
 export const MAX_VISITS_MIN = 1;
 export const MAX_VISITS_MAX = 3;
 
-// الافتراضي: زيارة واحدة في اليوم، وساعات الهدوء من 8 مساءً حتى 7 صباحًا
+// الافتراضي: الغابة مفتوحة دائمًا (limits: false). إن فعّل ولي الأمر الحدود:
+// زيارة واحدة في اليوم، وساعات الهدوء من 8 مساءً حتى 7 صباحًا.
 export const PARENT_DEFAULTS = {
   pinHash: null,
   pinSalt: null,
+  limits: false,
   maxVisits: 1,
   quietFrom: 20,
   quietTo: 7,
@@ -39,6 +41,7 @@ export function sanitizeParent(raw) {
   return {
     pinHash: hashOk && saltOk ? raw.pinHash : null,
     pinSalt: hashOk && saltOk ? raw.pinSalt : null,
+    limits: raw.limits === true,
     maxVisits:
       Number.isInteger(maxVisits) && maxVisits >= MAX_VISITS_MIN && maxVisits <= MAX_VISITS_MAX
         ? maxVisits
@@ -99,6 +102,8 @@ export function visitsToday(state, dayKey) {
 // هل تُسمح زيارة جديدة الآن؟ السبب إن كان الرفض: quiet أو cap
 export function visitGate(state, { dayKey, hour }) {
   const p = state.parent || PARENT_DEFAULTS;
+  // بلا حدود (الافتراضي): كل شيء مفتوح، والطفل ينتقل من نشاط إلى التالي متى شاء
+  if (!p.limits) return { open: true, reason: null };
   if (inQuietHours(hour, p.quietFrom, p.quietTo)) return { open: false, reason: 'quiet' };
   if (visitsToday(state, dayKey) >= p.maxVisits) return { open: false, reason: 'cap' };
   return { open: true, reason: null };

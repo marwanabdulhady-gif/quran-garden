@@ -1,6 +1,7 @@
 // شاشة ولي الأمر لحديقة سلمان: قفل بـ PIN، وحدّ الزيارات، وساعات الهدوء، وتقرير الحدائق.
 // منفصلة عن الطفل: لا تُفتح إلا برمز، وتُقفل تلقائيًا عند الخروج من الشاشة.
 import React, { useState } from 'react';
+import CloudSync from './CloudSync.jsx';
 import { GARDENS } from './data/gardens.js';
 import { CATALOG, toArabicNumeral } from './lib/catalog.js';
 import {
@@ -137,51 +138,74 @@ export default function ParentArea({ state, setState, onBack }) {
       <h1 className="sg-title">🔓 ولي الأمر</h1>
 
       <section className="sg-level">
-        <h2 className="sg-level-title">الزيارات اليومية</h2>
+        <h2 className="sg-level-title">حدود الوقت</h2>
         <p className="sg-sub">
-          اليوم: {toArabicNumeral(todayCount)} من {toArabicNumeral(parent.maxVisits)}
+          {parent.limits
+            ? 'مفعّلة: عدد زيارات اليوم وساعات الهدوء أدناه.'
+            : 'الغابة مفتوحة دائمًا: سلمان ينتقل من نشاط إلى التالي متى شاء.'}
         </p>
-        <div className="sg-parent-row" role="group" aria-label="عدد الزيارات في اليوم">
-          {[MAX_VISITS_MIN, 2, MAX_VISITS_MAX].map((n) => (
-            <button
-              key={n}
-              type="button"
-              className={parent.maxVisits === n ? 'sg-chip is-on' : 'sg-chip'}
-              aria-pressed={parent.maxVisits === n}
-              onClick={() => update({ maxVisits: n })}
-            >
-              {VISIT_LABEL[n]}
-            </button>
-          ))}
-        </div>
+        <button
+          type="button"
+          className={parent.limits ? 'sg-chip is-on' : 'sg-chip'}
+          aria-pressed={parent.limits}
+          onClick={() => update({ limits: !parent.limits })}
+        >
+          {parent.limits ? '✓ الحدود مفعّلة' : 'تفعيل حدود الوقت'}
+        </button>
       </section>
 
-      <section className="sg-level">
-        <h2 className="sg-level-title">ساعات الهدوء</h2>
-        <p className="sg-sub">لا تبدأ زيارة جديدة داخل هذه الساعات (توقيت الرياض).</p>
-        <div className="sg-parent-row">
-          <label className="sg-field">
-            من
-            <select value={parent.quietFrom} onChange={(e) => update({ quietFrom: Number(e.target.value) })}>
-              {HOURS.map((h) => (
-                <option key={h} value={h}>
-                  {toArabicNumeral(h)}:٠٠
-                </option>
+      {parent.limits && (
+        <>
+          <section className="sg-level">
+            <h2 className="sg-level-title">الزيارات اليومية</h2>
+            <p className="sg-sub">
+              اليوم: {toArabicNumeral(todayCount)} من {toArabicNumeral(parent.maxVisits)}
+            </p>
+            <div className="sg-parent-row" role="group" aria-label="عدد الزيارات في اليوم">
+              {[MAX_VISITS_MIN, 2, MAX_VISITS_MAX].map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={parent.maxVisits === n ? 'sg-chip is-on' : 'sg-chip'}
+                  aria-pressed={parent.maxVisits === n}
+                  onClick={() => update({ maxVisits: n })}
+                >
+                  {VISIT_LABEL[n]}
+                </button>
               ))}
-            </select>
-          </label>
-          <label className="sg-field">
-            إلى
-            <select value={parent.quietTo} onChange={(e) => update({ quietTo: Number(e.target.value) })}>
-              {HOURS.map((h) => (
-                <option key={h} value={h}>
-                  {toArabicNumeral(h)}:٠٠
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      </section>
+            </div>
+          </section>
+
+          <section className="sg-level">
+            <h2 className="sg-level-title">ساعات الهدوء</h2>
+            <p className="sg-sub">لا تبدأ زيارة جديدة داخل هذه الساعات (توقيت الرياض).</p>
+            <div className="sg-parent-row">
+              <label className="sg-field">
+                من
+                <select value={parent.quietFrom} onChange={(e) => update({ quietFrom: Number(e.target.value) })}>
+                  {HOURS.map((h) => (
+                    <option key={h} value={h}>
+                      {toArabicNumeral(h)}:٠٠
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="sg-field">
+                إلى
+                <select value={parent.quietTo} onChange={(e) => update({ quietTo: Number(e.target.value) })}>
+                  {HOURS.map((h) => (
+                    <option key={h} value={h}>
+                      {toArabicNumeral(h)}:٠٠
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </section>
+        </>
+      )}
+
+      <CloudSync />
 
       <section className="sg-level">
         <h2 className="sg-level-title">تقرير الحدائق</h2>
