@@ -76,6 +76,8 @@ function arabicItems() {
         garden: 'arabic',
         title: st.title,
         source: st.source,
+        // مسودة: النصوص من OCR/PDF غير مُدقَّقة، وقرار المستخدم: تبقى في التطبيق مع تنبيه حتى التدقيق
+        draft: true,
         paragraphs: st.paragraphs,
         question: {
           prompt: `أي حرف يبدأ به «${word}»؟`,

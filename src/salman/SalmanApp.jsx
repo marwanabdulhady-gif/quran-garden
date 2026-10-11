@@ -107,6 +107,11 @@ function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
       <h2 className="sg-title" lang={lang}>
         {item.title}
       </h2>
+      {item.draft && (
+        <p className="sg-draft-note" lang="ar">
+          📝 مسودة: قيد المراجعة قبل أن تُسمع بصوت المعلّم
+        </p>
+      )}
       <div className="sg-story" lang={lang}>
         {item.paragraphs.map((p, i) => (
           <p key={i}>{p}</p>

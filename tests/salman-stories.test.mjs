@@ -71,3 +71,11 @@ describe('قصص الإنجليزية: الفونيكس', () => {
     }
   });
 });
+
+describe('قصص الحروف العربية: مسودة حتى التدقيق', () => {
+  it('كل قصة حرف عربية مُعلَّمة draft، لأن النصوص لم تُدقَّق بعد', () => {
+    const arabicStories = CATALOG.arabic.filter((i) => i.source === 'companions' || i.source === 'prophet');
+    expect(arabicStories).toHaveLength(56);
+    for (const s of arabicStories) expect(s.draft).toBe(true);
+  });
+});
