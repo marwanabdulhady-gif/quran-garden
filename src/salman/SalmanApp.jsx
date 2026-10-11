@@ -13,6 +13,7 @@ import {
   recordSurah,
   GIFTS,
   recordDay,
+  recordDayStep,
 } from './lib/gamify.js';
 import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
 import { QURAN_LEVELS, QURAN_TRAILS, SURAHS } from './data/quran.js';
@@ -727,6 +728,8 @@ export default function SalmanApp() {
           color={g.color}
           backdrop={BACKGROUNDS[unit.garden]}
           dayIndex={0}
+          initialDone={unitCompleted(state, unit.id) ? [] : unitDay(state, unit.id)?.done || []}
+          onProgress={(steps) => setState((s) => recordDayStep(s, { unitId: unit.id, dayKey: today, steps }))}
           onExit={back}
           onDone={finishDay}
         />
