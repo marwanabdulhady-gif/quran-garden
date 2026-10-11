@@ -21,8 +21,8 @@ DATA_FILES = [
 ]
 AUDIO = ROOT / 'public/salman/audio/nour'
 
-STORY_IDS = re.compile(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-(?:ck|[a-z])-s))',\n")
-UNIT_IDS = re.compile(r"id: '((?:ar-[^\']+|num-\d|en-(?:ck|[a-z])))',\n(?:    clip: '([^']+)',\n)?")
+STORY_IDS = re.compile(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-(?:ck|[a-z]{1,2})-s))',\n")
+UNIT_IDS = re.compile(r"id: '((?:ar-[^\']+|num-\d|en-(?:ck|[a-z]{1,2})))',\n(?:    clip: '([^']+)',\n)?")
 CHANTS = re.compile(r"chant: \{\s*(?:voiced: (?:true|false),\s*)?")
 STORY_TAIL = re.compile(r"(review: '[^']*',\n)(?:        voiced: (?:true|false),\n)?")
 
@@ -52,7 +52,7 @@ def process_file(path: pathlib.Path) -> tuple[int, int]:
     text = CHANTS.sub(chant_sub, text)
 
     # قصص: nour/<storyId>.mp3 — نضبط voiced ونُعيد ترتيب (review · voiced · note) بلا تكرار
-    stories = list(re.finditer(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-(?:ck|[a-z])-s))',\n", text))
+    stories = list(re.finditer(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-(?:ck|[a-z]{1,2})-s))',\n", text))
     for sid in reversed(stories):
         ok = clip_exists(sid.group(1))
         on, off = (on + 1, off) if ok else (on, off + 1)

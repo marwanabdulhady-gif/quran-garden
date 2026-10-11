@@ -52,9 +52,15 @@ describe('حدائق النور — المحتوى', () => {
       'l',
       'f',
       'b',
+      'ai',
+      'j',
+      'oa',
+      'ie',
+      'ee',
+      'or',
     ]);
-    expect([...new Set(gardenUnits('english').map((u) => u.group))]).toEqual([1, 2, 3]);
-    expect(UNITS).toHaveLength(30);
+    expect([...new Set(gardenUnits('english').map((u) => u.group))]).toEqual([1, 2, 3, 4]);
+    expect(UNITS).toHaveLength(36);
     expect(NOUR_ORDER.arabic).toHaveLength(8);
     // ترتيب «اليوم التالي» يتبع الألفباء دائمًا
     const seq = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
@@ -123,14 +129,13 @@ describe('حدائق النور — المحتوى', () => {
 
   it('الإنجليزية: كل صوت له صورة معلَنة (رسمة جديدة أو من مكتبة التطبيق)', () => {
     const en = gardenUnits('english');
-    expect(en).toHaveLength(18);
+    expect(en).toHaveLength(24);
     for (const u of en) {
       expect(u.art, u.id).toBeTruthy();
       expect(u.art, u.id).toMatch(/^salman\/art\/(nour|animals|badges|gifts|count)\//);
     }
-    // ١٠ رسمات جديدة + باب من دفعة الطيار = ١١ من nour
-    expect(en.filter((u) => u.art.includes('/nour/'))).toHaveLength(11);
-    // وإعادة الاستخدام حقيقية: ٧ وحدات من مكتبة التطبيق القائمة بلا أي توليد جديد
+    // ١٧ من nour (منها باب الطيار وحبل حرف الحاء) و٧ إعادات استخدام من المكتبة
+    expect(en.filter((u) => u.art.includes('/nour/'))).toHaveLength(17);
     expect(en.filter((u) => !u.art.includes('/nour/'))).toHaveLength(7);
   });
 
@@ -147,6 +152,7 @@ describe('حدائق النور — المحتوى', () => {
     expect(nourUnit('en-ck').related.unitId).toBe('ar-ج');
     expect(nourUnit('en-r').related.unitId).toBe('num-3');
     expect(nourUnit('en-l').related.unitId).toBe('ar-م');
+    expect(nourUnit('en-ie').related.unitId).toBe('ar-ج');
   });
 
   it('اتساق الحدائق: كل حديقة بلغتها وبأدواتها', () => {
@@ -182,18 +188,23 @@ describe('حدائق النور — المحتوى', () => {
     const own = new Set(arts.filter((a) => a.includes('/nour/')).map((a) => a.split('/').pop()));
     expect([...own].sort()).toEqual([
       'ant.png',
+      'boat.png',
       'bouquet.png',
       'bricks.png',
       'cloud.png',
+      'corn.png',
       'dates.png',
       'door.png',
       'garment.png',
+      'jar.png',
       'lamp.png',
+      'leaf.png',
       'mosque.png',
       'mountain.png',
       'nest.png',
       'olive.png',
       'pot.png',
+      'rain.png',
       'rock.png',
       'rooster.png',
       'rope.png',
