@@ -1309,8 +1309,52 @@ body {
   min-height: 100vh;
   padding-bottom: calc(var(--sg-tabbar-h) + env(safe-area-inset-bottom));
 }
-/* شاشات رحلة القرآن الثابتة تترك مكانًا لشريط الحدائق */
+/* شاشات رحلة القرآن الثابتة تترك مكانًا لأقسام الحديقة في الأعلى ولشريط الحدائق في الأسفل */
+.sg-quran-tab .qg-root .garden {
+  top: var(--sg-segments-h);
+}
 .sg-quran-tab .qg-root .garden,
 .sg-quran-tab .qg-root .home-footer {
   bottom: calc(var(--sg-tabbar-h) + env(safe-area-inset-bottom));
+}
+
+/* أقسام حديقة القرآن: الاستماع والحفظ · قصص السور · مستويات السور */
+:root {
+  --sg-segments-h: 60px;
+}
+.sg-segments {
+  position: sticky;
+  top: 0;
+  z-index: 45;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  height: var(--sg-segments-h);
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 color-mix(in srgb, #14b8a6 30%, transparent);
+}
+.sg-app > .sg-segments {
+  margin: -16px -16px 0;
+}
+.sg-segment {
+  border: 0;
+  border-radius: 14px;
+  background: #f0fdfa;
+  color: #115e59;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.sg-segment.is-active {
+  background: #14b8a6;
+  color: #fff;
+  box-shadow: 0 4px 10px -6px #0f766e;
+}
+.sg-segment:focus-visible {
+  outline: 4px solid #fbbf24;
+  outline-offset: 2px;
 }
