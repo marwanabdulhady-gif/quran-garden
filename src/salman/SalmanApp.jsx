@@ -11,25 +11,24 @@ import {
   recordStory,
   recordHuroofLevel,
   recordSurah,
-  levelDone,
   GIFTS,
   recordDay,
 } from './lib/gamify.js';
 import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
-import { QURAN_LEVELS, SURAHS } from './data/quran.js';
+import { QURAN_LEVELS, QURAN_TRAILS, SURAHS } from './data/quran.js';
 import { JUZ30 } from '../juz30.js';
 import { FATIHA } from './data/fatiha.js';
 import { pickSession } from './lib/session.js';
 import { countVisit, riyadhHour, visitGate } from './lib/parent.js';
 import ParentArea from './ParentArea.jsx';
-import OrbitMap from './OrbitMap.jsx';
+import GardenMap from './GardenMap.jsx';
 import { getClient, hasSession, upload } from './lib/cloud.js';
 import Play from '../huroof/components/Play.jsx';
 import '../huroof/huroof.css';
 import QuranJourney from '../App.jsx';
 import '../styles.css';
 import { useGarden, activeChild } from '../store.js';
-import { GATES } from '../data.js';
+import { GATES, SURAH_META, SURAH_NAMES_FALLBACK } from '../data.js';
 import { LEVEL_DATA as HUROOF_LEVELS } from '../huroof/data/index.js';
 import { ANIMALS } from './data/animals.js';
 import { loadState, saveState } from './lib/store.js';
@@ -37,7 +36,7 @@ import { canSpeak, speak } from './lib/speech.js';
 import { playClip, playStory, assetUrl } from './lib/voice.js';
 import LetterDay from './LetterDay.jsx';
 import { NOUR_UNITS, NOUR_ORDER, UNIT_BY_LETTER, MATH_STATIONS, gardenUnits } from './data/nour.js';
-import { unitCompleted } from './lib/letterday.js';
+import { unitCompleted, unitDay, DAY_STEPS } from './lib/letterday.js';
 import { sfx } from './lib/sfx.js';
 
 const CONFETTI_COLORS = ['#f43f5e', '#fbbf24', '#10b981', '#38bdf8', '#a78bfa', '#fb923c'];
@@ -295,24 +294,46 @@ const HOME = { name: 'home' };
 /* global __APP_VERSION__, __APP_BUILT__ */
 const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'dev';
 const APP_BUILT = typeof __APP_BUILT__ !== 'undefined' ? __APP_BUILT__ : '';
-// ألوان الكواكب (محطة لكل لون)
-const STATION_COLORS = ['#6366f1', '#22c55e', '#f97316', '#0ea5e9', '#e11d48', '#a855f7', '#eab308'];
 // رحلة القرآن الواحدة: كل سورة محطة بثلاث خطوات (القصة ← الاستماع والترديد ← الحفظ)
 const SURAH_STEPS = [
   { id: 'story', icon: '📖', label: 'القصة' },
   { id: 'listen', icon: '🎧', label: 'استمع وردّد' },
   { id: 'memorize', icon: '🏆', label: 'حفظتها' },
 ];
-// السور بترتيب الرحلة (مستوى بعد مستوى)
-const QURAN_PATH = QURAN_LEVELS.flatMap((l) => l.surahs);
-// كنوز رحلة القرآن: أدوات تطبيق القرآن داخل نفس الرحلة
+// اسم السورة ومعلوماتها: سور المستويات من quran.js، وبقية السور من بيانات تطبيق القرآن
+function surahName(sid) {
+  return SURAHS[sid]?.name || (SURAH_NAMES_FALLBACK[sid] || '').replace(/^سورة\s+/, '');
+}
+function surahInfo(sid) {
+  return SURAHS[sid] || { id: sid, name: surahName(sid), ayahs: SURAH_META[sid] };
+}
+// خريطة القرآن الواحدة: المستويات الثلاثة (قصة · استماع · حفظ) ثم بقية جزء عمّ وتبارك وقد سمع (استماع · حفظ)
+const QURAN_STATIONS = [
+  ...QURAN_LEVELS.map((l) => ({ level: l.level, title: l.title, surahs: l.surahs })),
+  ...QURAN_TRAILS.map((t) => ({
+    level: t.level,
+    title: `${t.part}: ${surahName(t.surahs[0])} ← ${surahName(t.surahs[t.surahs.length - 1])}`,
+    surahs: t.surahs,
+  })),
+];
+// السور بترتيب الرحلة (محطة بعد محطة)
+const QURAN_PATH = QURAN_STATIONS.flatMap((l) => l.surahs);
+const stationOfSurah = (sid) => QURAN_STATIONS.find((l) => l.surahs.includes(sid));
+// السور التي لها قصة في الحديقة تبدأ بالقصة، والبقية بالاستماع
+const STORY_SURAHS = new Set(gardenItems('quran').map((it) => Number(it.id.slice(2))));
+const stepsFor = (sid) => (STORY_SURAHS.has(sid) ? SURAH_STEPS : SURAH_STEPS.filter((st) => st.id !== 'story'));
+// كنوز رحلة القرآن: أدوات تطبيق القرآن داخل نفس الرحلة (الخريطة واحدة، فلا «خريطة أجزاء» ثانية)
 const QURAN_TREASURES = [
-  { route: 'journey', icon: '🗺️', label: 'خريطة الأجزاء' },
   { route: 'words', icon: '📖', label: 'كلماتي' },
   { route: 'bridge', icon: '🌉', label: 'جسر المعاني' },
   { route: 'daily', icon: '🤍', label: 'آية اليوم' },
-  { route: 'garden', icon: '🌳', label: 'بستاني' },
 ];
+// تقدّم يوم «حدائق النور» لوحدة واحدة (٠..١)
+function unitRatio(state, unitId) {
+  if (!unitId) return 0;
+  if (unitCompleted(state, unitId)) return 1;
+  return Math.min(1, (unitDay(state, unitId)?.done?.length || 0) / DAY_STEPS.length);
+}
 const gateFor = (sid) => (GATES.find((g) => sid >= g.from && sid <= g.to) || GATES[0]).id;
 const ARABIC_HOME = { name: 'garden', garden: 'arabic' };
 
@@ -348,7 +369,7 @@ export function screenFromHash(hash = '') {
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   const [a, b, c] = parts;
   if (a === 'quran') {
-    if (b === 'surah' && SURAHS[Number(c)]) return { name: 'surah', sid: Number(c) };
+    if (b === 'surah' && QURAN_PATH.includes(Number(c))) return { name: 'surah', sid: Number(c) };
     if (b === 'explore' && QURAN_TREASURES.some((t) => t.route === c)) return { name: 'qexplore', route: c };
     return { name: 'quran' }; // الأقسام القديمة (stories/levels) صارت جزءًا من الرحلة نفسها
   }
@@ -408,6 +429,20 @@ function TabBar({ active, onTab }) {
   );
 }
 
+// شريط تقدّم العنصر (حرف · سورة) أعلى صفحته
+function ItemProgress({ color, ratio, label }) {
+  return (
+    <div className="sg-item-progress" style={{ '--g': color }}>
+      <span className="sg-gbar" aria-hidden="true">
+        <span style={{ width: `${Math.round(ratio * 100)}%` }} />
+      </span>
+      <span className="sg-item-progress-count">
+        {label} — {toArabicNumeral(Math.round(ratio * 100))}٪
+      </span>
+    </div>
+  );
+}
+
 // نجوم مستوى «مغامرة الحروف» ونجوم قصص الحرف
 const stationOf = (letter) => HUROOF_LEVELS.find((l) => l.letters.includes(letter));
 
@@ -419,11 +454,12 @@ export default function SalmanApp() {
     // رابط مباشر إلى سورة: نثبّت خطوة البداية مرة واحدة، حتى لا تقفز الشاشة بعد الإجابة
     if (first.name === 'surah' && !first.step) {
       const saved = loadState();
-      first.step = !saved.doneStories[`q-${first.sid}`]
-        ? 'story'
-        : saved.learnedSurahs[first.sid]
-          ? 'memorize'
-          : 'listen';
+      first.step =
+        STORY_SURAHS.has(first.sid) && !saved.doneStories[`q-${first.sid}`]
+          ? 'story'
+          : saved.learnedSurahs[first.sid]
+            ? 'memorize'
+            : 'listen';
     }
     return first;
   });
@@ -761,16 +797,40 @@ export default function SalmanApp() {
     listen: !!quranChild?.listening?.[sid]?.completed,
     memorize: !!state.learnedSurahs[sid],
   });
+  // نسبة ما أُنجز من خطوات السورة (٠..١) — للحلقة على الخريطة وشريط صفحة السورة
+  const surahRatio = (sid) => {
+    const p = surahProgress(sid);
+    if (p.memorize) return 1;
+    const steps = stepsFor(sid);
+    return steps.filter((st) => p[st.id]).length / steps.length;
+  };
   const firstOpenStep = (sid) => {
     const p = surahProgress(sid);
-    return SURAH_STEPS.find((st) => !p[st.id])?.id || 'memorize';
+    return stepsFor(sid).find((st) => !p[st.id])?.id || 'memorize';
   };
   const openSurah = (sid) => go({ name: 'surah', sid, step: firstOpenStep(sid) });
+  // تقدّم الحرف: خطوات «يوم الحرف» السبع + قصص الحرف
+  const letterProgress = (L) => {
+    const mine = gardenItems('arabic').filter((it) => it.letter === L);
+    const storiesRead = mine.filter((it) => state.doneStories[it.id]).length;
+    const unitId = UNIT_BY_LETTER[L];
+    const dayDone = unitCompleted(state, unitId);
+    const daySteps = unitId ? (dayDone ? DAY_STEPS.length : unitDay(state, unitId)?.done?.length || 0) : 0;
+    const total = (unitId ? DAY_STEPS.length : 0) + mine.length;
+    const doneN = daySteps + storiesRead;
+    const storiesDone = mine.length > 0 && storiesRead === mine.length;
+    return {
+      dayDone,
+      storiesDone,
+      done: total > 0 && doneN >= total,
+      ratio: total ? Math.min(1, doneN / total) : 0,
+      label: `🌿 يوم الحرف ${toArabicNumeral(daySteps)} من ${toArabicNumeral(unitId ? DAY_STEPS.length : 0)} — 📖 القصص ${toArabicNumeral(storiesRead)} من ${toArabicNumeral(mine.length)}`,
+    };
+  };
 
   if (screen.name === 'quran') {
-    // رحلة القرآن الواحدة: المستويات كواكب، والسور تدور حولها، وكل سورة رحلة من ثلاث خطوات
-    const all = QURAN_PATH.map((sid) => surahProgress(sid));
-    const memorized = all.filter((p) => p.memorize).length;
+    // رحلة القرآن الواحدة: كل مستوى شجرة على طريق الحديقة، وسوره أزهار حولها
+    const memorized = QURAN_PATH.filter((sid) => state.learnedSurahs[sid]).length;
     const nextSid = QURAN_PATH.find((sid) => !state.learnedSurahs[sid]);
     body = (
       <main className="sg-app" dir="rtl">
@@ -787,29 +847,32 @@ export default function SalmanApp() {
             </span>
             {nextSid && (
               <button type="button" className="sg-btn sg-btn-main sg-quran-next" onClick={() => openSurah(nextSid)}>
-                ▶ تابع: سورة {SURAHS[nextSid].name}
+                ▶ تابع: سورة {surahName(nextSid)}
               </button>
             )}
           </div>
         </section>
-        <OrbitMap
+        <GardenMap
           label="رحلة القرآن"
+          color={GARDENS.quran.color}
           guideArt={assetUrl(MASCOTS.salman)}
-          stations={QURAN_LEVELS.map((lvl) => ({
+          stations={QURAN_STATIONS.map((lvl) => ({
             id: lvl.level,
             title: lvl.title,
-            color: STATION_COLORS[(lvl.level + 1) % STATION_COLORS.length],
             onOpen: () => openSurah(lvl.surahs.find((sid) => !state.learnedSurahs[sid]) || lvl.surahs[0]),
             items: lvl.surahs.map((sid) => {
               const p = surahProgress(sid);
               return {
                 key: sid,
-                label: SURAHS[sid].name,
+                label: surahName(sid),
                 done: p.memorize,
-                gems: [
-                  { icon: '💎', on: p.story, label: 'القصة' },
-                  { icon: '🪙', on: p.memorize, label: 'الحفظ' },
-                ],
+                progress: surahRatio(sid),
+                gems: STORY_SURAHS.has(sid)
+                  ? [
+                      { icon: '💎', on: p.story },
+                      { icon: '🪙', on: p.memorize },
+                    ]
+                  : [{ icon: '🪙', on: p.memorize }],
               };
             }),
           }))}
@@ -837,16 +900,19 @@ export default function SalmanApp() {
     );
   } else if (screen.name === 'surah') {
     const sid = screen.sid;
-    const su = SURAHS[sid];
-    const level = QURAN_LEVELS.find((l) => l.surahs.includes(sid));
+    const su = surahInfo(sid);
+    const level = stationOfSurah(sid);
     const prog = surahProgress(sid);
-    const step = screen.step || 'story';
+    const steps = stepsFor(sid);
+    const step = steps.some((st) => st.id === screen.step) ? screen.step : steps[0].id;
     const item = gardenItems('quran').find((it) => it.id === `q-${sid}`);
     const nextSid = QURAN_PATH[QURAN_PATH.indexOf(sid) + 1];
+    const ratio = surahRatio(sid);
+    const doneSteps = steps.filter((st) => prog[st.id]).length;
     const toStep = (id) => replace({ ...screen, step: id });
     const stepBar = (
       <ol className="sg-surah-steps" aria-label={`خطوات سورة ${su.name}`}>
-        {SURAH_STEPS.map((st, i) => (
+        {steps.map((st, i) => (
           <li key={st.id}>
             <button
               type="button"
@@ -870,9 +936,18 @@ export default function SalmanApp() {
     const head = (
       <>
         <TopBar title={`سورة ${su.name}`} onBack={back} state={state} color={GARDENS.quran.color} />
-        <p className="sg-surah-level">
-          {level?.title} · {toArabicNumeral(su.ayahs)} آيات
-        </p>
+        <div className="sg-item-progress" style={{ '--g': GARDENS.quran.color }}>
+          <span className="sg-item-progress-text">
+            {level?.title}
+            {su.ayahs ? ` — ${toArabicNumeral(su.ayahs)} آيات` : ''}
+          </span>
+          <span className="sg-gbar" aria-hidden="true">
+            <span style={{ width: `${Math.round(ratio * 100)}%` }} />
+          </span>
+          <span className="sg-item-progress-count">
+            {prog.memorize ? '🪙 محفوظة' : `${toArabicNumeral(doneSteps)} من ${toArabicNumeral(steps.length)} خطوات`}
+          </span>
+        </div>
         {stepBar}
       </>
     );
@@ -918,19 +993,19 @@ export default function SalmanApp() {
           {head}
           <section className="sg-memorize">
             <div className="sg-verses" lang="ar">
-              {verses ? verses.join(' ۝ ') : 'النص يُضاف قريبًا.'}
+              {verses ? verses.join(' ۝ ') : 'اقرأها مع التلاوة في خطوة «استمع وردّد» 🎧، ثم اضغط «حفظتها».'}
             </div>
             {!prog.memorize ? (
               <button
                 type="button"
                 className="sg-btn sg-btn-main"
                 onClick={() => {
-                  const wasDone = levelDone(state, level.level);
                   const r = recordSurah(state, { surahId: sid, dayKey: today });
                   setState(r.state);
                   sfx('levelUp');
-                  if (!wasDone && levelDone(r.state, level.level)) {
-                    setCelebrate({ emoji: '🪐', title: 'كوكب مكتمل!', sub: level.title, clip: 'level-unlock' });
+                  const stationDone = level && level.surahs.every((x) => x === sid || state.learnedSurahs[x]);
+                  if (stationDone) {
+                    setCelebrate({ emoji: '🌳', title: 'شجرة مكتملة!', sub: level.title, clip: 'level-unlock' });
                   } else {
                     setCelebrate({ emoji: '🪙', title: 'سورة محفوظة!', sub: `سورة ${su.name}`, clip: 'surah-learned' });
                   }
@@ -947,11 +1022,11 @@ export default function SalmanApp() {
                 className="sg-btn sg-btn-main sg-next-btn"
                 onClick={() => replace({ name: 'surah', sid: nextSid, step: firstOpenStep(nextSid) })}
               >
-                السورة التالية: {SURAHS[nextSid].name} ➜
+                السورة التالية: {surahName(nextSid)} ➜
               </button>
             )}
             <button type="button" className="sg-btn sg-btn-soft" onClick={() => replace({ name: 'quran' })}>
-              🪐 رجوع إلى الرحلة
+              🌳 رجوع إلى خريطة الحديقة
             </button>
           </section>
         </main>
@@ -965,6 +1040,7 @@ export default function SalmanApp() {
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
         <TopBar title={`الحرف ${letter}`} onBack={back} state={state} color={GARDENS.arabic.color} />
+        <ItemProgress color={GARDENS.arabic.color} {...letterProgress(letter)} />
         <section className="sg-letter-hero">
           <span className="sg-letter-big">{letter}</span>
           <img className="sg-letter-animal" src={assetUrl(`salman/art/animals/${animal.slug}.png`)} alt="" />
@@ -1016,8 +1092,7 @@ export default function SalmanApp() {
         <h2 className="sg-section">حروف المحطة</h2>
         <ul className="sg-station-letters">
           {level.pairs.map((p) => {
-            const mine = gardenItems('arabic').filter((it) => it.letter === p.letter);
-            const done = mine.filter((it) => state.doneStories[it.id]).length;
+            const lp = letterProgress(p.letter);
             return (
               <li key={p.letter}>
                 <button
@@ -1029,8 +1104,11 @@ export default function SalmanApp() {
                   <span className="sg-letter-glyph">{p.letter}</span>
                   <img src={assetUrl(p.image)} alt="" loading="lazy" />
                   <span className="sg-letter-name">{p.word}</span>
-                  <span className="sg-letter-progress">
-                    📖 {toArabicNumeral(done)} / {toArabicNumeral(mine.length)}
+                  <span className="sg-letter-progress" style={{ '--g': GARDENS.arabic.color }}>
+                    <span className="sg-gbar" aria-hidden="true">
+                      <span style={{ width: `${Math.round(lp.ratio * 100)}%` }} />
+                    </span>
+                    {lp.done ? '⭐ مكتمل' : `${toArabicNumeral(Math.round(lp.ratio * 100))}٪`}
                   </span>
                 </button>
               </li>
@@ -1056,26 +1134,25 @@ export default function SalmanApp() {
     if (id === 'arabic') {
       content = (
         <>
-          <h2 className="sg-section">رحلة الحروف · ٧ كواكب</h2>
-          <OrbitMap
+          <h2 className="sg-section">رحلة الحروف · ٧ محطات</h2>
+          <GardenMap
             label="رحلة الحروف"
+            color={g.color}
             guideArt={assetUrl(MASCOTS.hoopoe)}
             stations={HUROOF_LEVELS.map((l) => ({
               id: l.id,
               title: l.title,
-              color: STATION_COLORS[(l.id - 1) % STATION_COLORS.length],
               onOpen: () => go({ name: 'station', level: l.id }),
               items: l.letters.map((L) => {
-                const mine = items.filter((it) => it.letter === L);
-                const storiesDone = mine.length > 0 && mine.every((it) => state.doneStories[it.id]);
-                const dayDone = unitCompleted(state, UNIT_BY_LETTER[L]);
+                const lp = letterProgress(L);
                 return {
                   key: L,
                   label: L,
-                  done: dayDone || storiesDone,
+                  done: lp.done,
+                  progress: lp.ratio,
                   gems: [
-                    { icon: '💎', on: storiesDone },
-                    { icon: '🪙', on: dayDone },
+                    { icon: '💎', on: lp.storiesDone },
+                    { icon: '🪙', on: lp.dayDone },
                   ],
                 };
               }),
@@ -1085,46 +1162,32 @@ export default function SalmanApp() {
         </>
       );
     } else if (id === 'math') {
-      const stations = MATH_STATIONS.map((st) => ({ ...st, days: st.units.map((uid) => NOUR_UNITS[uid]) }));
       content = (
         <>
-          <h2 className="sg-section">أيام الأرقام · ١–٢٠</h2>
-          {stations.map((st) => {
-            const first = st.days[0];
-            const last = st.days[st.days.length - 1];
-            const doneCount = st.days.filter((u) => unitCompleted(state, u.id)).length;
-            return (
-              <section key={st.id} className="sg-numstation">
-                <h3 className="sg-numstation-head">
-                  <span>
-                    المحطة {toArabicNumeral(st.id)} · {first.glyph}–{last.glyph}
-                  </span>
-                  <span className="sg-numstation-count" aria-label={`اكتمل ${doneCount} من ${st.days.length}`}>
-                    {toArabicNumeral(doneCount)} / {toArabicNumeral(st.days.length)}
-                  </span>
-                </h3>
-                <ul className="sg-nour-row">
-                  {st.days.map((u) => {
-                    const done = unitCompleted(state, u.id);
-                    return (
-                      <li key={u.id}>
-                        <button
-                          type="button"
-                          className={done ? 'sg-nour-card is-done' : 'sg-nour-card'}
-                          style={{ '--g': g.color }}
-                          onClick={() => go({ name: 'day', garden: 'math', unitId: u.id })}
-                        >
-                          <span className="sg-nour-glyph">{u.glyph}</span>
-                          <span className="sg-nour-label">{u.keyWord}</span>
-                          <span aria-hidden="true">{done ? '✅' : '🌱'}</span>
-                        </button>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
-            );
-          })}
+          <h2 className="sg-section">رحلة الأرقام · ١–٢٠</h2>
+          <GardenMap
+            label="رحلة الأرقام"
+            color={g.color}
+            guideArt={assetUrl(MASCOTS.squirrel)}
+            stations={MATH_STATIONS.map((st) => {
+              const days = st.units.map((uid) => NOUR_UNITS[uid]);
+              return {
+                id: st.id,
+                title: `المحطة ${toArabicNumeral(st.id)} · ${days[0].glyph}–${days[days.length - 1].glyph}`,
+                onOpen: () => {
+                  const next = days.find((u) => !unitCompleted(state, u.id)) || days[0];
+                  go({ name: 'day', garden: 'math', unitId: next.id });
+                },
+                items: days.map((u) => ({
+                  key: u.id,
+                  label: u.glyph,
+                  done: unitCompleted(state, u.id),
+                  progress: unitRatio(state, u.id),
+                })),
+              };
+            })}
+            onItem={(st, it) => go({ name: 'day', garden: 'math', unitId: it.key })}
+          />
           <h2 className="sg-section">قصص العدّ</h2>
           {cards(items.filter((it) => it.source !== 'count'))}
           <h2 className="sg-section">نعدّ من ١ إلى ٢٠</h2>
@@ -1158,41 +1221,42 @@ export default function SalmanApp() {
       );
     } else {
       const days = gardenUnits('english');
+      const groups = [...new Set(days.map((u) => u.group ?? 1))];
       content = (
         <>
-          <h2 className="sg-section">
-            {`Letter Days · ${[...new Set(days.map((u) => u.group ?? 1))]
-              .map((g) =>
-                days
-                  .filter((u) => (u.group ?? 1) === g)
-                  .map((u) => u.sound)
-                  .join(' ')
-              )
-              .join(' · ')}`}
-          </h2>
-          <ul className="sg-nour-row">
-            {days.map((u) => {
-              const done = unitCompleted(state, u.id);
-              return (
-                <li key={u.id}>
-                  <button
-                    type="button"
-                    className={done ? 'sg-nour-card is-done' : 'sg-nour-card'}
-                    style={{ '--g': g.color }}
-                    onClick={() => go({ name: 'day', garden: 'english', unitId: u.id })}
-                  >
-                    <span className="sg-nour-glyph" lang="en">
-                      {u.glyph}
-                    </span>
-                    <span className="sg-nour-label" lang="en">
-                      {u.keyWord}
-                    </span>
-                    <span aria-hidden="true">{done ? '✅' : '🌱'}</span>
-                  </button>
-                </li>
-              );
+          <h2 className="sg-section">Letter Days · رحلة الأصوات</h2>
+          <GardenMap
+            label="رحلة الأصوات"
+            color={g.color}
+            guideArt={assetUrl(MASCOTS.silkworm)}
+            stations={groups.map((grp) => {
+              const mine = days.filter((u) => (u.group ?? 1) === grp);
+              return {
+                id: grp,
+                name: `المجموعة ${toArabicNumeral(grp)} · ${mine.map((u) => u.sound).join(' ')}`,
+                title: (
+                  <>
+                    المجموعة {toArabicNumeral(grp)}
+                    <bdi className="sg-gsign-sounds" lang="en" dir="ltr">
+                      {mine.map((u) => u.sound).join(' ')}
+                    </bdi>
+                  </>
+                ),
+                onOpen: () => {
+                  const next = mine.find((u) => !unitCompleted(state, u.id)) || mine[0];
+                  go({ name: 'day', garden: 'english', unitId: next.id });
+                },
+                items: mine.map((u) => ({
+                  key: u.id,
+                  label: u.glyph,
+                  lang: 'en',
+                  done: unitCompleted(state, u.id),
+                  progress: unitRatio(state, u.id),
+                })),
+              };
             })}
-          </ul>
+            onItem={(st, it) => go({ name: 'day', garden: 'english', unitId: it.key })}
+          />
           <h2 className="sg-section">Phonics · الأصوات</h2>
           {cards(items)}
         </>

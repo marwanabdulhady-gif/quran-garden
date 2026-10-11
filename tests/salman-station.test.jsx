@@ -69,11 +69,11 @@ describe('الوصول إلى يوم الوحدة من داخل التطبيق',
     history.replaceState(null, '', '/');
     render(<SalmanApp />);
     fireEvent.click(screen.getByText('الأرقام')); // التبويب
-    expect(screen.getByText('أيام الأرقام · ١–٢٠')).toBeTruthy();
+    expect(screen.getByText('رحلة الأرقام · ١–٢٠')).toBeTruthy();
     // المحطات الأربع معروضة بعناوينها وعدّاد ما اكتمل فيها
     expect(screen.getByText('المحطة ١ · ١–٤')).toBeTruthy();
     expect(screen.getByText('المحطة ٤ · ١٣–٢٠')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /^١ أَحَد/ })); // ١ لا ١١
+    fireEvent.click(screen.getByRole('button', { name: /^١ · / })); // ١ لا ١١
     expect(document.querySelector('.sg-day-title strong').textContent).toContain('١');
   });
 
@@ -95,8 +95,15 @@ describe('الوصول إلى يوم الوحدة من داخل التطبيق',
     history.replaceState(null, '', '/');
     render(<SalmanApp />);
     fireEvent.click(screen.getByText('English'));
-    expect(screen.getByText(/Letter Days · s a t i p n · c k e h r m d · g o u l f b · ai j oa ie ee or/)).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /s\s*sun/ }));
+    const signs = [...document.querySelectorAll('.sg-gsign strong')].map((x) => x.textContent);
+    expect(signs).toEqual([
+      'المجموعة ١s a t i p n',
+      'المجموعة ٢c k e h r m d',
+      'المجموعة ٣g o u l f b',
+      'المجموعة ٤ai j oa ie ee or',
+    ]);
+    expect(screen.getByRole('button', { name: /^المجموعة ١ · s a t i p n/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /^s · / }));
     const head = document.querySelector('.sg-day-title strong');
     expect(head.textContent).toContain('s');
     expect(head.getAttribute('lang')).toBe('en');

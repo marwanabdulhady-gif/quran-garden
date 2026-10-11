@@ -415,7 +415,7 @@ export function Player({ gate, surahNum, go }) {
         <Top
           go={go}
           title={cleanAyah(SURAH_NAMES_FALLBACK[surahNum] || '...')}
-          avatar={child.avatarReading || '/assets/hero-reading-t.png'}
+          avatar={child.avatarReading || '/salman/art/mascot-salman.png'}
         />
         <div className="parent-gate">
           <div className="pg-emoji">🔒</div>
@@ -439,7 +439,7 @@ export function Player({ gate, surahNum, go }) {
         <Top
           go={go}
           title={cleanAyah(SURAH_NAMES_FALLBACK[surahNum])}
-          avatar={child.avatarReading || '/assets/hero-reading-t.png'}
+          avatar={child.avatarReading || '/salman/art/mascot-salman.png'}
         />
         <div className="player-ayah">
           <ErrorBox msg="تعذّر تحميل التلاوة. تأكد من الإنترنت واضغط للتشغيل مرة تانية." onRetry={load} />
@@ -454,7 +454,7 @@ export function Player({ gate, surahNum, go }) {
         <Top
           go={go}
           title={cleanAyah(SURAH_NAMES_FALLBACK[surahNum] || '...')}
-          avatar={child.avatarReading || '/assets/hero-reading-t.png'}
+          avatar={child.avatarReading || '/salman/art/mascot-salman.png'}
         />
         <div className="player-ayah">
           <Loading />
@@ -473,7 +473,7 @@ export function Player({ gate, surahNum, go }) {
         go={go}
         title={cleanAyah(surah.name)}
         sub={`${gate.title} · الآية ${cur + 1} من ${surah.numberOfAyahs}`}
-        avatar={child.avatarReading || '/assets/hero-reading-t.png'}
+        avatar={child.avatarReading || '/salman/art/mascot-salman.png'}
       />
       <div className="player-ayah">
         <div className="ayah-frame">
