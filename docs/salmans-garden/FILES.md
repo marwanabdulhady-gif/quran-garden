@@ -187,7 +187,8 @@
 - `docs/salmans-garden/APP.md`: وصف التطبيق وما هو معلّق.
 - `docs/salmans-garden/ASSETS.md`: الأصول وما تبقّى منها.
 - `docs/salmans-garden/PROPOSAL.md`: الاقتراح المعتمد.
-- `docs/salmans-garden/PLAN-ISLAMIC-PHONICS.md`: خطة «حدائق النور» للحدائق الثلاث (بانتظار القرارات).
+- `docs/salmans-garden/PLAN-ISLAMIC-PHONICS.md`: خطة «حدائق النور» للحدائق الثلاث (معتمدة 2026-10-11).
+- `docs/salmans-garden/CONTENT-REVIEW.md`: بروتوكول المراجعة وضمان الجودة وسجل القصص.
 - `docs/salmans-garden/README.md`: فهرس الوثائق.
 
 ## 3.4 مشاهد القصص (V2، 16 من 20 حتى الآن)
