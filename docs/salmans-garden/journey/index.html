@@ -90,7 +90,7 @@
     <ul class="notes muted">
       <li><b>حروف مع الصحابة (PDF، 56 صفحة ممسوحة):</b> نص مكتوب بالنظر من الصور، ولم يُراجع بعد مقابل الكتاب. صفحة الفصل 4 (ب) تطابقت مع الصورة. <span class="pill">يحتاج مراجعة</span></li>
       <li><b>حروف مع خاتم الأنبياء (نص Drive «Welcome file.md»):</b> 28 حرفًا، وطابق التعرف الضوئي معظم صفحات الـ PDF. <span class="pill">يحتاج مراجعة</span></li>
-      <li><b>حرف الفاء:</b> لا توجد قصة في كتاب الصحابة. <span class="pill">ناقص</span></li>
+      <li><b>حرف الفاء:</b> لا توجد قصة في كتاب الصحابة، وكُتبت قصة صحابة بديلة (أنس بن مالك، «أنت مع من أحببت») في <code>source/additions-fa-and-numbers.md</code>. <span class="pill">مسودة تحتاج مراجعة</span></li>
       <li><b>القصص القرآنية في التطبيق:</b> مبسّطة من إعداد المطوّر، وتُراجَع مع معلّم أو عالم قبل النشر. <span class="pill">يحتاج مراجعة</span></li>
       <li><b>الترتيب في كتاب الصحابة:</b> قصة النون تأتي داخل فصل الهاء في الترتيب المطبوع (الصفحات 48–50)، وأعيدت إلى حرفها في هذه الخريطة.</li>
     </ul>
@@ -163,7 +163,7 @@ function renderDetail() {
   if (tab === 'companions') {
     body = L.companions.length
       ? L.companions.map(c => `<h3>${escapeHtml(c.title)}</h3><div class="story">${paras(c.story)}</div>`).join('')
-      : '<p class="muted">لا توجد قصة للصحابة لهذا الحرف في الكتاب (حرف الفاء).</p>';
+      : '<p class="muted">لا توجد قصة للصحابة لهذا الحرف في الكتاب (حرف الفاء)، وكُتبت قصة بديلة في <code>source/additions-fa-and-numbers.md</code> بانتظار المراجعة.</p>';
   }
   if (tab === 'hadith') body = `<div class="story">${paras(L.prophet.hadith)}</div>`;
   if (tab === 'idea') body = `<h3>فكرة تربوية</h3><div class="story">${paras(L.prophet.idea)}</div>${L.companionQuestions.length ? '<h3>أسئلة للطفل</h3><div class="story">' + paras(L.companionQuestions) + '</div>' : ''}`;

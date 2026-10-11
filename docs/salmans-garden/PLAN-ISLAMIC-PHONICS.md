@@ -115,7 +115,7 @@ Key words and stories come from the two books (story summaries checked against t
 | ظ | ظَ | Patience in the shade of the Ka'bah (ظل) | Uqbah ibn Amir (ظلام) | Shade your eyes with your hand | Be patient when someone is unkind |
 | ع | عَ | The dua he taught his uncle al-Abbas (عم) | Mu'adh ibn Jabal (عالم) | Arms open for a hug | Learn the dua «اللهم إني أسألك العافية» |
 | غ | غَ | The two trees in the valley (غصن) | Abu Bakr and Abu Sa'id (غضب) | Gargle sound + bend a branch | When angry: sit down and stay quiet |
-| ف | فَ | His brave night ride (فرس) | **Added:** Anas ibn Malik, «أنت مع من أحببت» (فَرَح), Bukhari 3688, Muslim 2639. See `source/additions-fa-and-numbers.md` | Gallop | Make a «tree of those we love» |
+| ف | فَ | His brave night ride (فرس) | **Added:** Anas ibn Malik, «أنت مع من أحببت» (فَرَح), Bukhari 3688, Muslim 2639 (verified). See `source/additions-fa-and-numbers.md` | Gallop | Make a «tree of those we love» |
 | ق | قَ | Usayd ibn Hudayr's recitation (قرآن) | Abdullah ibn Mas'ud (قرآن) | Open your hands like a mushaf | Listen to one ayah |
 | ك | كَ | The man who gave water to a thirsty dog (كلب) | The Prophet's scribe (كاتب) | Paws holding a bucket | Give an animal water |
 | ل | لَ | The guest and the milk (لبن) | Aisha (لعب) | Drink from a cup | Don't fill your tummy too much |
@@ -256,6 +256,8 @@ Each number gets the same full treatment as a letter:
 
 The full texts, written in the books' style, are in `source/additions-fa-and-numbers.md`. All of them were researched, and every source is listed.
 
+**Verification (2026-10-11):** every hadith reference here and in the additions file was matched against sunnah.com (Sahih al-Bukhari / Sahih Muslim, Darussalam numbering), and every Quran reference against the Uthmani text (api.quran.com). The verification log is at the end of `source/additions-fa-and-numbers.md`. What remains is human: matching the numbers to the printed edition the family uses, and the teacher/scholar review — nothing is voiced before that.
+
 | Number | Story | Source | Good deed |
 |---|---|---|---|
 | ١ | «قل هو الله أحد», one finger in tashahhud | al-Ikhlas 1 | Recite al-Ikhlas |
@@ -264,8 +266,8 @@ The full texts, written in the books' style, are in `source/additions-fa-and-num
 | ٤ | Ibrahim and the four birds | al-Baqarah 260 | Count 4 birds outside |
 | ٥ | The five rights of a Muslim (and five prayers) | Bukhari 1240, Muslim 2162 | Return the salaam, say «يرحمك الله» |
 | ٦ | The heavens and earth in six days | al-A'raf 54 | Count 6 things Allah made |
-| ٧ | Seven in the shade of Allah: «شاب نشأ في عبادة الله» | Bukhari & Muslim (Muslim 1031) | Love your friends for Allah |
-| ٨ | Eight gates of Jannah, one called ar-Rayyan | Bukhari (number to verify) | Draw 8 doors |
+| ٧ | Seven in the shade of Allah: «شاب نشأ في عبادة الله» | Bukhari 660, Muslim 1031 | Love your friends for Allah |
+| ٨ | Eight gates of Jannah, one called ar-Rayyan | Bukhari 3257 | Draw 8 doors |
 | ٩ | Nine clear signs to Musa | al-Isra 101 | Fold fingers and count |
 | ١٠ | A good deed is worth ten | al-An'am 160 | 1 deed = 10 stars (first taste of multiplying) |
 | ١١ | Yusuf's eleven stars | Yusuf 4 | Count 11 stars |
@@ -308,6 +310,8 @@ Rough effort for the pilot (station 1 × 3 gardens):
 ---
 
 ## 12. Decisions needed from you before any code
+
+> The references were verified on 2026-10-11 (sunnah.com and api.quran.com; log in `source/additions-fa-and-numbers.md`). What is still pending is your approval of the decisions below, then the teacher/scholar review, then the printed-edition match.
 
 1. **Letter order:** switch to the phonics groups in §3, or keep the alphabet? *(I recommend phonics groups.)*
 2. **Chants:** voice only, no instruments, and no musical beat? *(I recommend voice only, with clapping allowed.)*
