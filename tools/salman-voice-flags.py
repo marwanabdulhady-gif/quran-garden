@@ -14,7 +14,11 @@ import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-DATA_FILES = [ROOT / 'src/salman/data/nour.js', ROOT / 'src/salman/data/nour-letters.js']
+DATA_FILES = [
+    ROOT / 'src/salman/data/nour.js',
+    ROOT / 'src/salman/data/nour-letters.js',
+    ROOT / 'src/salman/data/nour-english.js',
+]
 AUDIO = ROOT / 'public/salman/audio/nour'
 
 STORY_IDS = re.compile(r"id: '((?:ar-[a-z]{1,2}-[pc]|num-\d-s|en-[a-z]-s))',\n")

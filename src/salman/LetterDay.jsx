@@ -194,6 +194,11 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
               {chosen.note}
             </p>
           )}
+          {unit.related && (
+            <p className="sg-related" lang="ar">
+              🔗 {unit.related.labelAr}
+            </p>
+          )}
         </section>
       )}
 

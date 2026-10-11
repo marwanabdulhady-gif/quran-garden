@@ -7,6 +7,7 @@
 // حالة المراجعة لكل قصة: 'ok' ✅ (قوبل على sunnah.com) · 'note' 🟡 (مقبول مع ملاحظة) · 'pending' ⬜.
 
 import { LETTER_UNITS } from './nour-letters.js';
+import { ENGLISH_UNITS } from './nour-english.js';
 
 export const REVIEW = { ok: 'ok', note: 'note', pending: 'pending' };
 
@@ -391,178 +392,7 @@ const math = [
   },
 ];
 
-// ---------- الإنجليزية: Letters of Light — الأصوات s a t i ----------
-const english = [
-  {
-    id: 'en-s',
-    sound: 's',
-    keyWord: 'sun',
-    keyEmoji: '☀️',
-    action: { emoji: '🐍', text: 'Wiggle your hand like a snake and say: sss' },
-    chant: {
-      voiced: true,
-      lines: ['sss … sss … sun', 'Sulaiman heard the ant'],
-      text: 'sss, sss, sun. Sulaiman heard the ant.',
-      lang: 'en',
-    },
-    trace: { script: 'en', glyph: 's', hint: 'Start at the top, curve like a little snake' },
-    hunt: {
-      prompt: 'Tap everything that starts with sss',
-      lang: 'en',
-      items: [
-        { label: 'sun', emoji: '☀️', correct: true },
-        { label: 'snake', emoji: '🐍', correct: true },
-        { label: 'star', emoji: '⭐', correct: true },
-        { label: 'tree', emoji: '🌴', correct: false },
-        { label: 'ant', emoji: '🐜', correct: false },
-      ],
-    },
-    train: { prompt: 'Tap the sounds in order', lang: 'en', tiles: ['s', 'a', 't'], result: 'sat' },
-    boxes: { prompt: 'One sound in each box', lang: 'en', word: 'sun', tiles: ['s', 'u', 'n'] },
-    play: 'train',
-    deed: { emoji: '🐜', text: 'Be gentle with small creatures, like the ants' },
-    stories: [
-      {
-        id: 'en-s-s',
-        from: 'quran',
-        title: 'Sulaiman and the Ant',
-        text: 'Sulaiman led a big army. They came to the valley of the ants. A little ant said: "Run, ants! Go into your homes, so Sulaiman and his soldiers do not crush you." Sulaiman heard the ant, and he smiled. He said: "Thank you, Allah, for this gift." Can you say the sound s? sss, sss, sun, sand, snake.',
-        lang: 'en',
-        ref: 'Quran: an-Naml 18–19',
-        url: 'https://quran.com/27/18',
-        review: 'ok',
-        voiced: true,
-      },
-    ],
-  },
-  {
-    id: 'en-a',
-    sound: 'a',
-    keyWord: 'ant',
-    keyEmoji: '🐜',
-    action: { emoji: '🐜', text: 'Point at things and name them: a, a, ant' },
-    chant: {
-      voiced: true,
-      lines: ['a … a … ant', 'Allah taught Adam the names'],
-      text: 'a, a, ant. Allah taught Adam the names.',
-      lang: 'en',
-    },
-    trace: { script: 'en', glyph: 'a', hint: 'A little circle, then a line down' },
-    hunt: {
-      prompt: 'Tap everything that starts with a',
-      lang: 'en',
-      items: [
-        { label: 'ant', emoji: '🐜', correct: true },
-        { label: 'apple', emoji: '🍎', correct: true },
-        { label: 'arm', emoji: '💪', correct: true },
-        { label: 'pen', emoji: '🖊️', correct: false },
-        { label: 'moon', emoji: '🌙', correct: false },
-      ],
-    },
-    train: { prompt: 'Tap the sounds in order', lang: 'en', tiles: ['a', 'n', 't'], result: 'ant' },
-    boxes: { prompt: 'One sound in each box', lang: 'en', word: 'ant', tiles: ['a', 'n', 't'] },
-    play: 'boxes',
-    deed: { emoji: '📚', text: 'Learn one new word today and say it to Baba' },
-    stories: [
-      {
-        id: 'en-a-s',
-        from: 'quran',
-        title: 'Adam Names the Things',
-        text: 'Allah taught Adam the names of all things. Allah said: "Tell the angels their names." Adam said: "This is a tree. This is a bird. This is an ant." Adam knew every name. What can you name? Look around: a mat, a bag, a rag. Say the sound a: a, a, ant.',
-        lang: 'en',
-        ref: 'Quran: al-Baqarah 31',
-        url: 'https://quran.com/2/31',
-        review: 'ok',
-        voiced: true,
-      },
-    ],
-  },
-  {
-    id: 'en-t',
-    sound: 't',
-    keyWord: 'tree',
-    keyEmoji: '🌴',
-    action: { emoji: '🌴', text: 'Shake your hands like a tree and say: t, t, t' },
-    chant: {
-      voiced: true,
-      lines: ['t … t … tree', 'Maryam shook the palm tree'],
-      text: 't, t, tree. Maryam shook the palm tree.',
-      lang: 'en',
-    },
-    trace: { script: 'en', glyph: 't', hint: 'A line down, then a small cross at the top' },
-    hunt: {
-      prompt: 'Tap everything that starts with t',
-      lang: 'en',
-      items: [
-        { label: 'tree', emoji: '🌴', correct: true },
-        { label: 'tap', emoji: '👆', correct: true },
-        { label: 'table', emoji: '🪑', correct: true },
-        { label: 'sun', emoji: '☀️', correct: false },
-        { label: 'ant', emoji: '🐜', correct: false },
-      ],
-    },
-    train: { prompt: 'Tap the sounds in order', lang: 'en', tiles: ['t', 'e', 'n'], result: 'ten' },
-    boxes: { prompt: 'One sound in each box', lang: 'en', word: 'tree', tiles: ['t', 'r', 'ee'] },
-    play: 'train',
-    deed: { emoji: '🌰', text: 'Eat a date and say bismillah' },
-    stories: [
-      {
-        id: 'en-t-s',
-        from: 'quran',
-        title: 'Maryam and the Palm Tree',
-        text: 'Maryam was tired and hungry. Allah said to her: "Shake the trunk of the palm tree, and fresh ripe dates will fall for you." She shook the tree: tap, tap, tap. Dates fell down! Maryam ate and she was happy. Say the sound t: t, t, tree. Can you tap the table like this? Tap, tap, tap.',
-        lang: 'en',
-        ref: 'Quran: Maryam 25',
-        url: 'https://quran.com/19/25',
-        review: 'ok',
-        voiced: true,
-      },
-    ],
-  },
-  {
-    id: 'en-i',
-    sound: 'i',
-    keyWord: 'in',
-    keyEmoji: '🧱',
-    action: { emoji: '🧱', text: 'Put one hand in the other: brick in, brick in' },
-    chant: {
-      voiced: true,
-      lines: ['i … i … in', 'Brick in, brick in'],
-      text: 'i, i, in. Brick in, brick in.',
-      lang: 'en',
-    },
-    trace: { script: 'en', glyph: 'i', hint: 'A line down, then a small dot on top' },
-    hunt: {
-      prompt: 'Tap everything that starts with i',
-      lang: 'en',
-      items: [
-        { label: 'ink', emoji: '🖊️', correct: true },
-        { label: 'insect', emoji: '🐞', correct: true },
-        { label: 'igloo', emoji: '🏠', correct: true },
-        { label: 'ant', emoji: '🐜', correct: false },
-        { label: 'sun', emoji: '☀️', correct: false },
-      ],
-    },
-    train: { prompt: 'Tap the sounds in order', lang: 'en', tiles: ['i', 'n'], result: 'in' },
-    boxes: { prompt: 'One sound in each box', lang: 'en', word: 'ink', tiles: ['i', 'n', 'k'] },
-    play: 'boxes',
-    deed: { emoji: '🔨', text: 'Help Baba fix or build something today' },
-    stories: [
-      {
-        id: 'en-i-s',
-        from: 'quran',
-        title: "Ibrahim and Isma'il",
-        text: 'Ibrahim and his son Isma\'il built the House of Allah. Ibrahim put the bricks, and Isma\'il brought the stones. Brick in, brick in, brick in. They said: "Our Lord, accept this from us." Is there a job you can do with Baba? Say the sound i: i, i, in. Put the brick in.',
-        lang: 'en',
-        ref: 'Quran: al-Baqarah 127',
-        url: 'https://quran.com/2/127',
-        review: 'ok',
-        voiced: true,
-        note: 'لا يُصوَّر نبي؛ مشهد البناء بالحجارة والطير فقط.',
-      },
-    ],
-  },
-];
+// الإنجليزية انتقلت إلى nour-english.js (المجموعة الأولى: s a t i p n)
 
 const withGarden = (list, garden) => list.map((u) => ({ ...u, garden }));
 
@@ -573,17 +403,16 @@ const byLetter = (a, b) => LETTER_SEQUENCE.indexOf(a.letter) - LETTER_SEQUENCE.i
 const arabicUnits = [...arabic, ...LETTER_UNITS].sort(byLetter);
 
 export const NOUR_UNITS = Object.fromEntries(
-  [...withGarden(arabicUnits, 'arabic'), ...withGarden(math, 'math'), ...withGarden(english, 'english')].map((u) => [
-    u.id,
-    u,
-  ])
+  [...withGarden(arabicUnits, 'arabic'), ...withGarden(math, 'math'), ...withGarden(ENGLISH_UNITS, 'english')].map(
+    (u) => [u.id, u]
+  )
 );
 
 // ترتيب الوحدات داخل كل حديقة (حديقة الحروف بترتيب الألفباء، والبقية بترتيبها)
 export const NOUR_ORDER = {
   arabic: arabicUnits.map((u) => u.id),
   math: math.map((u) => u.id),
-  english: english.map((u) => u.id),
+  english: ENGLISH_UNITS.map((u) => u.id),
 };
 
 export const UNIT_BY_LETTER = Object.fromEntries(arabicUnits.map((u) => [u.letter, u.id]));

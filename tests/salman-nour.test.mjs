@@ -32,8 +32,10 @@ describe('حدائق النور — المحتوى', () => {
     // الألفباء: الدفعة الأولى (أ ب) ثم P3 (ت ث ج ح) ثم بقية الطيار (د م)
     expect(gardenUnits('arabic').map((u) => u.letter)).toEqual(['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'د', 'م']);
     expect(gardenUnits('math').map((u) => u.n)).toEqual([1, 2, 3, 4]);
-    expect(gardenUnits('english').map((u) => u.sound)).toEqual(['s', 'a', 't', 'i']);
-    expect(UNITS).toHaveLength(16);
+    // الإنجليزية: المجموعة الأولى كاملة من تسلسل الفونيكس (s a t i p n)
+    expect(gardenUnits('english').map((u) => u.sound)).toEqual(['s', 'a', 't', 'i', 'p', 'n']);
+    expect(gardenUnits('english').every((u) => u.group === 1)).toBe(true);
+    expect(UNITS).toHaveLength(18);
     expect(NOUR_ORDER.arabic).toHaveLength(8);
     // ترتيب «اليوم التالي» يتبع الألفباء دائمًا
     const seq = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
@@ -47,7 +49,7 @@ describe('حدائق النور — المحتوى', () => {
       expect(['arabic', 'math', 'english']).toContain(u.garden);
       expect(u.keyWord, u.id).toBeTruthy();
       expect(u.action?.text, u.id).toBeTruthy();
-      expect(u.chant?.lines?.length, u.id).toBe(2);
+      expect(u.chant?.lines?.length, u.id).toBeGreaterThanOrEqual(2);
       expect(u.chant?.text, u.id).toBeTruthy();
       expect(u.trace?.glyph, u.id).toBeTruthy();
       expect(['ar', 'en', 'num']).toContain(u.trace.script);
@@ -100,6 +102,18 @@ describe('حدائق النور — المحتوى', () => {
     }
   });
 
+  it('الجسر بين الحدائق: كل ربط `related` يشير إلى وحدة موجودة', () => {
+    const linked = UNITS.filter((u) => u.related);
+    expect(linked.length).toBeGreaterThanOrEqual(3);
+    for (const u of linked) {
+      expect(NOUR_UNITS[u.related.unitId], `${u.id} → ${u.related.unitId}`).toBeTruthy();
+      expect(u.related.labelAr.length, u.id).toBeGreaterThan(10);
+    }
+    // قصة جابر في الثاء والإنجليزية معًا، والإحسان للحيوان في الجيم والنون
+    expect(nourUnit('en-p').related.unitId).toBe('ar-ث');
+    expect(nourUnit('en-n').related.unitId).toBe('ar-ج');
+  });
+
   it('اتساق الحدائق: كل حديقة بلغتها وبأدواتها', () => {
     for (const u of gardenUnits('english')) {
       expect(u.chant.lang, u.id).toBe('en');
@@ -109,6 +123,14 @@ describe('حدائق النور — المحتوى', () => {
       }
       expect(u.trace.script, u.id).toBe('en');
       expect(u.keyWord, u.id).toMatch(/^[a-z]+$/);
+      const story = u.stories[0];
+      expect(story.text.length, `${u.id}: نص القصة`).toBeGreaterThan(420);
+      expect(story.ref, u.id).toBeTruthy();
+      expect(story.url, u.id).toBeTruthy();
+      // كل قصة إنجليزية تنتهي بدعوة للطفل (سؤال أو فعل معه) — ليست نصًا جامدًا
+      expect(/(say the sound|can you|tap the|puff|put the|will you)/i.test(story.text), `${u.id}: دعوة للطفل`).toBe(
+        true
+      );
     }
     for (const u of gardenUnits('math')) {
       expect(u.trace.script, u.id).toBe('num');

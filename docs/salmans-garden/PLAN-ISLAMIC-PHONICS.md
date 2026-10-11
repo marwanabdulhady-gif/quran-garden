@@ -242,6 +242,8 @@ This is what removes the 168-panel budget: **the pilot needs zero panel images**
 
 ## 9. English garden «Letters of Light»: the same method, with Islamic stories — **approved 2026-10-11**
 
+**Update 2026-10-11 (after the owner's note that the first English stories were too plain):** the sound *set and grouping* follow the widely used synthetic-phonics order (Jolly Phonics, 42 sounds in 7 groups: 1) s a t i p n · 2) c k e h r m d · 3) g o u l f b · 4) ai j oa ie ee or · 5) z w ng v oo oo · 6) y x ch sh th th · 7) qu ou oi ue er ar). **The story texts are ours**: no text is copied from that (copyrighted) programme — we take the sound sequence and write longer, warmer stories from our own pool of prophets and companions, and each unit links back to its Arabic-letter unit (`related`) so the same story lives in both gardens. Group 1 (s a t i p n) is written, recorded and reviewed in [`CONTENT-REVIEW.md`](CONTENT-REVIEW.md) §3.4.
+
 - **Sounds:** move from today's 25 single letters to the full synthetic-phonics set of **42 sounds in 7 groups**, in the standard teaching order: s a t i p n · c k e h r m d · g o u l f b · ai j oa ie ee or · z w ng v oo oo · y x ch sh th th · qu ou oi ue er ar.
   - That order is public teaching practice. **The stories, actions and songs are ours.**
 - **Stories: Quran stories told in simple English**, so English carries the same values as Arabic. Each sound's story is a Quran story whose key word starts with that sound. The first two groups:

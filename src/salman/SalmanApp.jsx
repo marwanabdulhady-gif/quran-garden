@@ -978,7 +978,12 @@ export default function SalmanApp() {
       const days = gardenUnits('english');
       content = (
         <>
-          <h2 className="sg-section">Letter Days · s a t i</h2>
+          <h2 className="sg-section">
+            {`Letter Days · Group ${days[0]?.group ?? 1} · ${days
+              .filter((u) => u.group === (days[0]?.group ?? 1))
+              .map((u) => u.sound)
+              .join(' ')}`}
+          </h2>
           <ul className="sg-nour-row">
             {days.map((u) => {
               const done = unitCompleted(state, u.id);
