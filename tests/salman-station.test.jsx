@@ -92,7 +92,7 @@ describe('الوصول إلى يوم الوحدة من داخل التطبيق',
     history.replaceState(null, '', '/');
     render(<SalmanApp />);
     fireEvent.click(screen.getByText('English'));
-    expect(screen.getByText(/Letter Days · Group 1 · s a t i p n/)).toBeTruthy();
+    expect(screen.getByText(/Letter Days · s a t i p n · c k e h r m d/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /s\s*sun/ }));
     const head = document.querySelector('.sg-day-title strong');
     expect(head.textContent).toContain('s');
@@ -127,14 +127,14 @@ describe('المحطة الأولى — مسح كامل للوحدات الاث�
       expect(state.nour[unit.id], `${unit.id} لم تُحفظ`).toMatchObject({ day: '2026-10-11', completed: true });
       expect(state.nour[unit.id].done.length, `${unit.id}: الخطوات`).toBeGreaterThanOrEqual(5);
     }
-    expect(Object.keys(state.nour)).toHaveLength(18);
+    expect(Object.keys(state.nour)).toHaveLength(24);
   });
 
   it('النجوم: نجمتان لكل وحدة مكتملة، موزّعة على الحدائق الثلاث', () => {
     let state = null;
     for (const unit of UNITS) state = playUnit(unit);
-    expect(state.gardens).toMatchObject({ arabic: 16, math: 8, english: 12 });
-    expect(state.stars).toBe(36);
+    expect(state.gardens).toMatchObject({ arabic: 16, math: 8, english: 24 });
+    expect(state.stars).toBe(48);
     expect(state.streak.current).toBe(1);
   });
 

@@ -33,9 +33,22 @@ describe('حدائق النور — المحتوى', () => {
     expect(gardenUnits('arabic').map((u) => u.letter)).toEqual(['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'د', 'م']);
     expect(gardenUnits('math').map((u) => u.n)).toEqual([1, 2, 3, 4]);
     // الإنجليزية: المجموعة الأولى كاملة من تسلسل الفونيكس (s a t i p n)
-    expect(gardenUnits('english').map((u) => u.sound)).toEqual(['s', 'a', 't', 'i', 'p', 'n']);
-    expect(gardenUnits('english').every((u) => u.group === 1)).toBe(true);
-    expect(UNITS).toHaveLength(18);
+    expect(gardenUnits('english').map((u) => u.sound)).toEqual([
+      's',
+      'a',
+      't',
+      'i',
+      'p',
+      'n',
+      'c k',
+      'e',
+      'h',
+      'r',
+      'm',
+      'd',
+    ]);
+    expect([...new Set(gardenUnits('english').map((u) => u.group))]).toEqual([1, 2]);
+    expect(UNITS).toHaveLength(24);
     expect(NOUR_ORDER.arabic).toHaveLength(8);
     // ترتيب «اليوم التالي» يتبع الألفباء دائمًا
     const seq = 'أبتثجحخدذرزسشصضطظعغفقكلمنهوي';
@@ -112,6 +125,8 @@ describe('حدائق النور — المحتوى', () => {
     // قصة جابر في الثاء والإنجليزية معًا، والإحسان للحيوان في الجيم والنون
     expect(nourUnit('en-p').related.unitId).toBe('ar-ث');
     expect(nourUnit('en-n').related.unitId).toBe('ar-ج');
+    expect(nourUnit('en-ck').related.unitId).toBe('ar-ج');
+    expect(nourUnit('en-r').related.unitId).toBe('num-3');
   });
 
   it('اتساق الحدائق: كل حديقة بلغتها وبأدواتها', () => {

@@ -979,10 +979,14 @@ export default function SalmanApp() {
       content = (
         <>
           <h2 className="sg-section">
-            {`Letter Days · Group ${days[0]?.group ?? 1} · ${days
-              .filter((u) => u.group === (days[0]?.group ?? 1))
-              .map((u) => u.sound)
-              .join(' ')}`}
+            {`Letter Days · ${[...new Set(days.map((u) => u.group ?? 1))]
+              .map((g) =>
+                days
+                  .filter((u) => (u.group ?? 1) === g)
+                  .map((u) => u.sound)
+                  .join(' ')
+              )
+              .join(' · ')}`}
           </h2>
           <ul className="sg-nour-row">
             {days.map((u) => {
