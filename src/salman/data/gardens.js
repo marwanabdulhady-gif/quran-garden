@@ -31,6 +31,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-03',
+    scene: true,
     clip: true,
     title: 'التفاحات الحمراء',
     count: 7,
@@ -38,6 +39,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-04',
+    scene: true,
     clip: true,
     title: 'الأصدقاء في الحديقة',
     count: 10,
@@ -84,6 +86,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s09',
+    scene: true,
     title: 'الكرات التسع',
     count: 9,
     clip: true,
@@ -112,6 +115,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s14',
+    scene: true,
     title: 'السمكات في البحيرة',
     count: 14,
     clip: true,
@@ -126,6 +130,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s16',
+    scene: true,
     clip: true,
     title: 'حبّات الفول',
     count: 16,

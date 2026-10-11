@@ -177,7 +177,7 @@
 | `tools/salman-process-animals.py` | يقرأ من `raw/animal-<slug>.png`، لذلك **لن يعمل** حتى تُعاد الصور الخام |
 | `/home/user/recovery/venv/`، `/home/user/recovery/chrome/`، `/home/user/recovery/libs/lib/` | تُعاد تهيئتها بسكربت واحد: `bash tools/salman-setup-checks.sh` (بايثون مع Pillow، وChromium وpuppeteer-core، ومكتبات Chromium). |
 | `tools/salman-visual-check.mjs` | فحص المتصفح لصور العدّ (يفتح درس «العدّ حتى ١»، ويتأكد أن الصور تحمّلت). يُنسخ إلى `/home/user/recovery/chrome/` ويُشغَّل من هناك |
-| `tools/salman-offline-check.mjs` | فحص دون إنترنت (196 مدخلًا في الكاش، نجح في V2) |
+| `tools/salman-offline-check.mjs` | فحص دون إنترنت (201 مدخلًا في الكاش، نجح بعد دفعة V2 الثانية) |
 | `/home/user/recovery/sheet-count.png`، `apple-check.png` | لوحة مراجعة رسوم العدّ، وفحص تفاحة بعد إعادة المعالجة |
 
 ## 8. الأدلة الأخرى
@@ -188,7 +188,7 @@
 - `docs/salmans-garden/PROPOSAL.md`: الاقتراح المعتمد.
 - `docs/salmans-garden/README.md`: فهرس الوثائق.
 
-## 3.4 مشاهد القصص (V2، 6 من 20 حتى الآن)
+## 3.4 مشاهد القصص (V2، 11 من 20 حتى الآن)
 
 ملفات JPG بقياس 800×450، تُعرض فوق نص القصة. تُولَّد من مصادر PNG خام في `/home/user/recovery/raw/scenes/` (لا تُحفظ في Git، وتُفقد عند إعادة تهيئة البيئة). الأداة: `tools/salman-process-scenes.py scene <id>`.
 
@@ -200,4 +200,9 @@
 | `math-s02` | حمامتان على السور | 2 | `public/salman/art/stories/math-s02.jpg` |
 | `math-s04` | الأرانب الأربعة | 4 | `public/salman/art/stories/math-s04.jpg` |
 | `math-s06` | الزهور الست | 6 | `public/salman/art/stories/math-s06.jpg` |
+| `math-03` | التفاحات الحمراء | 7 تفاحات | `public/salman/art/stories/math-03.jpg` |
+| `math-04` | الأصدقاء في الحديقة | 10 حيوانات (4 أرانب و6 طيور) | `public/salman/art/stories/math-04.jpg` |
+| `math-s09` | الكرات التسع | 9 كرات | `public/salman/art/stories/math-s09.jpg` |
+| `math-s14` | السمكات في البحيرة | 14 سمكة | `public/salman/art/stories/math-s14.jpg` |
+| `math-s16` | حبّات الفول | 16 حبة | `public/salman/art/stories/math-s16.jpg` |
 
