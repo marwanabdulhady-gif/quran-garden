@@ -588,3 +588,10 @@ export function gardenUnits(garden) {
 export function storyText(unit, story) {
   return story.text;
 }
+
+// ---------- اشتقاق واحد لا ينحرف ----------
+// الواجهة تحتاج رمزًا معروضًا لكل وحدة (ترويسة اليوم وبطاقات الحدائق) وهو نفس رمز التتبّع؛
+// نشتقّه هنا مرة واحدة بدل تكراره في البيانات والواجهة.
+for (const unit of Object.values(NOUR_UNITS)) {
+  unit.glyph = unit.glyph || unit.trace.glyph;
+}

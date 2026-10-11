@@ -11,6 +11,9 @@ import { sfx } from './lib/sfx.js';
 // اتجاه النص: العربية RTL والإنجليزية LTR — الشاشة كلها RTL، والنص الإنجليزي يحتاج dir خاصًا
 const dirOf = (lang) => (lang === 'en' ? 'ltr' : 'rtl');
 
+// لغة العرض: الإنجليزية LTR، والعربية والأرقام RTL
+const unitLang = (unit) => (unit.garden === 'english' ? 'en' : 'ar');
+
 // تمييز الكلمة المفتاحية داخل نص القصة
 function highlight(text, keyWord) {
   if (!keyWord) return [text];
@@ -73,7 +76,7 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
           ➜
         </button>
         <div className="sg-day-title">
-          <strong lang={unit.kind === 'sound' ? 'en' : 'ar'}>
+          <strong lang={unitLang(unit)}>
             {unit.glyph} · {unit.keyWord}
           </strong>
           <span>
@@ -187,7 +190,7 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
 
       {step.id === 'sound' && (
         <section className="sg-day-card">
-          <p className="sg-sound-big" style={{ color }} lang={unit.kind === 'sound' ? 'en' : 'ar'}>
+          <p className="sg-sound-big" style={{ color }} lang={unitLang(unit)}>
             {unit.sound || unit.glyph}
           </p>
           <p className="sg-action-line" lang={lang}>

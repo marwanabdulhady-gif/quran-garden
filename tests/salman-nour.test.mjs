@@ -95,6 +95,31 @@ describe('حدائق النور — المحتوى', () => {
     }
   });
 
+  it('اتساق الحدائق: كل حديقة بلغتها وبأدواتها', () => {
+    for (const u of gardenUnits('english')) {
+      expect(u.chant.lang, u.id).toBe('en');
+      expect(u.hunt.lang, u.id).toBe('en');
+      for (const item of u.hunt.items) {
+        expect(/^[\x20-\x7E]+$/.test(item.label), `${u.id}: ${item.label}`).toBe(true);
+      }
+      expect(u.trace.script, u.id).toBe('en');
+      expect(u.keyWord, u.id).toMatch(/^[a-z]+$/);
+    }
+    for (const u of gardenUnits('math')) {
+      expect(u.trace.script, u.id).toBe('num');
+      expect(/^[١٢٣٤٥٦٧٨٩٠]+$/.test(u.glyph), `${u.id}: ${u.glyph}`).toBe(true);
+      expect(u.n, u.id).toBeGreaterThanOrEqual(1);
+    }
+    for (const u of gardenUnits('arabic')) {
+      expect(u.trace.script, u.id).toBe('ar');
+      expect(u.trace.glyph, u.id).toBe(u.letter);
+      expect(u.clip, u.id).toBeTruthy();
+    }
+    // صور الأشياء الأربع هي وحدها المستخدمة في المحطة
+    const sprites = new Set(UNITS.map((u) => (u.art || '').split('/').pop()).filter(Boolean));
+    expect([...sprites].sort()).toEqual(['door.png', 'mosque.png', 'mountain.png', 'rooster.png']);
+  });
+
   it('كل ملف صورة أو صوت مُعلَن في الوحدات موجود في public/', () => {
     const problems = [];
     for (const u of UNITS) {
