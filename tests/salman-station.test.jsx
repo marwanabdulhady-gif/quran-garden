@@ -64,6 +64,42 @@ function playUnit(unit) {
   return state;
 }
 
+describe('الوصول إلى يوم الوحدة من داخل التطبيق', () => {
+  it('حديقة الأرقام: تبويب الأرقام ثم «أيام الأرقام» تفتح يوم الوحدة', () => {
+    history.replaceState(null, '', '/');
+    render(<SalmanApp />);
+    fireEvent.click(screen.getByText('الأرقام')); // التبويب
+    expect(screen.getByText('أيام الأرقام · ١–٤')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /١\s*أَحَد/ }));
+    expect(document.querySelector('.sg-day-title strong').textContent).toContain('١');
+  });
+
+  it('شاشة الحرف: زر «ابدأ يوم الحرف» يفتح اليوم، ويتغيّر إلى «راجعه» بعد الإكمال', () => {
+    history.replaceState(null, '', `/#/arabic/letter/${encodeURIComponent('أ')}`);
+    render(<SalmanApp />);
+    fireEvent.click(btn('ابدأ يوم الحرف'));
+    expect(document.querySelector('.sg-day-title strong').textContent).toContain('أ');
+    cleanup();
+
+    // بعد إكمال الوحدة يصير الزر «يوم الحرف (راجعه)»
+    playUnit(NOUR_UNITS['ar-أ']);
+    history.replaceState(null, '', `/#/arabic/letter/${encodeURIComponent('أ')}`);
+    render(<SalmanApp />);
+    expect(btn('يوم الحرف (راجعه)')).toBeTruthy();
+  });
+
+  it('الحديقة الإنجليزية: «Letter Days» تفتح يوم الصوت', () => {
+    history.replaceState(null, '', '/');
+    render(<SalmanApp />);
+    fireEvent.click(screen.getByText('English'));
+    expect(screen.getByText('Letter Days · s a t i')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /s\s*sun/ }));
+    const head = document.querySelector('.sg-day-title strong');
+    expect(head.textContent).toContain('s');
+    expect(head.getAttribute('lang')).toBe('en');
+  });
+});
+
 describe('رمز الوحدة في الواجهة', () => {
   it('ترويسة اليوم تعرض الرمز (لا undefined) في الحدائق الثلاث', () => {
     const cases = [
