@@ -317,6 +317,8 @@ The current math stories and their 16 scene images are reused in station 4 and i
 
 Rules in every phase: build on the existing screens and engines, reuse the library in §8.1, generate art only for the sprites in §8.3, and check the byte budget in the same pass. The content review (§7) is run by me, with the protocol and the records in [`CONTENT-REVIEW.md`](CONTENT-REVIEW.md), **before anything is voiced or shown to the child**.
 
+**Each phase gets its own pull request**, so the plan PR stays docs-only: PR #7 = the plan and the decisions; then P0, P1, P2 … each opens its own PR with its gate results written in the description.
+
 | Phase | What | What it reuses | Output | Gate |
 |---|---|---|---|---|
 | **P0 — Content, station 1** | Child versions for the first station of each garden: Arabic **ا ب م د** (أُحُد، باب، مسجد، ديك + أذان، بنت، مرض، دعاء = 8 stories), Math **١–٤**, English **s a t i** — each with story, action, voice-only chant and good deed | the two book transcriptions, `additions-fa-and-numbers.md`, the review protocol | `docs/salmans-garden/content/{arabic,math,english}/*.md` + a review record per story | every story has a record and a source link; 16 stories signed off |
