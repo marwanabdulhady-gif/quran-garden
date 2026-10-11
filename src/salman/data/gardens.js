@@ -103,6 +103,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s12',
+    scene: true,
     title: 'البيضات الصغيرة',
     count: 12,
     clip: true,
@@ -110,6 +111,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s13',
+    scene: true,
     title: 'الفراشات',
     count: 13,
     clip: true,
@@ -141,6 +143,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s17',
+    scene: true,
     clip: true,
     title: 'خطوات الأرنب',
     count: 17,
@@ -156,6 +159,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s19',
+    scene: true,
     clip: true,
     title: 'أوراق الشجرة',
     count: 19,
