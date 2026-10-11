@@ -7,6 +7,7 @@ Both PDFs are image-only scans with no text layer, so every word here came from 
 | File | Source | Pages | Method | Status |
 |---|---|---|---|---|
 | `alphabet-with-the-companions.md` | Drive `12y4bMBEvS0bOrVMjZA8r9TezHNmc9TSX` — «حروف الهجاء مع الصحابة» | 56 scanned | Visual transcription, page by page, from the images | Full structure: 27 letter chapters plus the closing section. **Needs a full proofread against the printed book.** Flagged passages are marked `[مراجعة]`. Spot-checked against page 4 (printed p. 11, ch. ب): text and citations match. The page-order anomaly around pp. 48–50 (ه cover before ن story) needs checking on the printed copy. |
+| `additions-fa-and-numbers.md` | Researched additions, not from the books: the missing **ف** companion story (Anas, «فَرَح», Bukhari 3688 / Muslim 2639) and the **number stories ١–١٢ and ١٠٠** from the Quran and authentic hadith | — | Written in the books' style; sources are listed in the file | **Draft: needs review**, and Bukhari numbers need checking against the edition used |
 | `alphabet-with-the-final-prophet.md` | Drive `1LOYecCL_acpZQEZNWDY0k5IuzUsnVjvN` («Welcome file.md»، نص Markdown جاهز، 28 حرفًا) — وهو نفس كتاب «حروف الهجاء مع خاتم الأنبياء» (Drive `1QipxkfLJXg_1R4Gwq4nvwSKP8Kqt7DwK`، PDF ممسوح، 50 صفحة) | 50 scanned | نص جاهز من Drive، وقورن بالتعرف الضوئي على صفحات الـ PDF: تطابق في معظم الصفحات. الصفحات p05 و p29 و p49 صور أو أغلفة بلا نص. | 28 حرفًا كاملة. **لم يُراجَع بعد مقابل الكتاب المطبوع.** |
 
 ## Conventions
