@@ -319,6 +319,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-21',
+    clip: true,
     title: 'Will and the Water',
     sound: 'w',
     text: 'Will walks in the wet grass. Wuh, wuh, wuh. w is the sound of water and window.',
@@ -326,6 +327,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-22',
+    clip: true,
     title: 'Max and the Box',
     sound: 'x',
     text: 'Max fixes the box. Ks, ks, ks. x is the sound at the end of box and fix.',
@@ -333,6 +335,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-23',
+    clip: true,
     title: 'Yak and Yellow',
     sound: 'y',
     text: 'A yak says yes. Yuh, yuh, yuh. y is the sound of yak and yellow.',
@@ -340,6 +343,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-24',
+    clip: true,
     title: 'Zip the Zebra',
     sound: 'z',
     text: 'Zip the zebra zooms. Zzz, zzz, zzz. z is the sound of zebra and zoo.',
@@ -347,6 +351,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-25',
+    clip: true,
     title: 'Quack the Queen',
     sound: 'q',
     text: 'The queen says quack! q is always with u, as in queen.',
