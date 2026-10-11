@@ -113,36 +113,42 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s15',
+    clip: true,
     title: 'النجوم الكثيرة',
     count: 15,
     text: 'ظهرت خمس عشرة نجمة في السماء. عدّ معنا حتى خمس عشرة. كم نجمة ظهرت؟',
   },
   {
     id: 'math-s16',
+    clip: true,
     title: 'حبّات الفول',
     count: 16,
     text: 'في الكيس ست عشرة حبة فول. عدّ معنا حتى ست عشرة. كم حبة في الكيس؟',
   },
   {
     id: 'math-s17',
+    clip: true,
     title: 'خطوات الأرنب',
     count: 17,
     text: 'مشى الأرنب سبع عشرة خطوة. عدّ معنا حتى سبع عشرة. كم خطوة مشى؟',
   },
   {
     id: 'math-s18',
+    clip: true,
     title: 'الورود الحمراء',
     count: 18,
     text: 'في الحديقة ثماني عشرة وردة حمراء. عدّ معنا حتى ثماني عشرة. كم وردة في الحديقة؟',
   },
   {
     id: 'math-s19',
+    clip: true,
     title: 'أوراق الشجرة',
     count: 19,
     text: 'سقطت تسع عشرة ورقة من الشجرة. عدّ معنا حتى تسع عشرة. كم ورقة سقطت؟',
   },
   {
     id: 'math-s20',
+    clip: true,
     title: 'بالونات العيد',
     count: 20,
     text: 'في يوم العيد عشرون بالونة ملوّنة. عدّ معنا حتى عشرين. كم بالونة في العيد؟',
@@ -201,6 +207,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-07',
+    clip: true,
     title: 'Mia and the Moon',
     sound: 'm',
     text: 'Mia sees the moon in the sky. Mmm, mmm, mmm. m is the sound of moon and milk.',
@@ -208,6 +215,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-08',
+    clip: true,
     title: 'Dan and the Dog',
     sound: 'd',
     text: 'Dan has a dog. The dog says d, d, d. d is the sound of dog and dig.',
@@ -215,6 +223,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-09',
+    clip: true,
     title: 'Gus the Goat',
     sound: 'g',
     text: 'Gus the goat eats grass. He says g, g, g. g is the sound of goat and gift.',
@@ -222,6 +231,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-10',
+    clip: true,
     title: 'The Ox in the Box',
     sound: 'o',
     text: 'An ox sits in a box. It says o, o, o. o is the sound in ox, hot, and dog.',
