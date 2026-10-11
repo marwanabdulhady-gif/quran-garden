@@ -43,7 +43,9 @@ describe('الأشياء المعدودة (V1)', () => {
 });
 
 describe('مشاهد قصص العدّ (V2)', () => {
-  const scenes = CATALOG.math.filter((i) => i.art);
+  const scenes = Object.values(CATALOG)
+    .flat()
+    .filter((i) => i.art);
 
   it('كل قصة عليها مشهد تشير إلى ملف jpg موجود', () => {
     for (const item of scenes) {
@@ -53,7 +55,12 @@ describe('مشاهد قصص العدّ (V2)', () => {
   });
 
   it('المشاهد المقبولة عشرون (اكتملت V2)، وكل مشهد مُعلَّم في gardens.js', () => {
-    expect(scenes.map((i) => i.id).sort()).toEqual(
+    expect(
+      scenes
+        .filter((i) => i.garden === 'math')
+        .map((i) => i.id)
+        .sort()
+    ).toEqual(
       [
         'math-01',
         'math-02',
@@ -77,6 +84,8 @@ describe('مشاهد قصص العدّ (V2)', () => {
         'math-s20',
       ].sort()
     );
-    expect(scenes).toHaveLength(20);
+    expect(scenes.filter((i) => i.garden === 'math')).toHaveLength(20);
+    expect(scenes.filter((i) => i.garden === 'english')).toHaveLength(25);
+    expect(scenes).toHaveLength(45);
   });
 });

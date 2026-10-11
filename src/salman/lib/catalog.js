@@ -144,6 +144,7 @@ function englishItems() {
     lang: 'en',
     paragraphs: [e.text],
     ...(e.clip ? { audio: `stories/${e.id}` } : {}),
+    ...(e.scene ? { art: `salman/art/stories/${e.id}.jpg` } : {}),
     question: {
       prompt: 'Which sound do you hear? · أي صوت تسمع؟',
       choices: e.choices,
