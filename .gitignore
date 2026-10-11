@@ -30,3 +30,6 @@ Thumbs.db
 # Python bytecode from tools/
 __pycache__/
 *.pyc
+
+# صور «حدائق النور» الخام (المعالجة الناتجة تُلتزم في public/)
+.work/
