@@ -162,6 +162,7 @@
 
 ## 6. الاختبارات (`tests/`)
 
+- `tests/salman-assets-exist.test.mjs`: كل صورة وصوت تشير إليه البيانات موجود وأكبر من 1 KB، بالجمع من البيانات نفسها.
 - `tests/salman-stories.test.mjs`: تغطية العدّ 1–20، المعرّفات، أصوات الفونيكس، مطابقة الملفات، مسودة الحروف العربية.
 - `tests/salman-data.test.mjs`، `salman-letters.test.mjs`، `salman-leitner.test.mjs`، `salman-gamify.test.mjs`، `salman-parent.test.mjs`، `salman-parent-ui.test.jsx`، `salman-app.test.jsx`، `salman-assets.test.mjs`، `salman-pwa.test.mjs`.
 
