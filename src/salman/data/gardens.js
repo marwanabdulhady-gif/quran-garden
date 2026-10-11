@@ -179,6 +179,7 @@ export const MATH_STORIES = [
 export const ENGLISH_STORIES = [
   {
     id: 'en-01',
+    scene: true,
     clip: true,
     title: 'Sam and the Sun',
     sound: 's',
@@ -187,6 +188,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-02',
+    scene: true,
     clip: true,
     title: 'The Ant',
     sound: 'a',
@@ -195,6 +197,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-03',
+    scene: true,
     clip: true,
     title: 'Tim and the Top',
     sound: 't',
@@ -203,6 +206,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-04',
+    scene: true,
     clip: true,
     title: 'Pip the Pig',
     sound: 'p',
@@ -211,6 +215,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-05',
+    scene: true,
     clip: true,
     title: 'In the Bin',
     sound: 'i',
@@ -219,6 +224,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-06',
+    scene: true,
     clip: true,
     title: 'Nan and the Nest',
     sound: 'n',
@@ -227,6 +233,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-07',
+    scene: true,
     clip: true,
     title: 'Mia and the Moon',
     sound: 'm',
@@ -235,6 +242,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-08',
+    scene: true,
     clip: true,
     title: 'Dan and the Dog',
     sound: 'd',
@@ -243,6 +251,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-09',
+    scene: true,
     clip: true,
     title: 'Gus the Goat',
     sound: 'g',
@@ -251,6 +260,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-10',
+    scene: true,
     clip: true,
     title: 'The Ox in the Box',
     sound: 'o',
@@ -259,6 +269,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-11',
+    scene: true,
     clip: true,
     title: 'Kim and the Kite',
     sound: 'k',
@@ -267,6 +278,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-12',
+    scene: true,
     clip: true,
     title: 'Ed and the Egg',
     sound: 'e',
@@ -275,6 +287,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-13',
+    scene: true,
     clip: true,
     title: 'Uncle and the Umbrella',
     sound: 'u',
@@ -283,6 +296,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-14',
+    scene: true,
     clip: true,
     title: 'Rabbit Runs',
     sound: 'r',
@@ -291,6 +305,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-15',
+    scene: true,
     clip: true,
     title: 'Hen and the Hat',
     sound: 'h',
@@ -299,6 +314,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-16',
+    scene: true,
     clip: true,
     title: 'Ben and the Ball',
     sound: 'b',
@@ -307,6 +323,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-17',
+    scene: true,
     clip: true,
     title: 'Fox and the Fig',
     sound: 'f',
@@ -315,6 +332,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-18',
+    scene: true,
     clip: true,
     title: 'Lily and the Lamp',
     sound: 'l',
@@ -323,6 +341,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-19',
+    scene: true,
     clip: true,
     title: 'Jack and the Jam',
     sound: 'j',
@@ -331,6 +350,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-20',
+    scene: true,
     clip: true,
     title: 'Victor and the Van',
     sound: 'v',
@@ -339,6 +359,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-21',
+    scene: true,
     clip: true,
     title: 'Will and the Water',
     sound: 'w',
@@ -347,6 +368,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-22',
+    scene: true,
     clip: true,
     title: 'Max and the Box',
     sound: 'x',
@@ -355,6 +377,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-23',
+    scene: true,
     clip: true,
     title: 'Yak and Yellow',
     sound: 'y',
@@ -363,6 +386,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-24',
+    scene: true,
     clip: true,
     title: 'Zip the Zebra',
     sound: 'z',
@@ -371,6 +395,7 @@ export const ENGLISH_STORIES = [
   },
   {
     id: 'en-25',
+    scene: true,
     clip: true,
     title: 'Quack the Queen',
     sound: 'q',
