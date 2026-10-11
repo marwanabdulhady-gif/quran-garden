@@ -12,7 +12,6 @@ import {
   recordHuroofLevel,
   recordSurah,
   levelDone,
-  levelUnlocked,
   GIFTS,
   recordDay,
 } from './lib/gamify.js';
@@ -30,6 +29,7 @@ import '../huroof/huroof.css';
 import QuranJourney from '../App.jsx';
 import '../styles.css';
 import { useGarden, activeChild } from '../store.js';
+import { GATES } from '../data.js';
 import { LEVEL_DATA as HUROOF_LEVELS } from '../huroof/data/index.js';
 import { ANIMALS } from './data/animals.js';
 import { loadState, saveState } from './lib/store.js';
@@ -272,7 +272,7 @@ function tabOf(screen) {
   if (['station', 'play', 'letter'].includes(screen.name)) return 'arabic';
   if (screen.name === 'lesson') return screen.garden;
   if (screen.name === 'day' || screen.name === 'dayDone') return screen.garden;
-  if (screen.name === 'quran') return 'quran';
+  if (['quran', 'surah', 'qexplore'].includes(screen.name)) return 'quran';
   return 'home';
 }
 
@@ -286,6 +286,7 @@ function parentOf(screen) {
     if (unit && unit.garden === 'arabic') return { name: 'letter', letter: unit.letter };
     return { name: 'garden', garden: (unit && unit.garden) || 'arabic' };
   }
+  if (screen.name === 'surah' || screen.name === 'qexplore') return { name: 'quran' };
   return HOME;
 }
 
@@ -296,12 +297,23 @@ const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '
 const APP_BUILT = typeof __APP_BUILT__ !== 'undefined' ? __APP_BUILT__ : '';
 // ألوان الكواكب (محطة لكل لون)
 const STATION_COLORS = ['#6366f1', '#22c55e', '#f97316', '#0ea5e9', '#e11d48', '#a855f7', '#eab308'];
-// حديقة القرآن: ثلاثة أقسام في مكان واحد
-const QURAN_VIEWS = [
-  { id: 'journey', label: '🎧 رحلة القرآن' },
-  { id: 'stories', label: '📖 قصص السور' },
-  { id: 'levels', label: '📗 المستويات' },
+// رحلة القرآن الواحدة: كل سورة محطة بثلاث خطوات (القصة ← الاستماع والترديد ← الحفظ)
+const SURAH_STEPS = [
+  { id: 'story', icon: '📖', label: 'القصة' },
+  { id: 'listen', icon: '🎧', label: 'استمع وردّد' },
+  { id: 'memorize', icon: '🏆', label: 'حفظتها' },
 ];
+// السور بترتيب الرحلة (مستوى بعد مستوى)
+const QURAN_PATH = QURAN_LEVELS.flatMap((l) => l.surahs);
+// كنوز رحلة القرآن: أدوات تطبيق القرآن داخل نفس الرحلة
+const QURAN_TREASURES = [
+  { route: 'journey', icon: '🗺️', label: 'خريطة الأجزاء' },
+  { route: 'words', icon: '📖', label: 'كلماتي' },
+  { route: 'bridge', icon: '🌉', label: 'جسر المعاني' },
+  { route: 'daily', icon: '🤍', label: 'آية اليوم' },
+  { route: 'garden', icon: '🌳', label: 'بستاني' },
+];
+const gateFor = (sid) => (GATES.find((g) => sid >= g.from && sid <= g.to) || GATES[0]).id;
 const ARABIC_HOME = { name: 'garden', garden: 'arabic' };
 
 function hashOf(screen) {
@@ -309,7 +321,11 @@ function hashOf(screen) {
     case 'garden':
       return `#/${screen.garden}`;
     case 'quran':
-      return screen.view && screen.view !== 'journey' ? `#/quran/${screen.view}` : '#/quran';
+      return '#/quran';
+    case 'surah':
+      return `#/quran/surah/${screen.sid}`;
+    case 'qexplore':
+      return `#/quran/explore/${screen.route}`;
     case 'station':
       return `#/arabic/${screen.level}`;
     case 'play':
@@ -331,7 +347,11 @@ export function screenFromHash(hash = '') {
   if (hash.startsWith('#garden=')) return { name: 'quran' }; // رابط استرجاع حديقة القرآن
   const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   const [a, b, c] = parts;
-  if (a === 'quran') return { name: 'quran', view: QURAN_VIEWS.some((v) => v.id === b) ? b : 'journey' };
+  if (a === 'quran') {
+    if (b === 'surah' && SURAHS[Number(c)]) return { name: 'surah', sid: Number(c) };
+    if (b === 'explore' && QURAN_TREASURES.some((t) => t.route === c)) return { name: 'qexplore', route: c };
+    return { name: 'quran' }; // الأقسام القديمة (stories/levels) صارت جزءًا من الرحلة نفسها
+  }
   if (a === 'badges') return { name: 'badges' };
   if (a === 'parent') return { name: 'parent' }; // العودة من دخول Google
   if (a === 'nour' && NOUR_UNITS[c]) return { name: 'day', garden: NOUR_UNITS[c].garden, unitId: c };
@@ -394,9 +414,20 @@ const stationOf = (letter) => HUROOF_LEVELS.find((l) => l.letters.includes(lette
 export default function SalmanApp() {
   const quranStore = useGarden();
   const [state, setState] = useState(() => loadState());
-  const [screen, setScreen] = useState(() => screenFromHash(globalThis.location?.hash));
+  const [screen, setScreen] = useState(() => {
+    const first = screenFromHash(globalThis.location?.hash);
+    // رابط مباشر إلى سورة: نثبّت خطوة البداية مرة واحدة، حتى لا تقفز الشاشة بعد الإجابة
+    if (first.name === 'surah' && !first.step) {
+      const saved = loadState();
+      first.step = !saved.doneStories[`q-${first.sid}`]
+        ? 'story'
+        : saved.learnedSurahs[first.sid]
+          ? 'memorize'
+          : 'listen';
+    }
+    return first;
+  });
   const [celebrate, setCelebrate] = useState(null);
-  const [openSurah, setOpenSurah] = useState(null);
   const today = dayKeyFrom();
 
   useEffect(() => {
@@ -724,147 +755,205 @@ export default function SalmanApp() {
 
   // ---------- شاشات الحدائق (مع شريط الحدائق) ----------
   let body;
+  // حالة كل سورة في الرحلة: 💎 القصة · 🎧 الاستماع · 🪙 الحفظ
+  const surahProgress = (sid) => ({
+    story: !!state.doneStories[`q-${sid}`],
+    listen: !!quranChild?.listening?.[sid]?.completed,
+    memorize: !!state.learnedSurahs[sid],
+  });
+  const firstOpenStep = (sid) => {
+    const p = surahProgress(sid);
+    return SURAH_STEPS.find((st) => !p[st.id])?.id || 'memorize';
+  };
+  const openSurah = (sid) => go({ name: 'surah', sid, step: firstOpenStep(sid) });
+
   if (screen.name === 'quran') {
-    // حديقة القرآن: رحلة الاستماع والحفظ + قصص السور + مستويات السور، بأقسام في أعلى الحديقة
-    const view = screen.view || 'journey';
-    const views = (
-      <div className="sg-segments" role="tablist" aria-label="أقسام حديقة القرآن">
-        {QURAN_VIEWS.map((v) => (
-          <button
-            key={v.id}
-            type="button"
-            role="tab"
-            aria-selected={view === v.id}
-            className={view === v.id ? 'sg-segment is-active' : 'sg-segment'}
-            onClick={() => view !== v.id && replace({ name: 'quran', view: v.id })}
-          >
-            {v.label}
-          </button>
-        ))}
+    // رحلة القرآن الواحدة: المستويات كواكب، والسور تدور حولها، وكل سورة رحلة من ثلاث خطوات
+    const all = QURAN_PATH.map((sid) => surahProgress(sid));
+    const memorized = all.filter((p) => p.memorize).length;
+    const nextSid = QURAN_PATH.find((sid) => !state.learnedSurahs[sid]);
+    body = (
+      <main className="sg-app" dir="rtl">
+        {celebrateLayer}
+        <TopBar title="🌴 رحلة القرآن" state={state} color={GARDENS.quran.color} />
+        <section className="sg-quran-hero" style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS.quran)})` }}>
+          <img className="sg-hero-mascot" src={assetUrl(MASCOTS.salman)} alt="" />
+          <div className="sg-quran-hero-text">
+            <strong>
+              حفظتَ {toArabicNumeral(memorized)} من {toArabicNumeral(QURAN_PATH.length)} سورة
+            </strong>
+            <span className="sg-bar" aria-hidden="true">
+              <span style={{ width: `${Math.round((memorized / QURAN_PATH.length) * 100)}%`, background: '#14b8a6' }} />
+            </span>
+            {nextSid && (
+              <button type="button" className="sg-btn sg-btn-main sg-quran-next" onClick={() => openSurah(nextSid)}>
+                ▶ تابع: سورة {SURAHS[nextSid].name}
+              </button>
+            )}
+          </div>
+        </section>
+        <OrbitMap
+          label="رحلة القرآن"
+          guideArt={assetUrl(MASCOTS.salman)}
+          stations={QURAN_LEVELS.map((lvl) => ({
+            id: lvl.level,
+            title: lvl.title,
+            color: STATION_COLORS[(lvl.level + 1) % STATION_COLORS.length],
+            onOpen: () => openSurah(lvl.surahs.find((sid) => !state.learnedSurahs[sid]) || lvl.surahs[0]),
+            items: lvl.surahs.map((sid) => {
+              const p = surahProgress(sid);
+              return {
+                key: sid,
+                label: SURAHS[sid].name,
+                done: p.memorize,
+                gems: [
+                  { icon: '💎', on: p.story, label: 'القصة' },
+                  { icon: '🪙', on: p.memorize, label: 'الحفظ' },
+                ],
+              };
+            }),
+          }))}
+          onItem={(st, it) => openSurah(it.key)}
+        />
+        <h2 className="sg-section">✨ كنوز الرحلة</h2>
+        <ul className="sg-treasures">
+          {QURAN_TREASURES.map((t) => (
+            <li key={t.route}>
+              <button type="button" className="sg-treasure" onClick={() => go({ name: 'qexplore', route: t.route })}>
+                <span aria-hidden="true">{t.icon}</span>
+                {t.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </main>
+    );
+  } else if (screen.name === 'qexplore') {
+    // أداة من تطبيق القرآن داخل الرحلة، والرجوع منها يعيد إلى رحلة القرآن
+    body = (
+      <div className="sg-quran-tab">
+        <QuranJourney embedded initialRoute={{ name: screen.route, params: {} }} onLeave={back} />
       </div>
     );
-    if (view === 'journey') {
+  } else if (screen.name === 'surah') {
+    const sid = screen.sid;
+    const su = SURAHS[sid];
+    const level = QURAN_LEVELS.find((l) => l.surahs.includes(sid));
+    const prog = surahProgress(sid);
+    const step = screen.step || 'story';
+    const item = gardenItems('quran').find((it) => it.id === `q-${sid}`);
+    const nextSid = QURAN_PATH[QURAN_PATH.indexOf(sid) + 1];
+    const toStep = (id) => replace({ ...screen, step: id });
+    const stepBar = (
+      <ol className="sg-surah-steps" aria-label={`خطوات سورة ${su.name}`}>
+        {SURAH_STEPS.map((st, i) => (
+          <li key={st.id}>
+            <button
+              type="button"
+              className={['sg-surah-step', step === st.id ? 'is-current' : '', prog[st.id] ? 'is-done' : '']
+                .filter(Boolean)
+                .join(' ')}
+              aria-current={step === st.id ? 'step' : undefined}
+              onClick={() => toStep(st.id)}
+            >
+              <span className="sg-surah-step-icon" aria-hidden="true">
+                {prog[st.id] ? '✓' : st.icon}
+              </span>
+              <span>
+                {toArabicNumeral(i + 1)}. {st.label}
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    );
+    const head = (
+      <>
+        <TopBar title={`سورة ${su.name}`} onBack={back} state={state} color={GARDENS.quran.color} />
+        <p className="sg-surah-level">
+          {level?.title} · {toArabicNumeral(su.ayahs)} آيات
+        </p>
+        {stepBar}
+      </>
+    );
+    if (step === 'listen') {
       body = (
-        <div className="sg-quran-tab">
-          {views}
-          <QuranJourney embedded />
+        <div className="sg-quran-tab sg-surah-listen">
+          <div className="sg-app sg-surah-head" dir="rtl">
+            {head}
+            <button type="button" className="sg-btn sg-btn-soft" onClick={() => toStep('memorize')}>
+              {prog.listen ? 'التالي: الحفظ ➜' : 'سمعتها وردّدتها ➜ إلى الحفظ'}
+            </button>
+          </div>
+          <QuranJourney
+            key={`player-${sid}`}
+            embedded
+            initialRoute={{ name: 'player', params: { gate: gateFor(sid), surah: sid } }}
+            onLeave={() => toStep('memorize')}
+          />
         </div>
       );
-    } else if (view === 'stories') {
-      const items = gardenItems('quran');
+    } else if (step === 'story') {
       body = (
         <main className="sg-app" dir="rtl">
           {celebrateLayer}
-          {views}
-          <section
-            className="sg-garden-hero"
-            style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS.quran)})`, '--g': GARDENS.quran.color }}
-          >
-            <img className="sg-hero-mascot" src={assetUrl(MASCOTS[GARDEN_MASCOT.quran])} alt="" />
-            <span className="sg-hero-badge">📖 قصص السور · {toArabicNumeral(items.length)}</span>
-          </section>
-          <ul className="sg-cards">
-            {items.map((it) => (
-              <ItemCard
-                key={it.id}
-                item={it}
-                state={state}
-                onOpen={(item, fresh) => openItem(item, fresh, screen, items)}
-              />
-            ))}
-          </ul>
+          {head}
+          {item && (
+            <Lesson
+              key={item.id}
+              item={item}
+              onCorrect={(firstTry) => credit(item, firstTry)}
+              onMiss={() => missItem(item)}
+              onContinue={() => toStep('listen')}
+              continueLabel="التالي: استمع وردّد 🎧 ➜"
+            />
+          )}
         </main>
       );
     } else {
+      const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
       body = (
         <main className="sg-app" dir="rtl">
           {celebrateLayer}
-          {views}
-          <OrbitMap
-            label="مستويات السور"
-            guideArt={assetUrl(MASCOTS.salman)}
-            stations={QURAN_LEVELS.map((lvl) => ({
-              id: lvl.level,
-              title: lvl.title,
-              color: STATION_COLORS[(lvl.level + 1) % STATION_COLORS.length],
-              onOpen: () => document.getElementById(`sg-level-${lvl.level}`)?.scrollIntoView({ behavior: 'smooth' }),
-              items: lvl.surahs.map((sid) => ({ key: sid, label: SURAHS[sid].name, done: !!state.learnedSurahs[sid] })),
-            }))}
-            onItem={(st, it) => {
-              setOpenSurah(it.key);
-              setTimeout(
-                () => document.getElementById(`sg-surah-${it.key}`)?.scrollIntoView({ behavior: 'smooth' }),
-                50
-              );
-            }}
-          />
-          {QURAN_LEVELS.map((lvl) => {
-            const unlocked = levelUnlocked(state, lvl.level);
-            const done = levelDone(state, lvl.level);
-            return (
-              <section
-                key={lvl.level}
-                id={`sg-level-${lvl.level}`}
-                className={unlocked ? 'sg-level' : 'sg-level is-locked'}
+          {head}
+          <section className="sg-memorize">
+            <div className="sg-verses" lang="ar">
+              {verses ? verses.join(' ۝ ') : 'النص يُضاف قريبًا.'}
+            </div>
+            {!prog.memorize ? (
+              <button
+                type="button"
+                className="sg-btn sg-btn-main"
+                onClick={() => {
+                  const wasDone = levelDone(state, level.level);
+                  const r = recordSurah(state, { surahId: sid, dayKey: today });
+                  setState(r.state);
+                  sfx('levelUp');
+                  if (!wasDone && levelDone(r.state, level.level)) {
+                    setCelebrate({ emoji: '🪐', title: 'كوكب مكتمل!', sub: level.title, clip: 'level-unlock' });
+                  } else {
+                    setCelebrate({ emoji: '🪙', title: 'سورة محفوظة!', sub: `سورة ${su.name}`, clip: 'surah-learned' });
+                  }
+                }}
               >
-                <h2 className="sg-level-title">
-                  {done ? '🏆 ' : unlocked ? '✨ ' : '🔒 '}
-                  {lvl.title}
-                </h2>
-                {!unlocked && <p className="sg-sub">افتح المستوى السابق أولًا 🌱</p>}
-                {lvl.surahs.map((sid) => {
-                  const su = SURAHS[sid];
-                  const learned = !!state.learnedSurahs[sid];
-                  const open = openSurah === sid;
-                  const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
-                  return (
-                    <article key={sid} id={`sg-surah-${sid}`} className="sg-surah">
-                      <button type="button" className="sg-row" onClick={() => setOpenSurah(open ? null : sid)}>
-                        <span>{learned ? '✅' : '📜'}</span>
-                        <span>
-                          سورة {su.name} · {toArabicNumeral(su.ayahs)} آيات
-                        </span>
-                      </button>
-                      {open && (
-                        <div className="sg-verses" lang="ar">
-                          {verses ? verses.join(' ۝ ') : 'النص يُضاف قريبًا.'}
-                        </div>
-                      )}
-                      {unlocked && !learned && (
-                        <button
-                          type="button"
-                          className="sg-btn sg-btn-main"
-                          onClick={() => {
-                            const wasDone = levelDone(state, lvl.level);
-                            const r = recordSurah(state, { surahId: sid, dayKey: today });
-                            setState(r.state);
-                            sfx('levelUp');
-                            if (!wasDone && levelDone(r.state, lvl.level)) {
-                              setCelebrate({
-                                emoji: '📗',
-                                title: 'مستوى مكتمل!',
-                                sub: lvl.title,
-                                clip: 'level-unlock',
-                              });
-                            } else {
-                              setCelebrate({
-                                emoji: '📜',
-                                title: 'سورة محفوظة!',
-                                sub: `سورة ${su.name}`,
-                                clip: 'surah-learned',
-                              });
-                            }
-                          }}
-                        >
-                          حفظتها ✓ (+⭐⭐)
-                        </button>
-                      )}
-                    </article>
-                  );
-                })}
-              </section>
-            );
-          })}
+                حفظتها ✓ (+⭐⭐ 🪙)
+              </button>
+            ) : (
+              <p className="sg-sub">🪙 أحسنت! سورة {su.name} محفوظة.</p>
+            )}
+            {prog.memorize && nextSid && (
+              <button
+                type="button"
+                className="sg-btn sg-btn-main sg-next-btn"
+                onClick={() => replace({ name: 'surah', sid: nextSid, step: firstOpenStep(nextSid) })}
+              >
+                السورة التالية: {SURAHS[nextSid].name} ➜
+              </button>
+            )}
+            <button type="button" className="sg-btn sg-btn-soft" onClick={() => replace({ name: 'quran' })}>
+              🪐 رجوع إلى الرحلة
+            </button>
+          </section>
         </main>
       );
     }
@@ -979,7 +1068,16 @@ export default function SalmanApp() {
               items: l.letters.map((L) => {
                 const mine = items.filter((it) => it.letter === L);
                 const storiesDone = mine.length > 0 && mine.every((it) => state.doneStories[it.id]);
-                return { key: L, label: L, done: unitCompleted(state, UNIT_BY_LETTER[L]) || storiesDone };
+                const dayDone = unitCompleted(state, UNIT_BY_LETTER[L]);
+                return {
+                  key: L,
+                  label: L,
+                  done: dayDone || storiesDone,
+                  gems: [
+                    { icon: '💎', on: storiesDone },
+                    { icon: '🪙', on: dayDone },
+                  ],
+                };
               }),
             }))}
             onItem={(st, it) => go({ name: 'letter', letter: it.key, level: st.id })}
@@ -1205,7 +1303,11 @@ export default function SalmanApp() {
 
   return (
     <div
-      className={screen.name === 'quran' && (screen.view || 'journey') === 'journey' ? 'sg-shell is-quran' : 'sg-shell'}
+      className={
+        screen.name === 'qexplore' || (screen.name === 'surah' && screen.step === 'listen')
+          ? 'sg-shell is-quran'
+          : 'sg-shell'
+      }
     >
       {body}
       <TabBar active={tab} onTab={onTab} />

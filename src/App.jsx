@@ -82,11 +82,13 @@ function InstallBanner() {
 }
 
 // حديقة القرآن داخل الغابة: تبدأ مباشرةً في حديقة الطفل (لا شاشة اختيار الطفل)، بلا شريط تثبيت مستقل
-export default function App({ embedded = false }) {
+// initialRoute: يفتح شاشة بعينها (مثل مشغّل سورة) داخل رحلة الغابة.
+// onLeave: إن وُجد، فالرجوع إلى الحديقة/البيت يُعيد الطفل إلى خطوته في رحلة الغابة بدل شاشات هذا التطبيق.
+export default function App({ embedded = false, initialRoute = null, onLeave = null }) {
   const s = useGarden();
   const child = activeChild(s);
   const storageError = useStorageError();
-  const [route, setRoute] = useState({ name: embedded ? 'garden' : 'home', params: {} });
+  const [route, setRoute] = useState(initialRoute || { name: embedded ? 'garden' : 'home', params: {} });
   const [pendingFamily, setPendingFamily] = useState(null);
   const [toast, setToast] = useState(null);
 
@@ -109,6 +111,7 @@ export default function App({ embedded = false }) {
 
   const go = (name, params = {}) => {
     window.scrollTo(0, 0);
+    if (onLeave && (name === 'garden' || name === 'home')) return onLeave();
     setRoute({ name, params });
   };
 

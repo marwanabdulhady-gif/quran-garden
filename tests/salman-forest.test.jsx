@@ -85,44 +85,62 @@ describe('الحدائق الأربع في موقع واحد', () => {
     expect(document.querySelectorAll('.sg-cards li').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('حديقة القرآن هي رحلة القرآن نفسها داخل الغابة', () => {
+  it('رحلة القرآن واحدة: المستويات كواكب والسور تدور حولها، بلا أقسام منفصلة', () => {
     render(<SalmanApp />);
     tab('القرآن');
     expect(location.hash).toBe('#/quran');
-    expect(document.querySelector('.sg-quran-tab .qg-root')).toBeTruthy();
-    // شريط الحدائق باقٍ للرجوع لأي حديقة
+    expect(screen.queryAllByRole('tab')).toHaveLength(0);
+    const map = document.querySelector('.sg-orbit-map[aria-label="رحلة القرآن"]');
+    expect(map.querySelectorAll('.sg-planet')).toHaveLength(3);
+    expect(map.querySelectorAll('.sg-moon')).toHaveLength(13);
+    // كل سورة عليها جائزتان: 💎 القصة و🪙 الحفظ
+    expect(map.querySelectorAll('.sg-moon .sg-gem')).toHaveLength(26);
+    expect(screen.getByText(/تابع: سورة الفاتحة/)).toBeTruthy();
+    // أدوات تطبيق القرآن جزء من الرحلة نفسها
+    expect(screen.getByText('خريطة الأجزاء')).toBeTruthy();
     expect(screen.getByRole('navigation', { name: 'الحدائق' })).toBeTruthy();
   });
 
-  it('حديقة القرآن فيها الأقسام الثلاثة: الاستماع والحفظ، قصص السور، مستويات السور', () => {
+  it('السورة رحلة بثلاث خطوات: القصة ← استمع وردّد ← حفظتها، ثم السورة التالية', () => {
     render(<SalmanApp />);
     tab('القرآن');
-    const tabs = screen.getAllByRole('tab');
-    expect(tabs.map((t) => t.textContent)).toEqual(['🎧 رحلة القرآن', '📖 قصص السور', '📗 المستويات']);
-    expect(tabs[0].getAttribute('aria-selected')).toBe('true');
-  });
-
-  it('قصص السور الـ13 داخل حديقة القرآن، والقصة تفتح وترجع للقصص', () => {
-    render(<SalmanApp />);
-    tab('القرآن');
-    fireEvent.click(screen.getByRole('tab', { name: '📖 قصص السور' }));
-    expect(location.hash).toBe('#/quran/stories');
-    const cards = document.querySelectorAll('.sg-cards .sg-card');
-    expect(cards).toHaveLength(13);
-    fireEvent.click(screen.getByText('سورة الفاتحة').closest('button'));
+    fireEvent.click(screen.getByText(/تابع: سورة الفاتحة/));
+    expect(location.hash).toBe('#/quran/surah/1');
+    expect(screen.getByRole('list', { name: 'خطوات سورة الفاتحة' })).toBeTruthy();
+    // الخطوة ١: القصة وسؤالها
     expect(screen.getByText('ما اسم السورة اللي قصتها هذه؟')).toBeTruthy();
+    const right = screen.getAllByRole('button').find((x) => x.textContent.trim() === 'الفاتحة');
+    fireEvent.click(right);
+    // الخطوة ٢: مشغّل السورة نفسه داخل الرحلة
+    fireEvent.click(screen.getByText(/التالي: استمع وردّد/));
+    expect(document.querySelector('.sg-surah-listen .qg-root')).toBeTruthy();
+    // الخطوة ٣: الحفظ، ثم الانتقال مباشرة للسورة التالية
+    fireEvent.click(screen.getByText(/إلى الحفظ/));
+    fireEvent.click(screen.getByText(/حفظتها ✓/));
+    fireEvent.click(screen.getByText(/السورة التالية: الناس/));
+    expect(location.hash).toBe('#/quran/surah/114');
   });
 
-  it('مستويات السور داخل حديقة القرآن: الأول مفتوح والثاني مقفل حتى يكتمل الأول', () => {
+  it('كنوز الرحلة (أدوات تطبيق القرآن) تفتح داخل الرحلة', () => {
     render(<SalmanApp />);
     tab('القرآن');
-    fireEvent.click(screen.getByRole('tab', { name: '📗 المستويات' }));
-    expect(location.hash).toBe('#/quran/levels');
-    expect(screen.getByRole('heading', { name: /المستوى الأول/ })).toBeTruthy();
-    // خريطة الكواكب: ٣ مستويات، وسورها تدور حولها
-    expect(document.querySelectorAll('.sg-planet')).toHaveLength(3);
-    const second = screen.getByRole('heading', { name: /المستوى الثاني/ }).closest('section');
-    expect(within(second).getByText(/افتح المستوى السابق أولًا/)).toBeTruthy();
+    fireEvent.click(screen.getByText('بستاني').closest('button'));
+    expect(location.hash).toBe('#/quran/explore/garden');
+    expect(document.querySelector('.sg-quran-tab .qg-root')).toBeTruthy();
+  });
+
+  it('رابط مباشر إلى سورة: الشاشة لا تقفز بعد الإجابة، وزر «التالي» يظهر', () => {
+    history.replaceState(null, '', '/#/quran/surah/1');
+    render(<SalmanApp />);
+    const right = screen.getAllByRole('button').find((x) => x.textContent.trim() === 'الفاتحة');
+    fireEvent.click(right);
+    expect(screen.getByText(/التالي: استمع وردّد/)).toBeTruthy();
+  });
+
+  it('الروابط القديمة لأقسام القرآن تفتح الرحلة الواحدة', () => {
+    history.replaceState(null, '', '/#/quran/levels');
+    render(<SalmanApp />);
+    expect(document.querySelector('.sg-orbit-map[aria-label="رحلة القرآن"]')).toBeTruthy();
   });
 
   it('رابط مباشر إلى حديقة يفتحها (يعمل مع زر الرجوع والمشاركة)', () => {
@@ -147,27 +165,26 @@ describe('الحدائق الأربع في موقع واحد', () => {
 
 describe('مفتوحة دائمًا: لا «غدًا»، وبعد الإنجاز ننتقل إلى التالي', () => {
   it('لا قفل يومي: حتى بعد فتح عناصر جديدة كثيرة اليوم تبقى كل البطاقات مفتوحة', () => {
-    const s = normalizeState({
+    const st = normalizeState({
       ...createState(),
       daily: { day: DAY, newByGarden: { quran: 99, arabic: 99, math: 99, english: 99 } },
     });
-    window.localStorage.setItem('salman-garden-v1', JSON.stringify(s));
-    history.replaceState(null, '', '/#/quran/stories');
+    window.localStorage.setItem('salman-garden-v1', JSON.stringify(st));
+    history.replaceState(null, '', '/#/math');
     render(<SalmanApp />);
     const cards = [...document.querySelectorAll('.sg-cards .sg-card')];
-    expect(cards).toHaveLength(13);
+    expect(cards.length).toBeGreaterThan(5);
     expect(cards.every((c) => !c.disabled)).toBe(true);
     expect(screen.queryByText(/غدًا/)).toBeNull();
   });
 
   it('بعد الإجابة الصحيحة يظهر «التالي» ويفتح البطاقة التالية مباشرة', () => {
-    history.replaceState(null, '', '/#/quran/stories');
+    history.replaceState(null, '', '/#/math');
     render(<SalmanApp />);
-    fireEvent.click(screen.getByText('سورة الفاتحة').closest('button'));
-    const right = screen.getAllByRole('button').find((b) => b.textContent.trim() === 'الفاتحة');
+    fireEvent.click(screen.getByText('السنجاب يعد الجوز').closest('button'));
+    const right = screen.getAllByRole('button').find((x) => x.textContent.trim() === '٣');
     fireEvent.click(right);
-    const next = screen.getByText(/التالي: سورة الناس/);
-    fireEvent.click(next);
-    expect(screen.getByRole('heading', { level: 2, name: 'سورة الناس' })).toBeTruthy();
+    fireEvent.click(screen.getByText(/التالي: النجوم في السماء/));
+    expect(screen.getByRole('heading', { level: 2, name: 'النجوم في السماء' })).toBeTruthy();
   });
 });
