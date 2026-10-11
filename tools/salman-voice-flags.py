@@ -47,26 +47,28 @@ def main() -> int:
 
     text = CHANTS.sub(chant_sub, text)
 
-    # قصص: nour/<storyId>.mp3
-    def story_sub(match: re.Match[str]) -> str:
-        nonlocal on, off
-        ok = clip_exists(match.group(1))
-        on, off = (on + 1, off) if ok else (on, off + 1)
-        tail = STORY_TAIL.search(text, match.end())
-        if not tail:
-            return match.group(0)
-        return match.group(0)
-
-    story_ids = list(STORY_IDS.finditer(text))
-    for sid in story_ids:
+    # قصص: nour/<storyId>.mp3 — نضبط voiced ونُعيد ترتيب (review · voiced · note) بلا تكرار
+    stories = list(re.finditer(r"id: '((?:ar-[a-z]-[pc]|num-\d-s|en-[a-z]-s))',\n", text))
+    for sid in reversed(stories):
         ok = clip_exists(sid.group(1))
         on, off = (on + 1, off) if ok else (on, off + 1)
-        tail = STORY_TAIL.search(text, sid.end())
-        if not tail:
+        review = re.compile(r"        review: '([^']*)',\n").search(text, sid.end())
+        if not review:
             print(f'!! no review line after {sid.group(1)}', file=sys.stderr)
             continue
-        replacement = f"{tail.group(1)}        voiced: {'true' if ok else 'false'},\n"
-        text = text[: tail.start()] + replacement + text[tail.end():]
+        tail = review.end()
+        note = None
+        while True:
+            m = re.compile(r"        (voiced: (?:true|false)|note: '([^']*)'),\n").match(text, tail)
+            if not m:
+                break
+            if m.group(2) is not None:
+                note = note or m.group(2)
+            tail = m.end()
+        block = f"        review: '{review.group(1)}',\n        voiced: {'true' if ok else 'false'},\n"
+        if note:
+            block += f"        note: '{note}',\n"
+        text = text[: review.start()] + block + text[tail:]
 
     DATA.write_text(text, encoding='utf-8')
     # نُعيد التنسيق حتى يبقى `npm run format:check` أخضر
