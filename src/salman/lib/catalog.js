@@ -78,6 +78,8 @@ function arabicItems() {
         letter: L.letter,
         title: st.title,
         source: st.source,
+        // مشهد القصة (ar-XX-p / ar-XX-c1 …): موجود لكل قصة عربية في art/stories/
+        art: `salman/art/stories/${st.id}.jpg`,
         // مسودة: النصوص من OCR/PDF غير مُدقَّقة، وقرار المستخدم: تبقى في التطبيق مع تنبيه حتى التدقيق
         draft: true,
         paragraphs: st.paragraphs,
@@ -124,6 +126,8 @@ function quranItems() {
         id: `q-${sid}`,
         garden: 'quran',
         title: `سورة ${surah.name}`,
+        // مشهد السورة q-<sid>.jpg (بعد مراجعة المعلّم/العالم)
+        art: `salman/art/stories/q-${sid}.jpg`,
         paragraphs: [SURAH_STORIES[sid]],
         question: {
           prompt: 'ما اسم السورة اللي قصتها هذه؟',

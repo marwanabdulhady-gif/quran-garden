@@ -86,6 +86,9 @@ describe('مشاهد قصص العدّ (V2)', () => {
     );
     expect(scenes.filter((i) => i.garden === 'math')).toHaveLength(20);
     expect(scenes.filter((i) => i.garden === 'english')).toHaveLength(25);
-    expect(scenes).toHaveLength(45);
+    // العربية: 56 مشهد قصة (28 فقرة رئيسية + 28 مرافقة)، والقرآن: 13 سورة
+    expect(scenes.filter((i) => i.garden === 'arabic')).toHaveLength(56);
+    expect(scenes.filter((i) => i.garden === 'quran')).toHaveLength(13);
+    expect(scenes).toHaveLength(114);
   });
 });
