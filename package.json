@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "precache:check": "node tools/salman-precache-check.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",

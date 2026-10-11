@@ -35,7 +35,7 @@ npm run build
 
 - **اختبار المحتوى:** كل قصة تدخل التطبيق يجب أن يكون لها مصدر قابل للتتبع؛ يُضاف اختبار `tests/salman-content-sources.test.mjs` في المرحلة P0 يتحقق أن كل قصة في بيانات الحديقة لها `source` ورقم/آية، ويفشل إن وُجدت قصة بلا مصدر.
 - **ميزانية الأصول** (`PLAN-ISLAMIC-PHONICS.md` §8.3): ≤ 200 KB صور للطيار، ≤ 1 MB للبرنامج كله. تُقاس بـ `du -sh public/salman/art` قبل/بعد كل مرحلة.
-- **عربة الأوفلاين:** أي أصل جديد يدخل precache، ويُشغَّل `tools/salman-offline-check.mjs` في مراحل P2 وP5 وP6.
+- **عربة الأوفلاين:** أي أصل جديد يدخل precache. بعد `npm run build` يُشغَّل `npm run precache:check` (يفشل إن بقي أصل من `public/salman` أو `public/assets` خارج قائمة الـ Service Worker). وفحص الأوفلاين الكامل بالمتصفح (`tools/salman-offline-check.mjs`) يبقى في P2 وP5 وP6 عند توفّر المتصفح الآلي.
 
 ## 3. سجل المراجعة
 
