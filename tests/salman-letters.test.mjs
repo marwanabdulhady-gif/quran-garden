@@ -115,29 +115,15 @@ describe('أصول الحروف الجاهزة (رسوم ومقاطع)', () => {
     }
   });
 
-  it('الحروف المعلَّمة بالرسم هي الـ 20 الأولى (أ إلى ف) حتى الآن', () => {
-    const ready = Object.keys(ANIMALS).filter((k) => ANIMALS[k].art);
-    expect(ready).toEqual([
-      'أ',
-      'ب',
-      'ت',
-      'ث',
-      'ج',
-      'ح',
-      'خ',
-      'د',
-      'ذ',
-      'ر',
-      'ز',
-      'س',
-      'ش',
-      'ص',
-      'ض',
-      'ط',
-      'ظ',
-      'ع',
-      'غ',
-      'ف',
-    ]);
+  it('كل الحروف الـ 28 معلَّمة بالرسم والمقطع، وكل ملفات الرسوم والمقاطع موجودة', () => {
+    const ready = Object.keys(ANIMALS).filter((k) => ANIMALS[k].art && ANIMALS[k].clip);
+    expect(ready).toHaveLength(28);
+    for (const L of ready) {
+      expect(existsSync(pub(`salman/art/animals/${ANIMALS[L].slug}.png`)), ANIMALS[L].slug).toBe(true);
+      expect(
+        existsSync(pub(`salman/audio/letters/letter-${String(LETTERS.indexOf(L) + 1).padStart(2, '0')}.mp3`)),
+        L
+      ).toBe(true);
+    }
   });
 });
