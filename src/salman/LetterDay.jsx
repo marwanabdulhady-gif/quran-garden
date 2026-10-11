@@ -8,6 +8,9 @@ import { assetUrl, playStory } from './lib/voice.js';
 import { speak, canSpeak } from './lib/speech.js';
 import { sfx } from './lib/sfx.js';
 
+// اتجاه النص: العربية RTL والإنجليزية LTR — الشاشة كلها RTL، والنص الإنجليزي يحتاج dir خاصًا
+const dirOf = (lang) => (lang === 'en' ? 'ltr' : 'rtl');
+
 // تمييز الكلمة المفتاحية داخل نص القصة
 function highlight(text, keyWord) {
   if (!keyWord) return [text];
@@ -61,6 +64,7 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
   };
 
   const lang = chosen?.lang || unit.chant.lang || 'ar';
+  const storyDir = dirOf(lang);
 
   return (
     <main className="sg-app sg-day" dir="rtl">
@@ -110,7 +114,7 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
             <img className="sg-mascot" src={assetUrl(MASCOTS[guide])} alt="" />
             <span className="sg-bubble">هيا نفتح كتاب الحكاية 📖</span>
           </p>
-          <h2 className="sg-title" lang={lang}>
+          <h2 className="sg-title" lang={lang} dir={storyDir}>
             {chosen.title}
           </h2>
           {unit.stories.length > 1 && (
@@ -139,10 +143,10 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
       {step.id === 'story' && (
         <section className="sg-day-card">
           <StoryScene unit={unit} color={color} backdrop={backdrop} />
-          <h2 className="sg-title" lang={lang}>
+          <h2 className="sg-title" lang={lang} dir={storyDir}>
             {chosen.title}
           </h2>
-          <p className="sg-story-text" lang={lang}>
+          <p className="sg-story-text" lang={lang} dir={storyDir}>
             {highlight(chosen.text, unit.keyWord).map((part, i) =>
               typeof part === 'string' ? (
                 part
@@ -194,7 +198,7 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
           </p>
           <ul className="sg-chant">
             {unit.chant.lines.map((line) => (
-              <li key={line} lang={lang}>
+              <li key={line} lang={lang} dir={dirOf(lang)}>
                 {line}
               </li>
             ))}

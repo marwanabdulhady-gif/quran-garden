@@ -11,6 +11,8 @@ function say(text, lang = 'ar') {
   speak(text, lang);
 }
 
+const dirOf = (lang, fallback) => ((lang || fallback) === 'en' ? 'ltr' : 'rtl');
+
 // ---------- 1) صيد الصوت: انقر كل ما يبدأ بالصوت ----------
 export function Hunt({ hunt, lang = 'ar', color, onDone }) {
   const [found, setFound] = useState([]);
@@ -39,7 +41,7 @@ export function Hunt({ hunt, lang = 'ar', color, onDone }) {
 
   return (
     <div className="sg-hunt">
-      <p className="sg-prompt" lang={hunt.lang || lang}>
+      <p className="sg-prompt" lang={hunt.lang || lang} dir={dirOf(hunt.lang, lang)}>
         {hunt.prompt}
       </p>
       <div className="sg-hunt-grid">
@@ -55,7 +57,7 @@ export function Hunt({ hunt, lang = 'ar', color, onDone }) {
             <span className="sg-hunt-emoji" aria-hidden="true">
               {item.emoji}
             </span>
-            <span className="sg-hunt-label" lang={item.lang || lang}>
+            <span className="sg-hunt-label" lang={item.lang || lang} dir={dirOf(item.lang, lang)}>
               {item.label}
             </span>
             {found.includes(i) && <span className="sg-hunt-check">✓</span>}
@@ -219,7 +221,7 @@ export function OrderGame({ round, variant = 'train', lang = 'ar', color, onDone
 
   return (
     <div className={`sg-order sg-order-${variant}`}>
-      <p className="sg-prompt" lang={round.lang || lang}>
+      <p className="sg-prompt" lang={round.lang || lang} dir={dirOf(round.lang, lang)}>
         {round.prompt}
       </p>
       <div className="sg-order-slots" aria-label="الترتيب">
@@ -251,7 +253,7 @@ export function OrderGame({ round, variant = 'train', lang = 'ar', color, onDone
         })}
       </div>
       {round.result && state === 'right' && (
-        <p className="sg-order-result" lang={lang}>
+        <p className="sg-order-result" lang={lang} dir={dirOf(null, lang)}>
           {round.result}
         </p>
       )}

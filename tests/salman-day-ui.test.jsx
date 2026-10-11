@@ -83,4 +83,29 @@ describe('يوم الحرف (حدائق النور)', () => {
     expect(s.gardens.arabic).toBe(2);
     expect(s.gardens.math).toBe(0);
   });
+
+  it('الإنجليزية تُعرض LTR داخل شاشة RTL (والعربية RTL)', () => {
+    history.replaceState(null, '', '/#/nour/english/en-s');
+    const { unmount } = render(<SalmanApp />);
+    fireEvent.click(btn('التالي')); // إلى القصة
+    const enText = document.querySelector('.sg-story-text');
+    expect(enText.getAttribute('lang')).toBe('en');
+    expect(enText.getAttribute('dir')).toBe('ltr');
+    unmount();
+
+    history.replaceState(null, '', '/#/nour/arabic/ar-%D8%A3');
+    render(<SalmanApp />);
+    fireEvent.click(btn('التالي'));
+    const arText = document.querySelector('.sg-story-text');
+    expect(arText.getAttribute('lang')).toBe('ar');
+    expect(arText.getAttribute('dir')).toBe('rtl');
+  });
+
+  it('الكلمة المفتاحية داخل نص القصة مُبرَزة بلون الحديقة', () => {
+    render(<SalmanApp />);
+    fireEvent.click(btn('التالي'));
+    const marks = document.querySelectorAll('.sg-story-text mark');
+    expect(marks.length).toBeGreaterThan(0);
+    expect(marks[0].textContent).toBe('أُحُد');
+  });
 });
