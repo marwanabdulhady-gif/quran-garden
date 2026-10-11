@@ -1358,3 +1358,346 @@ body {
   outline: 4px solid #fbbf24;
   outline-offset: 2px;
 }
+
+/* ---------- «حدائق النور»: يوم الوحدة (سبع خطوات) والمحرّكات المشتركة ---------- */
+.sg-day {
+  padding-bottom: 96px;
+}
+.sg-day-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--sg-card);
+  border-bottom: 2px solid var(--sg-line);
+}
+.sg-day-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.sg-day-title strong {
+  font-size: 1.25rem;
+}
+.sg-day-title span {
+  font-size: 0.9rem;
+  color: #0f766e;
+}
+.sg-day-mascot {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+.sg-day-steps {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  list-style: none;
+  margin: 0;
+  padding: 10px 16px 6px;
+}
+.sg-day-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 76px;
+  min-height: 64px;
+  padding: 6px 8px;
+  border: 2px solid var(--sg-line);
+  border-radius: 16px;
+  background: var(--sg-card);
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--sg-ink);
+}
+.sg-day-step.is-now {
+  border-color: var(--g);
+  outline: 3px solid color-mix(in srgb, var(--g) 25%, transparent);
+}
+.sg-day-step.is-done {
+  background: #ecfdf5;
+  border-color: #10b981;
+}
+.sg-day-progress {
+  height: 8px;
+  margin: 4px 16px 0;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.sg-day-progress span {
+  display: block;
+  height: 100%;
+}
+.sg-day-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 16px;
+  padding: 16px;
+  background: var(--sg-card);
+  border-radius: 24px;
+}
+.sg-day-foot {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 0 16px 24px;
+}
+.sg-scene-composed {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+.sg-scene-veil {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.4);
+}
+.sg-scene-subject {
+  position: relative;
+  width: 50%;
+  max-height: 82%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.18));
+}
+.sg-scene-emoji {
+  position: relative;
+  font-size: 4rem;
+}
+.sg-scene-key {
+  position: absolute;
+  inset-block-end: 10px;
+  inset-inline-start: 12px;
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+.sg-story-text {
+  font-size: 1.25rem;
+  line-height: 2.1;
+  margin: 0;
+}
+.sg-source {
+  font-size: 0.95rem;
+  color: #0f766e;
+  margin: 0;
+}
+.sg-source a {
+  color: #0d9488;
+}
+.sg-source-note {
+  color: #b45309;
+}
+.sg-guide-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+.sg-sound-big {
+  margin: 0;
+  text-align: center;
+  font-size: 3.4rem;
+  font-weight: 700;
+}
+.sg-action-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  margin: 0;
+}
+.sg-action-emoji {
+  font-size: 2rem;
+}
+.sg-chant {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.sg-hunt-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+.sg-hunt-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 96px;
+  padding: 10px;
+  border: 2px solid var(--sg-line);
+  border-radius: 20px;
+  background: var(--sg-card);
+  font: inherit;
+  color: var(--sg-ink);
+}
+.sg-hunt-item.is-found {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+.sg-hunt-emoji {
+  font-size: 2rem;
+}
+.sg-hunt-check {
+  position: absolute;
+  inset-inline-end: 8px;
+  inset-block-start: 6px;
+  color: #059669;
+  font-weight: 700;
+}
+.sg-hunt-progress {
+  margin: 0;
+  text-align: center;
+  font-weight: 700;
+}
+.sg-trace-canvas {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto;
+  aspect-ratio: 1;
+  border: 2px dashed var(--sg-line);
+  border-radius: 24px;
+  background: #fff;
+  touch-action: none;
+}
+.sg-trace-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.sg-order-slots,
+.sg-order-tiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.sg-order-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 64px;
+  min-height: 72px;
+  border: 2px dashed var(--sg-line);
+  border-radius: 16px;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+.sg-order-slot.is-full {
+  border-style: solid;
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+.sg-order-tile {
+  min-width: 72px;
+  min-height: 72px;
+  border: 2px solid var(--sg-line);
+  border-radius: 18px;
+  background: var(--sg-card);
+  font: inherit;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--sg-ink);
+}
+.sg-order-tile.is-used {
+  opacity: 0.35;
+}
+.sg-order-result {
+  margin: 0;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+.sg-deed-emoji {
+  margin: 0;
+  text-align: center;
+  font-size: 3.4rem;
+}
+.sg-deed-text {
+  margin: 0;
+  text-align: center;
+  font-size: 1.3rem;
+  line-height: 1.9;
+}
+.sg-nour-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0 16px;
+}
+.sg-nour-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 104px;
+  padding: 10px;
+  border: 2px solid var(--sg-line);
+  border-radius: 20px;
+  background: var(--sg-card);
+  font: inherit;
+  color: var(--sg-ink);
+}
+.sg-nour-card.is-done {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+.sg-nour-glyph {
+  font-size: 2rem;
+  font-weight: 700;
+}
+.sg-nour-label {
+  font-size: 0.85rem;
+}
+.sg-mascot {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex: none;
+}
+.sg-bubble {
+  position: relative;
+  padding: 8px 14px;
+  background: #f0fdfa;
+  border: 2px solid var(--sg-line);
+  border-radius: 16px;
+  font-size: 1.05rem;
+}
+.sg-float {
+  animation: sg-float 3.4s ease-in-out infinite;
+}
+@keyframes sg-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg-float {
+    animation: none;
+  }
+}
