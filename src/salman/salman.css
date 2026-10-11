@@ -1297,8 +1297,16 @@ body {
   font-weight: 900;
 }
 .sg-letter-progress {
-  font-size: 0.85rem;
-  opacity: 0.75;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #9f1239;
+}
+.sg-letter-progress .sg-gbar {
+  height: 8px;
 }
 
 /* ===== حديقة القرآن = رحلة القرآن داخل الغابة ===== */
@@ -1773,189 +1781,6 @@ body {
   font-weight: 900;
 }
 
-/* ===== خريطة الكواكب: محطة = كوكب، وعناصرها تدور حوله (مستوحاة من رحلة «ريان وبيان») ===== */
-.sg-orbit-map {
-  list-style: none;
-  margin: 0;
-  padding: 18px 8px 8px;
-  border-radius: 28px;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.5) 0 1px, transparent 2px) 0 0 / 60px 60px,
-    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.35) 0 1px, transparent 2px) 0 0 / 90px 90px,
-    linear-gradient(180deg, #1e1b4b, #312e81 60%, #3730a3);
-  color: #fff;
-  overflow: hidden;
-}
-.sg-orbit-row {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 26px 0;
-}
-.sg-orbit-row.is-end {
-  flex-direction: row-reverse;
-}
-.sg-orbit-link {
-  position: absolute;
-  top: -38px;
-  inset-inline: 10%;
-  width: 80%;
-  height: 64px;
-  overflow: visible;
-}
-.sg-orbit-link path {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.55);
-  stroke-width: 2;
-  stroke-dasharray: 6 6;
-  vector-effect: non-scaling-stroke;
-}
-.sg-orbit {
-  --p: #6366f1;
-  --r: 74px;
-  position: relative;
-  flex: none;
-  width: 200px;
-  height: 200px;
-  display: grid;
-  place-items: center;
-}
-.sg-orbit-ring {
-  position: absolute;
-  inset: calc(100px - var(--r));
-  border: 2px solid #facc15;
-  border-radius: 50%;
-  opacity: 0.85;
-}
-.sg-planet {
-  position: relative;
-  width: 92px;
-  height: 92px;
-  border: 0;
-  border-radius: 50%;
-  background:
-    repeating-linear-gradient(-18deg, transparent 0 14px, color-mix(in srgb, white 45%, transparent) 14px 22px),
-    radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--p) 60%, white), var(--p) 70%);
-  box-shadow:
-    inset -10px -12px 0 color-mix(in srgb, var(--p) 70%, black),
-    0 0 26px color-mix(in srgb, var(--p) 60%, transparent);
-  color: #fff;
-  font: inherit;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-.sg-planet:active {
-  transform: scale(0.95);
-}
-.sg-planet-num {
-  font-size: 1.6rem;
-  font-weight: 900;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
-}
-.sg-moon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 52px;
-  height: 52px;
-  margin: -26px 0 0 -26px;
-  padding: 0;
-  border: 0;
-  background: none;
-  transform: rotate(var(--a)) translate(var(--r)) rotate(calc(-1 * var(--a)));
-  font: inherit;
-  cursor: pointer;
-}
-.sg-moon-inner {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.95);
-  color: #312e81;
-  font-weight: 900;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
-}
-.sg-moon-label {
-  max-width: 48px;
-  font-size: 1.35rem;
-  line-height: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.sg-moon.is-done .sg-moon-inner {
-  background: linear-gradient(180deg, #fde68a, #facc15);
-  box-shadow:
-    0 0 0 3px #fff,
-    0 0 16px #facc15;
-}
-.sg-moon-medal {
-  position: absolute;
-  top: -8px;
-  inset-inline-end: -6px;
-  font-size: 0.95rem;
-}
-.sg-moon:focus-visible,
-.sg-planet:focus-visible,
-.sg-orbit-caption:focus-visible {
-  outline: 4px solid #fbbf24;
-  outline-offset: 3px;
-  border-radius: 50%;
-}
-.sg-orbit-guide {
-  position: absolute;
-  bottom: -18px;
-  inset-inline-end: -14px;
-  width: 64px;
-  height: 92px;
-  object-fit: cover;
-  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45));
-  animation: sg-float 3s ease-in-out infinite;
-  pointer-events: none;
-}
-.sg-orbit-caption {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-  padding: 10px 12px;
-  border: 0;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-}
-.sg-orbit-caption strong {
-  font-size: 1.05rem;
-  font-weight: 900;
-}
-/* السور أسماؤها أطول من الحروف: قمر أعرض بخط أصغر */
-.sg-orbit-map[aria-label='رحلة القرآن'] .sg-moon {
-  width: 66px;
-  margin-left: -33px;
-}
-.sg-orbit-map[aria-label='رحلة القرآن'] .sg-moon-inner {
-  border-radius: 999px;
-}
-.sg-orbit-map[aria-label='رحلة القرآن'] .sg-moon-label {
-  max-width: 62px;
-  font-size: 0.78rem;
-}
-.sg-orbit-map[aria-label='رحلة القرآن'] .sg-orbit {
-  --r: 80px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .sg-orbit-guide {
-    animation: none;
-  }
-}
-
 /* رقم الإصدار: لمعرفة هل الجهاز على آخر نسخة */
 .sg-version {
   margin: 4px 0 0;
@@ -2028,16 +1853,6 @@ body {
   }
   .sg-choice {
     min-height: 120px;
-  }
-  .sg-orbit-map {
-    padding: 24px;
-  }
-  .sg-orbit-row {
-    justify-content: center;
-    gap: 40px;
-  }
-  .sg-orbit-caption {
-    max-width: 240px;
   }
   .sg-home-links {
     max-width: 520px;
@@ -2115,82 +1930,12 @@ body {
     width: 100%;
     margin-inline: auto;
   }
-  /* خريطة الكواكب أفقية مثل رحلة الفضاء: كواكب في صف، والطريق المنقّط بينها */
-  .sg-orbit-map {
-    display: flex;
-    gap: 0;
-    align-items: flex-start;
-    overflow-x: auto;
-    padding: 24px 24px 32px;
-    scroll-snap-type: x proximity;
-  }
-  .sg-orbit-row,
-  .sg-orbit-row.is-end {
-    flex: none;
-    flex-direction: column;
-    gap: 14px;
-    padding: 0 28px;
-    scroll-snap-align: center;
-  }
-  .sg-orbit-row.is-end {
-    margin-top: 120px;
-  }
-  .sg-orbit-link {
-    display: none;
-  }
-  /* الطريق المنقّط: خط واحد يمرّ خلف الكواكب */
-  .sg-orbit-map {
-    position: relative;
-    background-image:
-      radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.5) 0 1px, transparent 2px),
-      radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.35) 0 1px, transparent 2px),
-      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.5) 0 8px, transparent 8px 16px),
-      linear-gradient(180deg, #1e1b4b, #312e81 60%, #3730a3);
-    background-size:
-      60px 60px,
-      90px 90px,
-      100% 2px,
-      100% 100%;
-    background-position:
-      0 0,
-      0 0,
-      0 184px,
-      0 0;
-    background-repeat: repeat, repeat, no-repeat, no-repeat;
-  }
-  .sg-orbit-caption {
-    align-items: center;
-    text-align: center;
-    max-width: 200px;
-  }
   /* رحلة القرآن داخل الحديقة: شاشاتها الثابتة تترك مكان الشريط الجانبي */
   .sg-quran-tab .qg-root .garden,
   .sg-quran-tab .qg-root .home-footer {
     bottom: 0;
     inset-inline-start: var(--sg-rail-w);
   }
-}
-
-/* ===== جوائز الأقمار: 💎 القصة · 🪙 الإتقان ===== */
-.sg-moon-gems {
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  display: flex;
-  gap: 2px;
-  padding: 1px 4px;
-  border-radius: 999px;
-  background: rgba(30, 27, 75, 0.85);
-  transform: translateX(-50%);
-  font-size: 0.62rem;
-  line-height: 1.3;
-}
-.sg-gem {
-  filter: grayscale(1) opacity(0.45);
-}
-.sg-gem.is-on {
-  filter: none;
-  animation: sg-pop 0.4s ease;
 }
 
 /* ===== رحلة القرآن الواحدة ===== */
@@ -2323,4 +2068,372 @@ body {
     width: 100%;
     margin-inline: auto;
   }
+}
+
+/* ===== خريطة الحديقة: طريق متعرّج، كل محطة شجرة تنمو، وعناصرها أزهار بحلقة تقدّم =====
+   نفس الخريطة للحدائق الأربع؛ يتغيّر لون الحديقة (--g) فقط */
+.sg-gmap {
+  --g: #14b8a6;
+  list-style: none;
+  margin: 8px 0 16px;
+  padding: 18px 12px 20px;
+  border-radius: 28px;
+  border: 3px solid color-mix(in srgb, var(--g) 30%, white);
+  background:
+    radial-gradient(circle at 12% 30%, rgba(251, 113, 133, 0.18) 0 4px, transparent 5px),
+    radial-gradient(circle at 82% 55%, rgba(250, 204, 21, 0.22) 0 4px, transparent 5px),
+    radial-gradient(circle at 40% 80%, rgba(167, 139, 250, 0.18) 0 3px, transparent 4px),
+    linear-gradient(180deg, #e0f2fe 0, #f0fdf4 120px, #dcfce7 55%, #bbf7d0 100%);
+  background-size:
+    140px 160px,
+    170px 190px,
+    120px 130px,
+    100% 100%;
+  box-shadow: 0 8px 24px rgba(19, 78, 74, 0.08);
+}
+.sg-gstop {
+  position: relative;
+}
+.sg-gpath {
+  display: block;
+  width: 100%;
+  height: 46px;
+  overflow: visible;
+}
+.sg-gpath path {
+  fill: none;
+  stroke: #d4a373;
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 1 16;
+  vector-effect: non-scaling-stroke;
+}
+.sg-gstop-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sg-gstop.is-end .sg-gstop-head {
+  flex-direction: row-reverse;
+}
+.sg-gtree {
+  position: relative;
+  flex: none;
+  width: 112px;
+  height: 112px;
+  padding: 0;
+  border: 0;
+  background: radial-gradient(ellipse 46% 12% at 50% 92%, rgba(120, 72, 30, 0.28), transparent 70%);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.sg-gtree:active {
+  transform: scale(0.95);
+}
+.sg-gtree img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+  transform-origin: 50% 100%;
+}
+.sg-gstop.is-current .sg-gtree img {
+  animation: sg-sway 3.2s ease-in-out infinite;
+}
+.sg-gtree-num {
+  position: absolute;
+  top: 2px;
+  inset-inline-start: 2px;
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 3px solid #fff;
+  background: var(--g);
+  color: #fff;
+  font-weight: 900;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+.sg-gguide {
+  flex: none;
+  width: 66px;
+  height: 90px;
+  object-fit: contain;
+  animation: sg-bob 2.4s ease-in-out infinite;
+}
+.sg-gsign {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 3px solid #e0b07c;
+  border-radius: 16px;
+  background: #fffbeb;
+  box-shadow: 0 4px 0 #c08552;
+  color: var(--sg-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.sg-gsign strong {
+  font-size: 0.98rem;
+  line-height: 1.5;
+}
+.sg-gsign-sounds {
+  display: block;
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  text-align: start;
+}
+.sg-gbar {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: #fde7c4;
+  overflow: hidden;
+}
+.sg-gbar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--g) 70%, white), var(--g));
+  transition: width 0.6s ease;
+}
+.sg-gsign-count {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #92400e;
+}
+.sg-gblooms {
+  list-style: none;
+  margin: 0;
+  padding: 12px 4px 4px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px 10px;
+}
+.sg-bloom {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.sg-bloom-ring {
+  display: grid;
+  width: 62px;
+  height: 62px;
+  padding: 5px;
+  border-radius: 50%;
+  background: conic-gradient(var(--g) var(--p), rgba(255, 255, 255, 0.85) 0);
+  box-shadow: 0 4px 10px rgba(19, 78, 74, 0.14);
+  transition: transform 0.2s ease;
+}
+.sg-bloom:active .sg-bloom-ring {
+  transform: scale(0.93);
+}
+.sg-bloom-label {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--sg-ink);
+  font-size: 1.45rem;
+  font-weight: 900;
+  line-height: 1;
+}
+.sg-bloom.is-word .sg-bloom-ring {
+  width: 80px;
+  height: 80px;
+}
+.sg-bloom.is-word .sg-bloom-label {
+  font-size: 0.82rem;
+  padding: 4px;
+  line-height: 1.3;
+  text-align: center;
+}
+.sg-bloom.is-done .sg-bloom-label {
+  background: color-mix(in srgb, var(--g) 16%, #fffbeb);
+}
+.sg-bloom.is-next .sg-bloom-ring {
+  animation: sg-bloom-pulse 1.6s ease-in-out infinite;
+}
+.sg-bloom-star {
+  position: absolute;
+  top: -6px;
+  inset-inline-end: -4px;
+  font-size: 1rem;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+}
+.sg-bloom-gems {
+  display: flex;
+  gap: 2px;
+  margin-top: 3px;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+.sg-gem {
+  filter: grayscale(1) opacity(0.45);
+}
+.sg-gem.is-on {
+  filter: none;
+  animation: sg-pop 0.4s ease;
+}
+.sg-bloom:focus-visible .sg-bloom-ring,
+.sg-gtree:focus-visible,
+.sg-gsign:focus-visible {
+  outline: 3px solid var(--g);
+  outline-offset: 3px;
+}
+@keyframes sg-sway {
+  0%,
+  100% {
+    transform: rotate(-1.5deg);
+  }
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+@keyframes sg-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes sg-bloom-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 4px 10px rgba(19, 78, 74, 0.14),
+      0 0 0 0 color-mix(in srgb, var(--g) 55%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 4px 10px rgba(19, 78, 74, 0.14),
+      0 0 0 9px color-mix(in srgb, var(--g) 0%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg-gstop.is-current .sg-gtree img,
+  .sg-gguide,
+  .sg-bloom.is-next .sg-bloom-ring {
+    animation: none;
+  }
+}
+@media (min-width: 700px) {
+  .sg-gmap {
+    padding: 24px 28px 28px;
+  }
+  .sg-gtree {
+    width: 140px;
+    height: 140px;
+  }
+  .sg-gsign {
+    max-width: 360px;
+  }
+  .sg-gstop.is-start .sg-gstop-head {
+    padding-inline-end: 12%;
+  }
+  .sg-gstop.is-end .sg-gstop-head {
+    padding-inline-start: 12%;
+  }
+  .sg-bloom-ring {
+    width: 72px;
+    height: 72px;
+  }
+  .sg-bloom.is-word .sg-bloom-ring {
+    width: 92px;
+    height: 92px;
+  }
+}
+@media (min-width: 1024px) {
+  .sg-gmap {
+    max-width: 980px;
+    margin-inline: auto;
+  }
+}
+
+/* ===== شريط تقدّم العنصر أعلى صفحة الحرف والسورة ===== */
+.sg-item-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 12px;
+  padding: 10px 14px;
+  border-radius: 18px;
+  border: 2px solid color-mix(in srgb, var(--g) 30%, white);
+  background: #fff;
+}
+.sg-item-progress-text {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--sg-ink);
+}
+.sg-item-progress-count {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: color-mix(in srgb, var(--g) 70%, #134e4a);
+}
+.sg-item-progress .sg-gbar {
+  background: color-mix(in srgb, var(--g) 14%, white);
+}
+
+/* ===== مشغّل «استمع وردّد» بألوان حديقة القرآن (بدل الأزرق البحري) ===== */
+.sg-quran-tab .qg-root .player {
+  background:
+    linear-gradient(180deg, rgba(15, 118, 110, 0.86), rgba(13, 148, 136, 0.82) 50%, rgba(17, 94, 89, 0.92)),
+    url('/salman/art/bg-quran.jpg') center / cover;
+}
+.sg-quran-tab .qg-root .player-deco {
+  display: none;
+}
+/* داخل صفحة السورة رأسٌ واحد فقط: رأس الحديقة وخطوات السورة */
+.sg-surah-listen .qg-root .player > .topbar {
+  display: none;
+}
+.sg-surah-listen .qg-root .player {
+  min-height: 0;
+  padding-top: 16px;
+  border-radius: 24px 24px 0 0;
+}
+
+/* ===== أدوات القرآن (كلماتي · جسر المعاني · آية اليوم) بنفس رأس الحديقة وخلفيتها ===== */
+.sg-quran-tab .qg-root .screen > .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 color-mix(in srgb, #14b8a6 25%, transparent);
+}
+.sg-quran-tab .qg-root .screen > .topbar .title {
+  font-size: 1.15rem;
+  color: color-mix(in srgb, #14b8a6 70%, #0f172a);
+}
+.sg-quran-tab .qg-root .screen > .topbar .icon-btn {
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, #14b8a6 14%, white);
+  color: color-mix(in srgb, #14b8a6 70%, black);
+  box-shadow: none;
+}
+.sg-quran-tab .qg-root .words-screen,
+.sg-quran-tab .qg-root .bridge-screen,
+.sg-quran-tab .qg-root .daily-screen {
+  background: linear-gradient(180deg, #f0fdfa 0%, #ecfdf5 60%, #f0fdf4 100%);
 }

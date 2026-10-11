@@ -238,7 +238,7 @@ export default function JourneyMap({ go }) {
                 {isCurrent && (
                   <span className="map-hero">
                     <img
-                      src={child.avatar || '/assets/hero-standing-t.png'}
+                      src={child.avatar || '/salman/art/mascot-salman.png'}
                       alt={`مكان ${child.name} عند السورة المختارة`}
                     />
                     <span className="map-you">بطلك هنا</span>

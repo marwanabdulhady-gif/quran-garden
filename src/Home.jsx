@@ -274,7 +274,7 @@ export default function Home({ go }) {
                   strokeDasharray={`${(c.stars === 0 ? 0 : (((c.stars - 1) % 10) + 1) / 10) * 282.7} 282.7`}
                 />
               </svg>
-              <img src={c.avatar || '/assets/hero-standing-t.png'} alt={c.name} />
+              <img src={c.avatar || '/salman/art/mascot-salman.png'} alt={c.name} />
             </div>
             <div className="child-name">{c.name}</div>
             <button

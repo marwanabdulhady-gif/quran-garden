@@ -57,10 +57,10 @@ describe('الحدائق الأربع في موقع واحد', () => {
     render(<SalmanApp />);
     tab('الحروف');
     expect(location.hash).toBe('#/arabic');
-    const stations = document.querySelectorAll('.sg-planet');
+    const stations = document.querySelectorAll('.sg-gmap .sg-gtree');
     expect(stations).toHaveLength(7);
-    // كل كوكب تدور حوله حروفه الأربعة (28 حرفًا)
-    expect(document.querySelectorAll('.sg-moon')).toHaveLength(28);
+    // كل محطة شجرة وحولها حروفها الأربعة أزهارًا بحلقة تقدّم (28 حرفًا)
+    expect(document.querySelectorAll('.sg-gmap .sg-bloom')).toHaveLength(28);
     fireEvent.click(stations[0]);
     expect(location.hash).toBe('#/arabic/1');
     expect(screen.getByText(/العب: صِل الحرف بصديقه/)).toBeTruthy();
@@ -70,7 +70,7 @@ describe('الحدائق الأربع في موقع واحد', () => {
   it('اللعبة تُفتح من المحطة نفسها (بلا خريطة مستويات منفصلة)', () => {
     render(<SalmanApp />);
     tab('الحروف');
-    fireEvent.click(document.querySelector('.sg-planet'));
+    fireEvent.click(document.querySelector('.sg-gtree'));
     fireEvent.click(screen.getByText(/العب: صِل الحرف بصديقه/).closest('button'));
     expect(document.querySelector('.hp-root .play')).toBeTruthy();
     expect(screen.queryByText('خريطة المستويات')).toBeNull();
@@ -79,25 +79,28 @@ describe('الحدائق الأربع في موقع واحد', () => {
   it('الحرف يفتح صفحته وقصصه، وزر الرجوع يرجع للمحطة', () => {
     render(<SalmanApp />);
     tab('الحروف');
-    fireEvent.click(document.querySelector('.sg-planet'));
+    fireEvent.click(document.querySelector('.sg-gtree'));
     fireEvent.click(screen.getByRole('button', { name: 'الحرف ب' }));
     expect(screen.getByText('قصص الحرف')).toBeTruthy();
     expect(document.querySelectorAll('.sg-cards li').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('رحلة القرآن واحدة: المستويات كواكب والسور تدور حولها، بلا أقسام منفصلة', () => {
+  it('رحلة القرآن واحدة: المستويات وبقية الأجزاء أشجار على خريطة واحدة، بلا أقسام منفصلة', () => {
     render(<SalmanApp />);
     tab('القرآن');
     expect(location.hash).toBe('#/quran');
     expect(screen.queryAllByRole('tab')).toHaveLength(0);
-    const map = document.querySelector('.sg-orbit-map[aria-label="رحلة القرآن"]');
-    expect(map.querySelectorAll('.sg-planet')).toHaveLength(3);
-    expect(map.querySelectorAll('.sg-moon')).toHaveLength(13);
-    // كل سورة عليها جائزتان: 💎 القصة و🪙 الحفظ
-    expect(map.querySelectorAll('.sg-moon .sg-gem')).toHaveLength(26);
+    const map = document.querySelector('.sg-gmap[aria-label="رحلة القرآن"]');
+    // ٣ مستويات بقصص + ٥ محطات لبقية جزء عمّ + ٢ تبارك + ٢ قد سمع
+    expect(map.querySelectorAll('.sg-gtree')).toHaveLength(12);
+    expect(map.querySelectorAll('.sg-bloom')).toHaveLength(13 + 25 + 11 + 9);
+    // سور المستويات عليها جائزتان (💎 القصة و🪙 الحفظ)، والبقية جائزة الحفظ فقط
+    expect(map.querySelectorAll('.sg-bloom .sg-gem')).toHaveLength(26 + 45);
     expect(screen.getByText(/تابع: سورة الفاتحة/)).toBeTruthy();
-    // أدوات تطبيق القرآن جزء من الرحلة نفسها
-    expect(screen.getByText('خريطة الأجزاء')).toBeTruthy();
+    // خريطة واحدة: لا «خريطة أجزاء» ثانية ولا «بستاني» بشخصية أخرى
+    expect(screen.queryByText('خريطة الأجزاء')).toBeNull();
+    expect(screen.queryByText('بستاني')).toBeNull();
+    expect(screen.getByText('كلماتي')).toBeTruthy();
     expect(screen.getByRole('navigation', { name: 'الحدائق' })).toBeTruthy();
   });
 
@@ -124,8 +127,8 @@ describe('الحدائق الأربع في موقع واحد', () => {
   it('كنوز الرحلة (أدوات تطبيق القرآن) تفتح داخل الرحلة', () => {
     render(<SalmanApp />);
     tab('القرآن');
-    fireEvent.click(screen.getByText('بستاني').closest('button'));
-    expect(location.hash).toBe('#/quran/explore/garden');
+    fireEvent.click(screen.getByText('كلماتي').closest('button'));
+    expect(location.hash).toBe('#/quran/explore/words');
     expect(document.querySelector('.sg-quran-tab .qg-root')).toBeTruthy();
   });
 
@@ -140,7 +143,7 @@ describe('الحدائق الأربع في موقع واحد', () => {
   it('الروابط القديمة لأقسام القرآن تفتح الرحلة الواحدة', () => {
     history.replaceState(null, '', '/#/quran/levels');
     render(<SalmanApp />);
-    expect(document.querySelector('.sg-orbit-map[aria-label="رحلة القرآن"]')).toBeTruthy();
+    expect(document.querySelector('.sg-gmap[aria-label="رحلة القرآن"]')).toBeTruthy();
   });
 
   it('رابط مباشر إلى حديقة يفتحها (يعمل مع زر الرجوع والمشاركة)', () => {
@@ -186,5 +189,54 @@ describe('مفتوحة دائمًا: لا «غدًا»، وبعد الإنجاز
     fireEvent.click(right);
     fireEvent.click(screen.getByText(/التالي: النجوم في السماء/));
     expect(screen.getByRole('heading', { level: 2, name: 'النجوم في السماء' })).toBeTruthy();
+  });
+});
+
+describe('خريطة الحديقة الموحّدة والتقدّم لكل عنصر', () => {
+  const tab = (label) => fireEvent.click(within(screen.getByRole('navigation', { name: 'الحدائق' })).getByText(label));
+  const seed = (patch) => {
+    const st = { ...createState(), ...patch };
+    window.localStorage.setItem('salman-garden-v1', JSON.stringify(st));
+  };
+
+  it('الحدائق الأربع تستعمل نفس خريطة الحديقة (أشجار وأزهار)، لا كواكب', () => {
+    render(<SalmanApp />);
+    for (const [t, label] of [
+      ['الحروف', 'رحلة الحروف'],
+      ['الأرقام', 'رحلة الأرقام'],
+      ['القرآن', 'رحلة القرآن'],
+      ['English', 'رحلة الأصوات'],
+    ]) {
+      tab(t);
+      expect(document.querySelector(`.sg-gmap[aria-label="${label}"]`)).toBeTruthy();
+      expect(document.querySelector('.sg-planet, .sg-orbit-map')).toBeNull();
+    }
+  });
+
+  it('حلقة تقدّم الحرف تعكس خطوات يومه وقصصه، والشجرة تنمو', () => {
+    seed({ nour: { 'ar-أ': { day: DAY, done: ['door', 'story', 'sound'], completed: false } } });
+    render(<SalmanApp />);
+    tab('الحروف');
+    const bloom = screen.getByRole('button', { name: /^أ · / });
+    expect(bloom.getAttribute('aria-label')).not.toMatch(/ · ٠٪$/);
+    expect(bloom.style.getPropertyValue('--p')).not.toBe('0%');
+    // الشجرة الأولى خرجت من البذرة
+    expect(document.querySelector('.sg-gtree img').getAttribute('src')).toMatch(/growth-2\.png$/);
+  });
+
+  it('صفحة الحرف فيها شريط تقدّم', () => {
+    history.replaceState(null, '', `/#/arabic/letter/${encodeURIComponent('ب')}`);
+    render(<SalmanApp />);
+    expect(document.querySelector('.sg-item-progress .sg-gbar')).toBeTruthy();
+    expect(screen.getByText(/يوم الحرف ٠ من ٧/)).toBeTruthy();
+  });
+
+  it('سورة بلا قصة (النبأ): خطوتان فقط، تبدأ بالاستماع، وشريط تقدّمها ظاهر', () => {
+    history.replaceState(null, '', '/#/quran/surah/78');
+    render(<SalmanApp />);
+    const steps = screen.getByRole('list', { name: 'خطوات سورة النبأ' });
+    expect(within(steps).getAllByRole('button')).toHaveLength(2);
+    expect(document.querySelector('.sg-surah-listen .qg-root')).toBeTruthy();
+    expect(screen.getByText(/٠ من ٢ خطوات/)).toBeTruthy();
   });
 });

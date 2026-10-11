@@ -200,7 +200,7 @@ export function StepScreen({ trip, go }) {
         ))}
         <span className="step-dot on" style={{ right: '100%' }} />
         <div className="mini-hero" style={{ right: heroPos + '%' }}>
-          <img src={child.avatar || '/assets/hero-standing-t.png'} alt="شخصيتك" />
+          <img src={child.avatar || '/salman/art/mascot-salman.png'} alt="شخصيتك" />
         </div>
         <div style={{ textAlign: 'center', fontSize: 12, fontWeight: 800, color: '#334155', marginTop: 34 }}>
           شخصيتك على جسر الحديقة، تقدّمت {doneCount} من {trip.words.length} خطوات
@@ -374,7 +374,7 @@ function Celebration({ badgeKey, final, tripName, accent, confettiColors, go, on
       <Confetti show colors={confettiColors} />
       <div className="overlay" style={{ zIndex: 55 }}>
         <div className="modal" style={{ textAlign: 'center', borderTop: `6px solid ${accent || '#10b981'}` }}>
-          <img className="celebrate-hero" src="/assets/hero-celebrate-t.png" alt="" aria-hidden="true" />
+          <img className="celebrate-hero" src="/salman/art/mascot-salman.png" alt="" aria-hidden="true" />
           {(isTrip || badgeKey === 'round2') && (
             <img className="celebrate-trophy" src="/assets/trophy-t.png" alt="" aria-hidden="true" />
           )}

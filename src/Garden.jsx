@@ -251,7 +251,7 @@ export default function Garden({ go, embedded = false }) {
         {/* البطل (يمشي للداخل أول مرة) */}
         <div className={'hero' + (walking ? ' walking' : '')} style={{ left: '47%', top: '84%' }}>
           <img
-            src={confetti ? '/assets/hero-celebrate-t.png' : child.avatar || '/assets/hero-standing-t.png'}
+            src={confetti ? '/salman/art/mascot-salman.png' : child.avatar || '/salman/art/mascot-salman.png'}
             alt={child.name}
           />
         </div>
@@ -307,7 +307,7 @@ export default function Garden({ go, embedded = false }) {
           </button>
         )}
         <div className="who">
-          <img src={child.avatar || '/assets/hero-standing-t.png'} alt={child.name} />
+          <img src={child.avatar || '/salman/art/mascot-salman.png'} alt={child.name} />
           <span>
             أهلًا {child.name}
             <div className="stars star-count">
@@ -401,7 +401,7 @@ export default function Garden({ go, embedded = false }) {
       {giftOpen && (
         <Modal title="هدية رائعة! 🎁" onClose={() => setGiftOpen(false)}>
           <div className="center" style={{ padding: '10px 0' }}>
-            <img className="gift-hero" src="/assets/hero-gift-t.png" alt={child.name} />
+            <img className="gift-hero" src="/salman/art/mascot-salman.png" alt={child.name} />
             <p style={{ fontWeight: 800, fontSize: 15, lineHeight: 2, marginTop: 8 }}>
               فتحت الهدية! اتضافت الزينة لحديقتك وهتفضل موجودة دايمًا 🌿
             </p>

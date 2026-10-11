@@ -67,7 +67,7 @@ export function Confetti({ show, colors = COLORS }) {
 }
 
 export function Avatar({ child, className, style }) {
-  const src = child?.avatar || '/assets/hero-standing-t.png';
+  const src = child?.avatar || '/salman/art/mascot-salman.png';
   return (
     <div className={className} style={style}>
       <img src={src} alt={child?.name || 'بطل'} />

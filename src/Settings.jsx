@@ -334,7 +334,7 @@ export default function Settings({ go }) {
             <div className="toggle-row" key={c.id}>
               <span>
                 <img
-                  src={c.avatar || '/assets/hero-standing-t.png'}
+                  src={c.avatar || '/salman/art/mascot-salman.png'}
                   alt=""
                   style={{
                     width: 34,
@@ -386,7 +386,7 @@ export default function Settings({ go }) {
                 sfx.tap();
               }}
             >
-              <img src="/assets/hero-standing-t.png" alt="الشخصية الافتراضية" />
+              <img src="/salman/art/mascot-salman.png" alt="الشخصية الافتراضية" />
               <div>الشخصية الكرتونية الافتراضية</div>
             </div>
             <div className={'char-opt' + (child.avatar ? ' on' : '')} onClick={() => setForm(child.id)}>
