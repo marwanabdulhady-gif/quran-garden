@@ -25,8 +25,15 @@ const D2 = addDays(D1, 1);
 const D3 = addDays(D1, 2);
 
 describe('إعدادات ولي الأمر', () => {
-  it('الافتراضي: زيارة واحدة، وهدوء من 20 إلى 7، وبلا PIN', () => {
-    expect(PARENT_DEFAULTS).toEqual({ pinHash: null, pinSalt: null, maxVisits: 1, quietFrom: 20, quietTo: 7 });
+  it('الافتراضي: الغابة مفتوحة (بلا حدود)، وإن فُعّلت: زيارة واحدة وهدوء من 20 إلى 7، وبلا PIN', () => {
+    expect(PARENT_DEFAULTS).toEqual({
+      pinHash: null,
+      pinSalt: null,
+      limits: false,
+      maxVisits: 1,
+      quietFrom: 20,
+      quietTo: 7,
+    });
     expect(createState().parent).toEqual(PARENT_DEFAULTS);
     expect(createState().visitLog).toEqual({ day: null, count: 0 });
   });
@@ -109,28 +116,43 @@ describe('ساعات الهدوء (توقيت الرياض)', () => {
   });
 });
 
+// الحدود اختيارية: تعمل فقط إذا فعّلها ولي الأمر
+const limited = () => ({ ...createState(), parent: { ...PARENT_DEFAULTS, limits: true } });
+
 describe('بوابة الزيارة', () => {
+  it('الافتراضي مفتوح دائمًا: لا حدّ يومي ولا ساعات هدوء', () => {
+    let s = createState();
+    for (let i = 0; i < 5; i++) s = countVisit(s, D1);
+    expect(visitGate(s, { dayKey: D1, hour: 10 })).toEqual({ open: true, reason: null });
+    expect(visitGate(s, { dayKey: D1, hour: 22 })).toEqual({ open: true, reason: null });
+  });
+
+  it('sanitizeParent يحفظ تفعيل الحدود ويرفض القيم الغريبة', () => {
+    expect(sanitizeParent({ limits: true }).limits).toBe(true);
+    expect(sanitizeParent({ limits: 'yes' }).limits).toBe(false);
+  });
+
   it('تُسمح الزيارة الأولى في وقت النهار', () => {
     const s = createState();
     expect(visitGate(s, { dayKey: D1, hour: 10 })).toEqual({ open: true, reason: null });
   });
 
   it('بعد الحدّ اليومي (زيارة واحدة) تُمنع، والسبب cap', () => {
-    let s = createState();
+    let s = limited();
     s = countVisit(s, D1);
     expect(visitsToday(s, D1)).toBe(1);
     expect(visitGate(s, { dayKey: D1, hour: 10 })).toEqual({ open: false, reason: 'cap' });
   });
 
   it('الحدّ اليومي يتجدد في يوم جديد', () => {
-    let s = countVisit(createState(), D1);
+    let s = countVisit(limited(), D1);
     expect(visitGate(s, { dayKey: D2, hour: 10 }).open).toBe(true);
     s = countVisit(s, D2);
     expect(visitsToday(s, D2)).toBe(1);
   });
 
   it('الولي يرفع الحدّ إلى زيارتين فتُسمح الثانية', () => {
-    let s = { ...createState(), parent: { ...PARENT_DEFAULTS, maxVisits: 2 } };
+    let s = { ...createState(), parent: { ...PARENT_DEFAULTS, limits: true, maxVisits: 2 } };
     s = countVisit(s, D1);
     expect(visitGate(s, { dayKey: D1, hour: 10 }).open).toBe(true);
     s = countVisit(s, D1);
@@ -138,7 +160,7 @@ describe('بوابة الزيارة', () => {
   });
 
   it('وقت الهدوء يمنع الزيارة بسبب quiet حتى مع توفّر الحدّ', () => {
-    const s = createState();
+    const s = limited();
     expect(visitGate(s, { dayKey: D1, hour: 22 })).toEqual({ open: false, reason: 'quiet' });
   });
 });

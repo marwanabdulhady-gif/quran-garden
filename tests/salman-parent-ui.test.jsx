@@ -46,7 +46,7 @@ describe('ولي الأمر — ضبط الرمز والدخول', () => {
     expect(screen.getByText('أعد إدخال الرمز للتأكيد')).toBeTruthy();
     typePin('1234');
 
-    expect(screen.getByText(/الزيارات اليومية/)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'حدود الوقت' })).toBeTruthy();
     const p = saved().parent;
     expect(p.pinHash).toMatch(/^[0-9a-f]{8}$/);
     expect(p.pinSalt).toBeTruthy();
@@ -75,15 +75,30 @@ describe('ولي الأمر — ضبط الرمز والدخول', () => {
     expect(screen.getByText(/الرمز غير صحيح/)).toBeTruthy();
 
     typePin('5678');
-    expect(screen.getByText(/الزيارات اليومية/)).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'حدود الوقت' })).toBeTruthy();
   });
 });
 
 describe('ولي الأمر — الزيارة وساعات الهدوء على الغابة', () => {
+  it('الافتراضي مفتوح: زر الزيارة ظاهر بعد زيارة سابقة اليوم وحتى في الليل', () => {
+    vi.setSystemTime(NIGHT);
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...createState(), visitLog: { day: dayKeyFrom(NIGHT), count: 3 } })
+    );
+    render(<SalmanApp />);
+    expect(screen.getByText(/زيارة اليوم \(/)).toBeTruthy();
+    expect(screen.queryByText(/خلصت زيارة اليوم/)).toBeNull();
+  });
+
   it('بعد استنفاد حدّ اليوم يختفي زر الزيارة ويظهر سبب لطيف بلا عدّاد', () => {
     window.localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify({ ...createState(), visitLog: { day: dayKeyFrom(DAYTIME), count: 1 } })
+      JSON.stringify({
+        ...createState(),
+        parent: { ...PARENT_DEFAULTS, limits: true },
+        visitLog: { day: dayKeyFrom(DAYTIME), count: 1 },
+      })
     );
     render(<SalmanApp />);
     expect(screen.queryByText(/زيارة اليوم \(/)).toBeNull();
@@ -92,12 +107,16 @@ describe('ولي الأمر — الزيارة وساعات الهدوء على 
 
   it('ساعات الهدوء تُظهر رسالة النوم بدل زر الزيارة', () => {
     vi.setSystemTime(NIGHT);
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...createState(), parent: { ...PARENT_DEFAULTS, limits: true } })
+    );
     render(<SalmanApp />);
     expect(screen.queryByText(/زيارة اليوم \(/)).toBeNull();
     expect(screen.getByText(/الغابة نايمة الآن/)).toBeTruthy();
   });
 
-  it('بدء الزيارة يسجّل عدّاد اليوم، والزيارة الثانية في نفس اليوم تُمنع', () => {
+  it('بدء الزيارة يسجّل عدّاد اليوم (للتقرير)', () => {
     render(<SalmanApp />);
     fireEvent.click(screen.getByText(/زيارة اليوم \(/));
     expect(saved().visitLog).toEqual({ day: dayKeyFrom(DAYTIME), count: 1 });

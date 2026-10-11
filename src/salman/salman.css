@@ -1710,3 +1710,36 @@ body {
   font-size: 1rem;
   color: #0f766e;
 }
+
+/* ===== أحسنت! ثم التالي مباشرة ===== */
+.sg-done {
+  --g: #10b981;
+  position: relative;
+  overflow: hidden;
+}
+.sg-done-glyph {
+  margin: 0;
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--g);
+}
+.sg-next-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.3rem;
+}
+.sg-next-glyph {
+  display: grid;
+  place-items: center;
+  min-width: 52px;
+  height: 52px;
+  padding: 0 8px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #047857;
+  font-size: 1.6rem;
+  font-weight: 900;
+}

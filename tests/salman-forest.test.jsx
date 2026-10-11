@@ -140,3 +140,30 @@ describe('الحدائق الأربع في موقع واحد', () => {
     expect(screen.getByText(/Phonics/)).toBeTruthy();
   });
 });
+
+describe('مفتوحة دائمًا: لا «غدًا»، وبعد الإنجاز ننتقل إلى التالي', () => {
+  it('لا قفل يومي: حتى بعد فتح عناصر جديدة كثيرة اليوم تبقى كل البطاقات مفتوحة', () => {
+    const s = normalizeState({
+      ...createState(),
+      daily: { day: DAY, newByGarden: { quran: 99, arabic: 99, math: 99, english: 99 } },
+    });
+    window.localStorage.setItem('salman-garden-v1', JSON.stringify(s));
+    history.replaceState(null, '', '/#/quran/stories');
+    render(<SalmanApp />);
+    const cards = [...document.querySelectorAll('.sg-cards .sg-card')];
+    expect(cards).toHaveLength(13);
+    expect(cards.every((c) => !c.disabled)).toBe(true);
+    expect(screen.queryByText(/غدًا/)).toBeNull();
+  });
+
+  it('بعد الإجابة الصحيحة يظهر «التالي» ويفتح البطاقة التالية مباشرة', () => {
+    history.replaceState(null, '', '/#/quran/stories');
+    render(<SalmanApp />);
+    fireEvent.click(screen.getByText('سورة الفاتحة').closest('button'));
+    const right = screen.getAllByRole('button').find((b) => b.textContent.trim() === 'الفاتحة');
+    fireEvent.click(right);
+    const next = screen.getByText(/التالي: سورة الناس/);
+    fireEvent.click(next);
+    expect(screen.getByRole('heading', { level: 2, name: 'سورة الناس' })).toBeTruthy();
+  });
+});
