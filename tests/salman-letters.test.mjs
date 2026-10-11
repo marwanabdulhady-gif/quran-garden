@@ -43,11 +43,11 @@ describe('المرحلة B: الحرف ← الحيوان', () => {
   });
 });
 
-describe('المرحلة C: الأرقام 1–10', () => {
+describe('المرحلة C: الأرقام 1–20', () => {
   const nums = numberItems();
 
-  it('عشرة عناصر، كل واحد يعدّ رقمه بالضبط', () => {
-    expect(nums).toHaveLength(10);
+  it('عشرون عنصرًا، كل واحد يعدّ رقمه بالضبط', () => {
+    expect(nums).toHaveLength(20);
     nums.forEach((it, i) => {
       const n = i + 1;
       expect(it.question.answer).toBe(toArabicNumeral(n));
@@ -66,8 +66,8 @@ describe('المرحلة C: الأرقام 1–10', () => {
   });
 
   it('الرياضيات تضم القصص الأربع والأرقام العشرة', () => {
-    expect(CATALOG.math).toHaveLength(14);
-    expect(CATALOG.math.filter((i) => i.source === 'count')).toHaveLength(10);
+    expect(CATALOG.math).toHaveLength(24);
+    expect(CATALOG.math.filter((i) => i.source === 'count')).toHaveLength(20);
   });
 });
 

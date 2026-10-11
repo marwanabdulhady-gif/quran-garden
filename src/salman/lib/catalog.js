@@ -137,13 +137,14 @@ function englishItems() {
   }));
 }
 
-// الأرقام 1 إلى 10 (مرحلة C): عدّ الأشياء المعروضة ثم اختيار الرقم. خياران: الرقم الصحيح وجاره.
+// الأرقام 1 إلى 20 (مرحلة C): عدّ الأشياء المعروضة ثم اختيار الرقم. خياران: الرقم الصحيح وجاره.
+// المرحلة الأولى 1–10 والثانية 11–20 في الجدول نفسه.
 const COUNT_OBJECTS = ['🍎', '⭐', '🌸', '🐟', '🥚'];
 export function numberItems() {
-  return Array.from({ length: 10 }, (_, i) => {
+  return Array.from({ length: 20 }, (_, i) => {
     const n = i + 1;
     const obj = COUNT_OBJECTS[i % COUNT_OBJECTS.length];
-    const distractor = n >= 10 ? n - 1 : n + 1;
+    const distractor = n >= 20 ? n - 1 : n + 1;
     return {
       id: `math-n-${String(n).padStart(2, '0')}`,
       garden: 'math',
