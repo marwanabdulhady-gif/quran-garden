@@ -4,6 +4,7 @@
 import { ARABIC_STORIES } from '../data/stories.generated.js';
 import { GARDENS, MATH_STORIES, ENGLISH_STORIES } from '../data/gardens.js';
 import { SURAHS, QURAN_LEVELS, SURAH_STORIES } from '../data/quran.js';
+import { ANIMALS } from '../data/animals.js';
 
 const ALPHABET = ARABIC_STORIES.map((l) => l.letter);
 const ARABIC_NUMERALS = [
@@ -35,6 +36,24 @@ export function toArabicNumeral(n) {
   return ARABIC_NUMERALS[n] ?? String(n).replace(/\d/g, (d) => ARABIC_NUMERALS[Number(d)]);
 }
 
+const animalLabel = (letter) => `${ANIMALS[letter].emoji} ${ANIMALS[letter].word}`;
+
+// الحرف ← الحيوان (مرحلة B): أي حيوان اسمه يبدأ بهذا الحرف؟ خياران فقط، والثاني حيوان لحرف بعيد
+function letterItem(L, distractorLetter) {
+  return {
+    id: `ar-m-${String(L.num).padStart(2, '0')}`,
+    garden: 'arabic',
+    title: `الحرف ${L.letter}`,
+    source: 'match',
+    paragraphs: [`الحرف ${L.letter} يبدأ به اسم حيوان. ابحث عنه!`],
+    question: {
+      prompt: `أي حيوان اسمه يبدأ بحرف «${L.letter}»؟`,
+      choices: [animalLabel(L.letter), animalLabel(distractorLetter)],
+      answer: animalLabel(L.letter),
+    },
+  };
+}
+
 function arabicItems() {
   const items = [];
   for (const L of ARABIC_STORIES) {
@@ -55,11 +74,12 @@ function arabicItems() {
         },
       });
     }
+    items.push(letterItem(L, distractor));
   }
   return items;
 }
 
-function mathItems() {
+function mathStoryItems() {
   return MATH_STORIES.map((m) => {
     const distractor = m.count >= 10 ? m.count - 1 : m.count + 1;
     return {
@@ -115,6 +135,32 @@ function englishItems() {
       answer: e.sound,
     },
   }));
+}
+
+// الأرقام 1 إلى 10 (مرحلة C): عدّ الأشياء المعروضة ثم اختيار الرقم. خياران: الرقم الصحيح وجاره.
+const COUNT_OBJECTS = ['🍎', '⭐', '🌸', '🐟', '🥚'];
+export function numberItems() {
+  return Array.from({ length: 10 }, (_, i) => {
+    const n = i + 1;
+    const obj = COUNT_OBJECTS[i % COUNT_OBJECTS.length];
+    const distractor = n >= 10 ? n - 1 : n + 1;
+    return {
+      id: `math-n-${String(n).padStart(2, '0')}`,
+      garden: 'math',
+      title: `العدّ حتى ${toArabicNumeral(n)}`,
+      source: 'count',
+      paragraphs: [`عُدّ معي: ${Array(n).fill(obj).join(' ')}`],
+      question: {
+        prompt: 'كم عددها؟',
+        choices: [toArabicNumeral(n), toArabicNumeral(distractor)],
+        answer: toArabicNumeral(n),
+      },
+    };
+  });
+}
+
+function mathItems() {
+  return [...mathStoryItems(), ...numberItems()];
 }
 
 export const CATALOG = {
