@@ -125,7 +125,7 @@ export default function Play({ level, onExit, onLevelComplete, onNext }) {
     <main className="screen play" aria-labelledby="play-title">
       <header className="topbar">
         <button type="button" className="btn ghost" onClick={onExit}>
-          → الخريطة
+          → رجوع
         </button>
         <div className="play-title">
           <h1 id="play-title">{level.title}</h1>

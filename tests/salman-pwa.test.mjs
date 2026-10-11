@@ -5,13 +5,18 @@ import { resolve } from 'node:path';
 const root = resolve(import.meta.dirname, '..');
 const config = readFileSync(resolve(root, 'vite.config.js'), 'utf-8');
 
-// موقع واحد: الغابة (الحدائق الأربع) على «/» ورحلة القرآن الكاملة على «/quran.html»
+// موقع واحد: الغابة بحدائقها الأربع على «/»، ورحلة القرآن داخل حديقة القرآن
 describe('one site, one PWA', () => {
-  it('builds the forest at / and the Quran journey at /quran.html', () => {
+  it('builds one page: the forest at /, with the Quran journey inside the Quran garden', () => {
     expect(config).toContain("main: resolve(root, 'index.html')");
-    expect(config).toContain("quran: resolve(root, 'quran.html')");
+    expect(config).not.toContain('quran.html');
     expect(readFileSync(resolve(root, 'index.html'), 'utf-8')).toContain('/src/salman/main.jsx');
-    expect(readFileSync(resolve(root, 'quran.html'), 'utf-8')).toContain('/src/main.jsx');
+  });
+
+  it('sends the old /quran.html address to the Quran garden and keeps restore links', () => {
+    const html = readFileSync(resolve(root, 'public/quran.html'), 'utf-8');
+    expect(html).toContain('#/quran');
+    expect(html).toContain('#garden=');
   });
 
   it('keeps the old /salman.html address working as a redirect to /', () => {

@@ -8,12 +8,11 @@ import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('.', import.meta.url));
 
 export default defineConfig({
-  // موقع واحد: الغابة (الحدائق الأربع) على «/»، ورحلة حديقة القرآن الكاملة على «/quran.html»
+  // موقع واحد: الغابة بحدائقها الأربع على «/». رحلة القرآن داخل حديقة القرآن (#/quran)
   build: {
     rollupOptions: {
       input: {
         main: resolve(root, 'index.html'),
-        quran: resolve(root, 'quran.html'),
       },
     },
   },

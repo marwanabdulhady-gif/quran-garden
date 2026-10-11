@@ -2,7 +2,6 @@
 import React from 'react';
 import { describe, it, expect, vi, afterEach, beforeAll } from 'vitest';
 import { render, fireEvent, cleanup, act, within } from '@testing-library/react';
-import LevelMap from '../src/huroof/components/LevelMap.jsx';
 import Play from '../src/huroof/components/Play.jsx';
 import { LEVEL_DATA } from '../src/huroof/data/index.js';
 
@@ -14,35 +13,6 @@ afterEach(() => cleanup());
 const level1 = LEVEL_DATA[0];
 const letterBtn = (c, letter) => c.container.querySelector(`[data-letter="${letter}"]`);
 const targetBtn = (c, target) => c.container.querySelector(`[data-target="${target}"]`);
-
-describe('LevelMap', () => {
-  it('المستويات المقفولة ما تتفتحش، والمفتوح بيشغّل onPlay', () => {
-    const onPlay = vi.fn();
-    const c = render(<LevelMap playerName="ليلى" completed={{}} results={{}} onPlay={onPlay} onBack={() => {}} />);
-    const buttons = c.getAllByRole('button').filter((b) => b.className.includes('level-card'));
-    expect(buttons).toHaveLength(7);
-    expect(buttons[1].disabled).toBe(true);
-    expect(buttons[0].disabled).toBe(false);
-    fireEvent.click(buttons[0]);
-    expect(onPlay).toHaveBeenCalledWith(1);
-  });
-
-  it('بعد إكمال مستوى بيفتح اللي بعده ويعرض النجوم', () => {
-    const c = render(
-      <LevelMap
-        playerName="ليلى"
-        completed={{ 1: true }}
-        results={{ 1: { stars: 3 } }}
-        onPlay={() => {}}
-        onBack={() => {}}
-      />
-    );
-    const buttons = c.getAllByRole('button').filter((b) => b.className.includes('level-card'));
-    expect(buttons[1].disabled).toBe(false);
-    expect(buttons[0].className).toContain('done');
-    expect(buttons[0].textContent).toContain('3/4');
-  });
-});
 
 describe('Play — لعبة المستوى', () => {
   it('الضغط: اختيار حرف ثم حيوانه بيحط الحرف ويدّي نجمة', () => {

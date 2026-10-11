@@ -2,7 +2,7 @@
 // اختبار واجهة حديقة سلمان: الغابة، زيارة اليوم، الخطأ لا يعاقب، والإجابة الصحيحة تحفظ النجوم
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
-import { render, screen, cleanup, fireEvent, within } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import SalmanApp from '../src/salman/SalmanApp.jsx';
 import { CATALOG } from '../src/salman/lib/catalog.js';
 import { STORAGE_KEY, createState, dayKeyFrom } from '../src/salman/lib/gamify.js';
@@ -15,6 +15,7 @@ const DAYTIME = new Date('2026-10-11T07:00:00Z');
 
 beforeEach(() => {
   window.localStorage.clear();
+  history.replaceState(null, '', '/');
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(DAYTIME);
 });
@@ -70,12 +71,10 @@ describe('حديقة سلمان — الواجهة', () => {
     expect(saved.gardens.arabic).toBe(1);
   });
 
-  it('فتح مستويات القرآن يعرض المستوى الأول مفتوحًا والثاني مقفلًا', () => {
+  it('بطاقة حديقة القرآن تفتح رحلة القرآن داخل الغابة (الحفظ والاستماع في مكان واحد)', () => {
     render(<SalmanApp />);
-    fireEvent.click(screen.getByText('📗 مستويات السور'));
-    expect(screen.getByText(/المستوى الأول/)).toBeTruthy();
-    const second = screen.getByText(/المستوى الثاني/).closest('section');
-    expect(within(second).getByText(/افتح المستوى السابق أولًا/)).toBeTruthy();
+    fireEvent.click(screen.getByText('حديقة القرآن').closest('button'));
+    expect(document.querySelector('.sg-quran-tab .qg-root')).toBeTruthy();
   });
 
   it('عدد الأسئلة في كل حديقة مطابق للكتالوج', () => {

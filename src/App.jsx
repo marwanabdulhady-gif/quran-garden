@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useGarden, activeChild, parseGardenLink, useStorageError } from './store.js';
-import { setMuted, sfx } from './sound.js';
+import { setMuted } from './sound.js';
 import Home from './Home.jsx';
 import Garden from './Garden.jsx';
 import Bridge from './Bridge.jsx';
@@ -81,11 +81,12 @@ function InstallBanner() {
   );
 }
 
-export default function App() {
+// حديقة القرآن داخل الغابة: تبدأ مباشرةً في حديقة الطفل (لا شاشة اختيار الطفل)، بلا شريط تثبيت مستقل
+export default function App({ embedded = false }) {
   const s = useGarden();
   const child = activeChild(s);
   const storageError = useStorageError();
-  const [route, setRoute] = useState({ name: 'home', params: {} });
+  const [route, setRoute] = useState({ name: embedded ? 'garden' : 'home', params: {} });
   const [pendingFamily, setPendingFamily] = useState(null);
   const [toast, setToast] = useState(null);
 
@@ -113,61 +114,63 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      {storageError && (
-        <div className="storage-banner" role="alert">
-          ⚠️ مساحة التخزين ممتلئة — نزّل نسخة احتياطية من الإعدادات واحذف صورًا قديمة
-        </div>
-      )}
-      {route.name === 'home' && <Home go={go} />}
-      {route.name === 'garden' && <Garden go={go} />}
-      {route.name === 'bridge' && <Bridge go={go} initialView={route.params.review ? 'review' : 'list'} />}
-      {route.name === 'words' && <Words go={go} />}
-      {route.name === 'journey' && <JourneyMap go={go} />}
-      {route.name === 'badges' && <Badges go={go} childId={route.params.childId} />}
-      {route.name === 'gate' && <Listening gateId={route.params.gate} go={go} />}
-      {route.name === 'player' && <Listening gateId={route.params.gate} surahNum={route.params.surah} go={go} />}
-      {route.name === 'listen-review' && <ListenReviewRoute gateId={route.params.gate} go={go} />}
-      {route.name === 'daily' && <Daily go={go} />}
-      {route.name === 'settings' && <Settings go={go} />}
+      <div className="qg-root">
+        {storageError && (
+          <div className="storage-banner" role="alert">
+            ⚠️ مساحة التخزين ممتلئة — نزّل نسخة احتياطية من الإعدادات واحذف صورًا قديمة
+          </div>
+        )}
+        {route.name === 'home' && <Home go={go} />}
+        {route.name === 'garden' && <Garden go={go} embedded={embedded} />}
+        {route.name === 'bridge' && <Bridge go={go} initialView={route.params.review ? 'review' : 'list'} />}
+        {route.name === 'words' && <Words go={go} />}
+        {route.name === 'journey' && <JourneyMap go={go} />}
+        {route.name === 'badges' && <Badges go={go} childId={route.params.childId} />}
+        {route.name === 'gate' && <Listening gateId={route.params.gate} go={go} />}
+        {route.name === 'player' && <Listening gateId={route.params.gate} surahNum={route.params.surah} go={go} />}
+        {route.name === 'listen-review' && <ListenReviewRoute gateId={route.params.gate} go={go} />}
+        {route.name === 'daily' && <Daily go={go} />}
+        {route.name === 'settings' && <Settings go={go} />}
 
-      {pendingFamily && (
-        <RestoreDialog
-          family={pendingFamily}
-          onClose={() => {
-            setPendingFamily(null);
-            try {
-              history.replaceState(null, '', location.pathname);
-            } catch (e) {
-              /* ما يهمش */
-            }
-          }}
-          onApplied={say}
-        />
-      )}
+        {pendingFamily && (
+          <RestoreDialog
+            family={pendingFamily}
+            onClose={() => {
+              setPendingFamily(null);
+              try {
+                history.replaceState(null, '', location.pathname);
+              } catch (e) {
+                /* ما يهمش */
+              }
+            }}
+            onApplied={say}
+          />
+        )}
 
-      {toast && (
-        <div
-          style={{
-            position: 'fixed',
-            bottom: 84,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            background: '#065f46',
-            color: '#fff',
-            fontWeight: 800,
-            fontSize: 14,
-            padding: '10px 20px',
-            borderRadius: 999,
-            zIndex: 80,
-            animation: 'pop 0.25s ease',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-          }}
-        >
-          {toast}
-        </div>
-      )}
+        {toast && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: 84,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#065f46',
+              color: '#fff',
+              fontWeight: 800,
+              fontSize: 14,
+              padding: '10px 20px',
+              borderRadius: 999,
+              zIndex: 80,
+              animation: 'pop 0.25s ease',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
+            }}
+          >
+            {toast}
+          </div>
+        )}
 
-      <InstallBanner />
+        {!embedded && <InstallBanner />}
+      </div>
     </ErrorBoundary>
   );
 }
