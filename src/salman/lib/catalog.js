@@ -40,18 +40,28 @@ const animalLabel = (letter) => `${ANIMALS[letter].emoji} ${ANIMALS[letter].word
 
 // الحرف ← الحيوان (مرحلة B): أي حيوان اسمه يبدأ بهذا الحرف؟ خياران فقط، والثاني حيوان لحرف بعيد
 function letterItem(L, distractorLetter) {
-  return {
-    id: `ar-m-${String(L.num).padStart(2, '0')}`,
+  const num = String(L.num).padStart(2, '0');
+  const choices = [animalLabel(L.letter), animalLabel(distractorLetter)];
+  // الصورة تظهر على زر الخيار، والمقطع يقول اسم الحرف ثم الحيوان (إن وُجد)
+  const choiceArt = {};
+  for (const letter of [L.letter, distractorLetter]) {
+    if (ANIMALS[letter].art) choiceArt[animalLabel(letter)] = `salman/art/animals/${ANIMALS[letter].slug}.png`;
+  }
+  const item = {
+    id: `ar-m-${num}`,
     garden: 'arabic',
     title: `الحرف ${L.letter}`,
     source: 'match',
     paragraphs: [`الحرف ${L.letter} يبدأ به اسم حيوان. ابحث عنه!`],
     question: {
       prompt: `أي حيوان اسمه يبدأ بحرف «${L.letter}»؟`,
-      choices: [animalLabel(L.letter), animalLabel(distractorLetter)],
+      choices,
       answer: animalLabel(L.letter),
+      choiceArt,
     },
   };
+  if (ANIMALS[L.letter].clip) item.audio = `letters/letter-${num}`;
+  return item;
 }
 
 function arabicItems() {

@@ -1,4 +1,6 @@
 // اختبارات المرحلتين B وC: الحرف ← الحيوان (28 حرفًا)، والأرقام 1–10، وقيود الخيارات (2 في البداية، ولا أكثر من 4).
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import { ANIMALS } from '../src/salman/data/animals.js';
 import { ARABIC_STORIES } from '../src/salman/data/stories.generated.js';
@@ -79,5 +81,42 @@ describe('قيود الخيارات لكل العناصر (سلامة عامة)'
         expect(it.question.choices.length).toBeLessThanOrEqual(4);
       }
     }
+  });
+});
+
+describe('أصول الحروف الجاهزة (رسوم ومقاطع)', () => {
+  const pub = (rel) => join(process.cwd(), 'public', rel);
+
+  it('الصورة على الخيار إذا وُجد حيوانه بعلم الرسم، ويجب أن يكون الملف موجودًا', () => {
+    const artLetters = Object.keys(ANIMALS).filter((k) => ANIMALS[k].art);
+    for (const it of matchItems) {
+      const art = it.question.choiceArt || {};
+      for (const choice of it.question.choices) {
+        const letter = Object.keys(ANIMALS).find((k) => `${ANIMALS[k].emoji} ${ANIMALS[k].word}` === choice);
+        if (artLetters.includes(letter)) {
+          expect(art[choice], `${letter} art`).toBeTruthy();
+          expect(existsSync(pub(art[choice])), art[choice]).toBe(true);
+        } else {
+          expect(art[choice], `${letter} no art`).toBeUndefined();
+        }
+      }
+    }
+  });
+
+  it('كل حرف معلَّم بالمقطع يملك ملف المقطع، وغيره بلا مقطع', () => {
+    for (const it of matchItems) {
+      const L = it.title.replace('الحرف ', '');
+      if (ANIMALS[L].clip) {
+        expect(it.audio, `${L} audio`).toMatch(/^letters\/letter-\d{2}$/);
+        expect(existsSync(pub(`salman/audio/${it.audio}.mp3`)), it.audio).toBe(true);
+      } else {
+        expect(it.audio).toBeUndefined();
+      }
+    }
+  });
+
+  it('الحروف المعلَّمة بالرسم هي الـ 10 الأولى (أ إلى ر) في هذه الجولة', () => {
+    const ready = Object.keys(ANIMALS).filter((k) => ANIMALS[k].art);
+    expect(ready).toEqual(['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر']);
   });
 });

@@ -430,3 +430,19 @@ body {
 .sg-report-row.is-help .sg-report-status {
   color: #b45309;
 }
+
+/* ---- خيارات بصورة (تمرين الحرف والحيوان) ---- */
+.sg-choice.has-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 150px;
+  font-size: 1.3rem;
+}
+.sg-choice-art {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}

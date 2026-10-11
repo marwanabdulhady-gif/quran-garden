@@ -131,7 +131,16 @@ function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
             .filter(Boolean)
             .join(' ');
           return (
-            <button key={c} type="button" className={cls} onClick={() => pick(c)} disabled={solved}>
+            <button
+              key={c}
+              type="button"
+              className={item.question.choiceArt?.[c] ? `${cls} has-art` : cls}
+              onClick={() => pick(c)}
+              disabled={solved}
+            >
+              {item.question.choiceArt?.[c] && (
+                <img className="sg-choice-art" src={assetUrl(item.question.choiceArt[c])} alt="" />
+              )}
               <span lang={lang}>{c}</span>
             </button>
           );
