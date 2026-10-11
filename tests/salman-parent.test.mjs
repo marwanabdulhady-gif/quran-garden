@@ -188,9 +188,9 @@ describe('تقرير ولي الأمر', () => {
   });
 });
 
-describe('الترحيل إلى v3', () => {
-  it('الإصدار الحالي 3', () => {
-    expect(SCHEMA_VERSION).toBe(3);
+describe('الترحيل إلى الإصدار الحالي', () => {
+  it('الإصدار الحالي 4', () => {
+    expect(SCHEMA_VERSION).toBe(4);
   });
 
   it('حالة v2 بلا visitLog ولا parent تُحمَّل بالافتراضي، والنجوم لا تتغيّر', () => {
@@ -208,7 +208,7 @@ describe('الترحيل إلى v3', () => {
       daily: { day: D1, newByGarden: { arabic: 1 } },
     };
     const s = normalizeState(v2);
-    expect(s.v).toBe(3);
+    expect(s.v).toBe(4);
     expect(s.stars).toBe(9);
     expect(s.visitLog).toEqual({ day: null, count: 0 });
     expect(s.parent).toEqual(PARENT_DEFAULTS);
