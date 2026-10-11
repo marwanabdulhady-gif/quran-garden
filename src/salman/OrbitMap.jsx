@@ -3,7 +3,8 @@ import { toArabicNumeral } from './lib/catalog.js';
 
 // خريطة الكواكب: كل محطة كوكب، وعناصرها (حروف أو سور) تدور حوله في مدار.
 // الكواكب متصلة بطريق منقّط، والدليل يقف عند أول محطة لم تكتمل بعد.
-// station: { id, title, color, items: [{ key, label, done }], onOpen }
+// station: { id, title, color, items: [{ key, label, done, gems?: [{ icon, on }] }], onOpen }
+// gems: جوائز صغيرة تحت كل عنصر (💎 القصة، 🪙 الإتقان) تلمع عند كسبها
 export default function OrbitMap({ stations, onItem, guideArt, label }) {
   const current = stations.findIndex((s) => s.items.some((it) => !it.done));
   return (
@@ -49,6 +50,15 @@ export default function OrbitMap({ stations, onItem, guideArt, label }) {
                         </span>
                       )}
                     </span>
+                    {it.gems && (
+                      <span className="sg-moon-gems" aria-hidden="true">
+                        {it.gems.map((g) => (
+                          <span key={g.icon} className={g.on ? 'sg-gem is-on' : 'sg-gem'}>
+                            {g.icon}
+                          </span>
+                        ))}
+                      </span>
+                    )}
                   </button>
                 );
               })}

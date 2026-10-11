@@ -74,7 +74,7 @@ describe('حديقة سلمان — الواجهة', () => {
   it('بطاقة حديقة القرآن تفتح رحلة القرآن داخل الغابة (الحفظ والاستماع في مكان واحد)', () => {
     render(<SalmanApp />);
     fireEvent.click(screen.getByText('حديقة القرآن').closest('button'));
-    expect(document.querySelector('.sg-quran-tab .qg-root')).toBeTruthy();
+    expect(document.querySelector('.sg-orbit-map[aria-label="رحلة القرآن"]')).toBeTruthy();
   });
 
   it('عدد الأسئلة في كل حديقة مطابق للكتالوج', () => {
