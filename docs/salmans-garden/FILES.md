@@ -68,6 +68,8 @@
 - خلفيات الحدائق (4): `bg-arabic.jpg`، `bg-english.jpg`، `bg-math.jpg`، `bg-quran.jpg` — في `public/salman/art/`
 - الأيقونات (3): `icon-192.png`، `icon-512.png`، `icon-maskable-512.png` — في `public/salman/icons/`
 
+- الأشياء المعدودة (5، V1): `public/salman/art/count/{apple,star,flower,fish,egg}.png`، PNG شفاف 256px، تُعرض في سؤال العدّ.
+
 ## 3. الصوت (`public/salman/audio/`) — بصوت voice-00
 
 ### 3.1 التعليمات (10 مقاطع في `public/salman/audio/`)
@@ -153,6 +155,7 @@
 | `docs/salmans-garden/source/alphabet-with-the-companions.md`، `alphabet-with-the-final-prophet.md` | نصّا الكتابين (Markdown)، والمصدر الذي بُنيت منه قصص الحروف |
 | `docs/salmans-garden/source/README.md` | تحذير: النصوص غير مُدقَّقة |
 | `tools/build_salman_stories.py` | `python3 tools/build_salman_stories.py --write` |
+| `tools/salman-process-scenes.py` | معالجة رسوم العدّ (`count`) ومشاهد القصص (`scene`) حسب VISUALS.md |
 | `tools/salman-process-animals.py` | معالجة الصور الخام: إزالة الخلفية، قص، تصغير 256، تقليل الألوان إلى 200 |
 | `tools/salman-offline-check.mjs` | فحص دون إنترنت (يحتاج Chromium خارج المستودع) |
 | `tools/build_journey.py` | بناء `docs/salmans-garden/journey/index.html` |
@@ -164,13 +167,18 @@
 
 ## 7. ملفات خارج المستودع (غير مُدارة من Git)
 
-| المسار | المحتوى |
+> **تنبيه (V1):** أُعيدت تهيئة البيئة، فاختفت من `/home/user/recovery/` الصور الخام للحيوانات (28)، ولوحات مراجعتها، وسكربت المعالجة الأصلي، ومجلد الفحص دون إنترنت. الصور المعالجة للحيوانات كاملة في Git (`public/salman/art/animals/`)، لكن **إعادة معالجتها لن تعمل** حتى تُعاد الصور الخام. الذي بقي وأُعيد إنشاؤه موضّح أدناه.
+
+| المسار | الحالة والمحتوى |
 | --- | --- |
-| `/home/user/recovery/raw/animal-<slug>.png` | الصور الخام (28) قبل المعالجة، وهي المصدر الأصلي |
-| `/home/user/recovery/process_animals.py` | نسخة سكربت المعالجة، وتُشغَّل بـ `/home/user/recovery/venv/bin/python` |
-| `/home/user/recovery/sheet-animals.png`، `sheet-animals-2.png`، `sheet-animals-3.png` | لوحات مراجعة الصور |
-| `/home/user/recovery/chrome/` | أداة الفحص دون إنترنت (puppeteer-core) ونسخة من `salman-offline-check.mjs` |
-| `/home/user/recovery/libs/lib/` | مكتبات Chromium المستخرجة (تُضبط في `LD_LIBRARY_PATH`) |
+| `/home/user/recovery/raw/count-*.png` | صور العدّ الخام الخمس (apple، star، flower، fish، egg)، وهي المصدر لـ `public/salman/art/count/` |
+| `/home/user/recovery/raw/animal-<slug>.png` | **مفقودة** بعد إعادة التهيئة. لا توجد نسخة خارج Git |
+| `tools/salman-process-animals.py` | يقرأ من `raw/animal-<slug>.png`، لذلك **لن يعمل** حتى تُعاد الصور الخام |
+| `/home/user/recovery/venv/` | بايثون مع Pillow، أُعيد إنشاؤه (`python3 -m venv` ثم `pip install pillow`) |
+| `/home/user/recovery/chrome/` | أداة الفحص دون إنترنت (puppeteer-core@23، @sparticuz/chromium@131)، أُعيد تثبيتها |
+| `/home/user/recovery/chrome/offline-check-run.mjs` | نسخة من `tools/salman-offline-check.mjs` تُشغَّل من داخل مجلد الأداة |
+| `/home/user/recovery/libs/lib/` | مكتبات Chromium، أُعيد استخراجها من `al2023.tar.br` و`al2.tar.br` |
+| `/home/user/recovery/sheet-count.png`، `apple-check.png` | لوحة مراجعة رسوم العدّ، وفحص تفاحة بعد إعادة المعالجة |
 
 ## 8. الأدلة الأخرى
 

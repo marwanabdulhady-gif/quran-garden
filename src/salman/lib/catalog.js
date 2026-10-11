@@ -151,11 +151,19 @@ function englishItems() {
 
 // الأرقام 1 إلى 20 (مرحلة C): عدّ الأشياء المعروضة ثم اختيار الرقم. خياران: الرقم الصحيح وجاره.
 // المرحلة الأولى 1–10 والثانية 11–20 في الجدول نفسه.
-const COUNT_OBJECTS = ['🍎', '⭐', '🌸', '🐟', '🥚'];
+// الأشياء المعدودة: الإيموجي للنص (وبديلًا آمنًا)، واسم الرسم في public/salman/art/count/
+const COUNT_OBJECTS = [
+  { emoji: '🍎', art: 'apple' },
+  { emoji: '⭐', art: 'star' },
+  { emoji: '🌸', art: 'flower' },
+  { emoji: '🐟', art: 'fish' },
+  { emoji: '🥚', art: 'egg' },
+];
 export function numberItems() {
   return Array.from({ length: 20 }, (_, i) => {
     const n = i + 1;
-    const obj = COUNT_OBJECTS[i % COUNT_OBJECTS.length];
+    const o = COUNT_OBJECTS[i % COUNT_OBJECTS.length];
+    const obj = o.emoji;
     const distractor = n >= 20 ? n - 1 : n + 1;
     return {
       id: `math-n-${String(n).padStart(2, '0')}`,
@@ -163,6 +171,7 @@ export function numberItems() {
       title: `العدّ حتى ${toArabicNumeral(n)}`,
       source: 'count',
       paragraphs: [`عُدّ معي: ${Array(n).fill(obj).join(' ')}`],
+      countArt: { n, object: o.art, emoji: o.emoji },
       question: {
         prompt: 'كم عددها؟',
         choices: [toArabicNumeral(n), toArabicNumeral(distractor)],

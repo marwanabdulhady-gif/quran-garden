@@ -1,0 +1,43 @@
+// رسوم حديقة سلمان (VISUALS.md، مرحلة V1): الأشياء المعدودة.
+// كل سؤال عدّ يحمل شيئه المرسوم وعددَه، وكل رسم موجود فعلًا، والإيموجي يبقى في النص بديلًا آمنًا.
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { describe, it, expect } from 'vitest';
+import { CATALOG, toArabicNumeral } from '../src/salman/lib/catalog.js';
+
+const ROOT = process.cwd();
+const countItems = CATALOG.math.filter((i) => i.source === 'count');
+const OBJECTS = ['apple', 'star', 'flower', 'fish', 'egg'];
+
+describe('الأشياء المعدودة (V1)', () => {
+  it('الرسوم الخمسة موجودة وبخلفية شفافة (PNG)', () => {
+    for (const name of OBJECTS) {
+      expect(existsSync(join(ROOT, 'public/salman/art/count', `${name}.png`))).toBe(true);
+    }
+  });
+
+  it('كل سؤال عدّ له شيء مرسوم معروف وعدد يطابق جوابه', () => {
+    expect(countItems).toHaveLength(20);
+    for (const item of countItems) {
+      expect(item.countArt).toBeDefined();
+      expect(OBJECTS).toContain(item.countArt.object);
+      expect(item.countArt.n).toBeGreaterThanOrEqual(1);
+      expect(item.countArt.n).toBeLessThanOrEqual(20);
+      // الجواب هو عدد الأشياء المعروضة نفسه، بالأرقام العربية
+      expect(item.question.answer).toBe(toArabicNumeral(item.countArt.n));
+    }
+  });
+
+  it('الأشياء تتكرر بالترتيب نفسه في الحدائق (كل خمسة أعداد)', () => {
+    countItems.forEach((item, i) => {
+      expect(item.countArt.object).toBe(OBJECTS[i % OBJECTS.length]);
+    });
+  });
+
+  it('النص الأصلي بالإيموجي يبقى بديلًا عند فشل الصورة', () => {
+    for (const item of countItems) {
+      expect(item.paragraphs[0]).toContain(item.countArt.emoji);
+      expect(item.paragraphs[0].split(item.countArt.emoji).length - 1).toBe(item.countArt.n);
+    }
+  });
+});

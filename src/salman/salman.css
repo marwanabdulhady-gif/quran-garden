@@ -457,3 +457,33 @@ body {
   font-size: 14px;
   text-align: center;
 }
+
+/* الأشياء المعدودة (مرحلة C) */
+.sg-count-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 12px;
+}
+.sg-count-art {
+  height: 56px;
+  width: auto;
+  max-width: 56px;
+  object-fit: contain;
+}
+.sg-count-emoji {
+  font-size: 32px;
+  line-height: 1.6;
+  text-align: center;
+  margin: 8px 0 12px;
+}
+/* النص الكامل يبقى للقراءة الصوتية وللتقنيات المساعدة، دون عرضه فوق الصور */
+.sg-story-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

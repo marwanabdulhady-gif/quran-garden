@@ -112,7 +112,8 @@ function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
           📝 مسودة: قيد المراجعة قبل أن تُسمع بصوت المعلّم
         </p>
       )}
-      <div className="sg-story" lang={lang}>
+      {item.countArt && <CountPicture {...item.countArt} />}
+      <div className={item.countArt ? 'sg-story sg-story-hidden' : 'sg-story'} lang={lang}>
         {item.paragraphs.map((p, i) => (
           <p key={i}>{p}</p>
         ))}
@@ -195,6 +196,31 @@ function Mascot({ name, bubble, className = '' }) {
 
 function gardenStageIndex(state, garden) {
   return growthStage(state.gardens[garden] || 0).index;
+}
+
+// الأشياء المعدودة (مرحلة C): صورة لكل شيء. إن تعذّر تحميلها يُعرض الإيموجي بدلها
+function CountPicture({ n, object, emoji }) {
+  const [failed, setFailed] = useState(false);
+  if (failed) {
+    return (
+      <p className="sg-count-emoji" aria-hidden="true">
+        {Array(n).fill(emoji).join(' ')}
+      </p>
+    );
+  }
+  return (
+    <div className="sg-count-row" aria-hidden="true">
+      {Array.from({ length: n }, (_, i) => (
+        <img
+          key={i}
+          className="sg-count-art"
+          src={assetUrl(`salman/art/count/${object}.png`)}
+          alt=""
+          onError={() => setFailed(true)}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default function SalmanApp() {
