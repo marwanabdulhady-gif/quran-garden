@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-// مسح كامل للمحطة الأولى: نلعب «يوم الوحدة» للوحدات الاثنتي عشرة كلها من أول خطوة إلى
+// مسح كامل لحدائق النور: نلعب «يوم الوحدة» لكل وحدة (٥٢ وحدة) من أول خطوة إلى
 // «عمل اليوم»، ونتأكد أن كل وحدة تُحفظ مكتملة وأن النجوم تُمنح مرة واحدة.
 // هذا هو الفحص الذي يقوم مقام «جولة يد في التطبيق» قبل بوابة الطفل.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -69,8 +69,11 @@ describe('الوصول إلى يوم الوحدة من داخل التطبيق',
     history.replaceState(null, '', '/');
     render(<SalmanApp />);
     fireEvent.click(screen.getByText('الأرقام')); // التبويب
-    expect(screen.getByText('أيام الأرقام · ١–٤')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /١\s*أَحَد/ }));
+    expect(screen.getByText('أيام الأرقام · ١–٢٠')).toBeTruthy();
+    // المحطات الأربع معروضة بعناوينها وعدّاد ما اكتمل فيها
+    expect(screen.getByText('المحطة ١ · ١–٤')).toBeTruthy();
+    expect(screen.getByText('المحطة ٤ · ١٣–٢٠')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /^١ أَحَد/ })); // ١ لا ١١
     expect(document.querySelector('.sg-day-title strong').textContent).toContain('١');
   });
 
@@ -119,7 +122,7 @@ describe('رمز الوحدة في الواجهة', () => {
   });
 });
 
-describe('المحطة الأولى — مسح كامل للوحدات الاثنتي عشرة', () => {
+describe('حدائق النور — مسح كامل لكل الوحدات', () => {
   it('كل وحدة تُكمَل من الباب إلى عمل اليوم وتُحفظ', () => {
     let state = null;
     for (const unit of UNITS) {
@@ -127,14 +130,14 @@ describe('المحطة الأولى — مسح كامل للوحدات الاث�
       expect(state.nour[unit.id], `${unit.id} لم تُحفظ`).toMatchObject({ day: '2026-10-11', completed: true });
       expect(state.nour[unit.id].done.length, `${unit.id}: الخطوات`).toBeGreaterThanOrEqual(5);
     }
-    expect(Object.keys(state.nour)).toHaveLength(36);
+    expect(Object.keys(state.nour)).toHaveLength(52);
   });
 
   it('النجوم: نجمتان لكل وحدة مكتملة، موزّعة على الحدائق الثلاث', () => {
     let state = null;
     for (const unit of UNITS) state = playUnit(unit);
-    expect(state.gardens).toMatchObject({ arabic: 16, math: 8, english: 48 });
-    expect(state.stars).toBe(72);
+    expect(state.gardens).toMatchObject({ arabic: 16, math: 40, english: 48 });
+    expect(state.stars).toBe(104);
     expect(state.streak.current).toBe(1);
   });
 

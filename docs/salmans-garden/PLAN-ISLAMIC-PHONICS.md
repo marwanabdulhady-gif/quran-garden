@@ -321,7 +321,7 @@ Rules in every phase: build on the existing screens and engines, reuse the libra
 
 **Each phase gets its own pull request**, so the plan PR stays docs-only: PR #7 = the plan and the decisions; then P0, P1, P2 … each opens its own PR with its gate results written in the description.
 
-**حالة التنفيذ (2026-10-11):** P0 وP1 ✅ منجزان، وP2 🟡 يعمل وينتظر 18 مقطعًا صوتيًا وبوابة الطفل — التفصيل في [`PHASES.md`](PHASES.md) وفي PR #7. ونص الطفل يُكتب في وحدة البيانات نفسها (`src/salman/data/nour.js`) لأنها مصدر التطبيق الوحيد، وسجلّ المراجعة في `CONTENT-REVIEW.md` — بدل ملفات `content/*.md` المذكورة أدناه.
+**حالة التنفيذ (2026-10-11):** P0 وP1 ✅ منجزان، و**P6a ✅ منجز** (الأعداد ٥–٢٠ صارت أيامًا كاملة)، وP2 🟡 يعمل وينتظر 18 مقطعًا صوتيًا وبوابة الطفل — التفصيل في [`PHASES.md`](PHASES.md) وفي PR #7. ونص الطفل يُكتب في وحدة البيانات نفسها (`src/salman/data/nour.js`) لأنها مصدر التطبيق الوحيد، وسجلّ المراجعة في `CONTENT-REVIEW.md` — بدل ملفات `content/*.md` المذكورة أدناه.
 
 | Phase | What | What it reuses | Output | Gate |
 |---|---|---|---|---|
@@ -332,6 +332,8 @@ Rules in every phase: build on the existing screens and engines, reuse the libra
 | **P4 — Arabic, stations 8–10** | harakat, madd, tanween, shadda, ال, special words | the tracing engine | blending stations | the child reads 10 real words aloud |
 | **P5 — English, groups 2–7** | the remaining sounds of the 42 | the 25 existing stories as extra reading, the existing backgrounds | 42 sounds live in 7 groups | a child gate per group |
 | **P6 — Math, stations 2–7** | numbers ٥–٢٠, comparing, number bonds to 10, shapes in the masjid | the 16 math scenes and the 5 count objects | 7 math stations live | a child gate per station |
+| ↳ **P6a — الأعداد ٥–٢٠** ✅ 2026-10-11 | كل عدد من ٥ إلى ٢٠ صار يومًا كاملًا بسبع خطوات مثل ١–٤ (محطات ٢ و٣ و٤): قصة من القرآن/السنة لـ٥–١٢ وقصة عدّ أصلية لـ١٣–٢٠، مع الحركة والنشيد والصيد والتتبّع واللعبة وعمل اليوم | `nour.js` والمحركات كما هي + `src/salman/data/nour-numbers.js` الجديد، ومشاهد العدّ والصور الموجودة (بلا أصل جديد) | 20 يوم رقم حيًّا في «حديقة الأرقام» مقسّمة على 4 محطات | ✅ 618 اختبارًا تمرّ (منها نقرة كاملة على كل وحدة) · سجل المراجعة §3.9 · الصوت TTS حتى يُسجَّل |
+| ↳ P6b — المحطات 5–7 | أكبر/أصغر · مكمّلات العشرة · الأشكال في المسجد | نفس المحركات | 3 محطات إضافية | ⬜ لم تبدأ |
 | **P7 — Story polish** | the second and third scenes per story, where they earn their place | existing sprites | full storybooks | — |
 
 **Pilot effort** (the number that matters): 16 child stories · 4 new sprites · **0 new panels** · 0 new screens · 0 new backgrounds · ~60 audio clips · 4 shared engines.
