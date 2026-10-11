@@ -14,6 +14,8 @@ Object.defineProperty(globalThis, 'navigator', { value: {}, configurable: true, 
 
 const S = await import('../src/store.js');
 const SC = await import('../src/shareCard.js');
+const D = await import('../src/data.js');
+const ALL_WORDS = [D.WORDS, D.WORDS_R2, D.WORDS_R3, D.WORDS_R4].reduce((n, w) => n + (w?.length || 0), 0);
 
 describe('collectShareStats (P5-33)', () => {
   it('يجمع أرقام الطفل الحالي', () => {
@@ -27,7 +29,8 @@ describe('collectShareStats (P5-33)', () => {
     expect(st.name).toBe('شارك');
     expect(st.stars).toBeGreaterThanOrEqual(5);
     expect(st.words).toBe(1);
-    expect(st.wordsTotal).toBe(30);
+    expect(st.wordsTotal).toBe(ALL_WORDS);
+    expect(ALL_WORDS).toBe(50);
     expect(st.badgesEarned).toBeGreaterThanOrEqual(1);
     expect(st.badgeEmojis).toContain('🌱');
     expect(st.listeningMin).toBe(2);

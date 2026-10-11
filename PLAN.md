@@ -217,6 +217,136 @@ ESLint (react-hooks, no-unused) + Prettier (RTL-safe config). Optionally `JSDoc`
 
 **P5 shipped details:** schema v3 (`migrateV2ToV3` = stats+parent on every child, dogfoods the P4 chain; `safeStats`/`safeParent` type-guarded with size caps); 10 round-2 words verified against the embedded Uthmani text (`matchForm` + `splitWord`, e.g. عَلَقٍ 96:2, كَبَدٍ 90:4, وَجُوهٌ 80:38, ٱلْفَوْزُ 85:11, مُخْلِصِينَ 98:5, يَغْشَى 91:4, ٱلثَّاقِبُ 86:3, ٱلْفَجْرِ 89:1, يَسْعَى 80:8, ٱلْحُطَمَةِ 104:5); two real bugs caught while wiring (Bridge `byId` only searched round 1; store `WORD_IDS` sanitizer dropped round-2 words on reload); pre-existing `go('gate', gate.id)` param bug fixed (fell back to first gate); tests now 368 (was 343): +10 round-2 data-integrity, +2 tafakkur rotation, +9 stats/parent store tests, +3 v3 migration, +2 share-card stats.
 
+## P6 — Visual enrichment II: the illustrated world layer 🎨
+
+> **Status (2026-09-28): waves 1–5 shipped and verified — 27 assets generated, optimized & wired (817 KB waves 1–4 + 170 KB P8 trip scenes + 376 KB decor sprites ≈ 1.36 MB). Wave 6 remains backlog.**
+> P3 gave every screen a watercolor background and the hero his poses — but the app's **content** surfaces are still carried by emoji: trip cards, gate headers, tafakkur cards, badge medals, garden decor. This phase replaces the emoji that carry the most emotional weight with generated watercolor art, in the same locked style, under a strict byte budget so the PWA precache stays healthy.
+>
+> **Shipped:** 6 trip scenes → Bridge card thumbs + step banners (locked round-2 = grayscale + 🔒) · 2 gate banners → gate intro + list head (replaced the bouncing 🏰) · 4 tafakkur illustrations → Daily تأمل الأسبوع card (all four weekly cards now rotate art too) · rosette frame behind every earned badge (wall + celebrations) · golden trophy sticker on trip-complete/round-2 celebrations + as the round-2 badge art on the wall.
+
+### Locked art direction — the shared prompt prefix
+
+Every asset of this phase is generated with the *same* style preamble (style drift is the #1 risk, see P4 risks — so one batch, one voice):
+
+```
+Soft watercolor children's storybook illustration, gentle washes, dreamy soft
+edges, no harsh outlines, subtle paper texture, calming emerald and mint green
+palette (#10b981 / #ecfdf5) with warm cream light (#fffbeb) and a small golden
+sun accent (#fbbf24), cozy and peaceful, no people, no text, no letters,
+no numbers, no watermark.
+```
+
+- Trip/gate/tafakkur scenes tint toward the surface's existing accent (violet / blue / amber / indigo / rose) while keeping the mint-emerald base.
+- Flat frontal compositions, wide landscapes with generous negative space where UI text sits on top.
+- Transparent art (rewards) is generated on a **pure white background**, then flood-fill keyed + alpha-softened in ImageMagick (same pipeline that produced `hero-*-t.png`).
+
+### Byte budget — the guardrail
+
+| Rule | Value |
+| --- | --- |
+| Waves 1–4 (this drop) | 14 assets |
+| Per asset, optimized | scene/banner ≤ 120 KB · tafakkur ≤ 90 KB · transparent PNG ≤ 150 KB |
+| Total added to precache | ≤ 1.1 MB (precache ≈ 5.2 MB → ≤ 6.3 MB) |
+| Formats | JPEG for scenes/banners/tafakkur, PNG for transparent reward art |
+| Processing | ImageMagick: center-crop to target ratio → resize → strip metadata → quality tune to budget |
+
+### Asset manifest
+
+| # | Asset | File | Target | Surface (where it appears) | Wave |
+| --- | --- | --- | --- | --- | --- |
+| 1 | وادي البدايات scene | `trip-1-wadi.jpg` | 720×300 | Bridge trip card thumb + step banner | 1 ✅ |
+| 2 | بستان الفراشات scene | `trip-2-bustan.jpg` | 720×300 | same | 1 ✅ |
+| 3 | شلال الرفق scene | `trip-3-shallal.jpg` | 720×300 | same | 1 ✅ |
+| 4 | حديقة الفوانيس scene | `trip-4-fawanis.jpg` | 720×300 | same | 1 ✅ |
+| 5 | مغامرة الخلق scene | `trip-5-khalq.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
+| 6 | سماء وفجر scene | `trip-6-fajr.jpg` | 720×300 | same (round-2 trip) | 1 ✅ |
+| 6b | تاج المُلك scene | `trip-7-taj.jpg` | 720×300 | same (juz-29 trip, added with P8) | — ✅ |
+| 6c | دروب الوحي scene | `trip-8-wahy.jpg` | 720×300 | same (juz-29 trip, added with P8) | — ✅ |
+| 6d | ميزان الحشر scene | `trip-9-mizan.jpg` | 720×300 | same (juz-28 trip, added with P8) | — ✅ |
+| 6e | أسرار الأسفار scene | `trip-10-asfar.jpg` | 720×300 | same (juz-28 trip, added with P8) | — ✅ |
+| 7 | بوابة جزء تبارك banner | `gate-tabarak.jpg` | 800×280 | Listening gate head | 2 ✅ |
+| 8 | بوابة قد سمع banner | `gate-qadsama.jpg` | 800×280 | Listening gate head | 2 ✅ |
+| 8b | بوابة جزء عمّ banner | `gate-amma.jpg` | 800×280 | Listening gate head — added with the عمّ gate (P7) | 2 ✅ |
+| 9 | تأمل الطيور | `tafa-birds.jpg` | 480×360 | Daily tafakkur card | 3 ✅ |
+| 10 | تأمل السماوات | `tafa-heavens.jpg` | 480×360 | same | 3 ✅ |
+| 11 | تأمل الماء | `tafa-water.jpg` | 480×360 | same | 3 ✅ |
+| 12 | تأمل المصابيح | `tafa-lamps.jpg` | 480×360 | same | 3 ✅ |
+| 13 | وسام-إطار مائي (rosette) | `medal-rosette-t.png` | 420² | behind every badge emoji (wall + celebrations) | 4 ✅ |
+| 14 | كأس الأبطال | `trophy-t.png` | 420² | «بطل الجولتين» + trip-complete celebrations | 4 ✅ |
+| 15–22 | garden decor sprites (قطة/عصفور/تنين/تاج/طوق/نجمة/ميدالية/فراشة) | `decor-{cat,bird,dragon,crown,halo,star,medal,butterfly}-t.png` | ≤200² | Garden scene, replaces floating emoji | 5 ✅ |
+| 23 | وردة الحديقة + مرجيحة/زحليقة/مقعد spots | `spot-*.png` | ~240² | Garden interactive spots | 6 ⏳ backlog |
+
+### 37. Trip identity scenes ⭐ (wave 1) ✅
+
+- **What:** six illustrated scene headers, one per bridge trip (4 round-1 + 2 round-2), tinted to each trip's accent; trip cards get a rounded scene **thumbnail** in place of the emoji box (same 62 px footprint — zero layout risk), and the step screen gets a full-width **scene banner** above the bridge strip.
+- **Why:** the bridge is the heart of the app; «اليوم أنا في بستان الفراشات» should *look* different from «شلال الرفق». Locked round-2 cards show the scene grayscale + 🔒 overlay — a teaser, not a dead lock.
+- **Accept:** every trip reads at a glance from its card; step banner keeps ≥ 4.5:1 text contrast (name overlaid on a cream wash); total ≤ 700 KB. — ✅ 258 KB for the six (34–71 KB each), scene name sits on a `#fffbeb` wash at `#065f46`.
+
+### 38. Illustrated gate banners (wave 2) ✅
+
+- **What:** two wide banners — a vine-wrapped wooden garden arch (تبارك) and a pale-stone arch with a soft geometric rim (قد سمع) — as the header of each gate screen.
+- **Accept:** both gates feel like two doors of the same garden; ≤ 240 KB the pair. — ✅ 111 KB the pair; wired into the gate intro hero (replacing the bouncing 🏰) and the gate list head.
+
+### 39. Tafakkur card illustrations (wave 3) ✅
+
+- **What:** four small illustrations (doves / layered sky / winding river / glowing lamps) matching the four weekly تأمل cards from Surah Al-Mulk; rendered at the top of the tafakkur card.
+- **Accept:** weekly rotation visibly changes the art; ≤ 340 KB all four. — ✅ 125 KB all four; `img` field per TAFAKKUR entry, card renders it only when present.
+
+### 40. Reward medal + trophy (wave 4) ✅
+
+- **What:** a watercolor **rosette frame** (transparent) that sits behind every badge emoji — badge wall, celebration modals — and a **golden trophy** for «بطل الجولتين» and trip-complete moments. The emoji stays as the badge's unique center; the rosette gives all 13 badges one consistent, illustrated body.
+- **How:** both generated on pure white and keyed to alpha (flood-fill from the edges + alpha-blur seam, same pipeline as `hero-*-t.png`); rosette = CSS `background` on the earned `.b-emoji` box and on `.badge-medal` (replacing the radial-gradient circle); trophy = corner sticker in trip/round-2 celebrations + the round-2 badge's own art on the wall.
+- **Accept:** locked badges keep their gray treatment (🔒 centered in the same-size box so grid rows stay even); earned medals animate in (existing `badge-spin`, auto-gated by the global reduced-motion rule); 257 KB the pair (budget ≤ 300 KB). ✅
+
+### 41. Garden decor sprites (wave 5) ✅
+
+- **What:** the 8 gift decorations become small transparent watercolor sprites pinned on the garden photo at their existing `x/y` anchors; tap → same `say()` bubble; the existing `floaty` sway + drop-shadow stay (reduced-motion still kills them via the global rule).
+- **Shipped:** 8 sprites (`decor-*-t.png`, 26–69 KB each, 376 KB total) generated on pure white → flood-fill key + alpha-blur seam + trim + ≤200 px — same pipeline as the hero poses. The halo got a second interior flood-fill so its center is a true transparent ring (not a white disc). Corner-alpha + opaque-fraction verified per sprite; `img` field per DECOR entry with emoji fallback in the component; sized `clamp(36px, 7vw, 60px)` (watercolor reads lighter than dense emoji glyphs).
+
+### 42. Words cards & share-card art (wave 6 — backlog)
+
+- **What:** tiny leaf/word motifs for «كلماتي» cards, hero art in the canvas share card, and an optional night-garden variant background.
+- **Why:** nice-to-have polish; only after waves 1–5 prove their byte cost.
+
+### QA checklist per wave
+
+1. `npm test` (368) + `npm run lint` + `npm run build` stay green.
+2. New files counted against the budget table — anything over budget gets re-compressed, not shipped fat.
+3. Live-preview pass on a 360 px viewport: contrast, RTL alignment, reduced-motion (no new animation on transparent art beyond existing gates).
+4. PWA: new assets land in the precache manifest automatically (`globPatterns` covers jpg/png) — verify `dist/sw.js` count grows by exactly the shipped files.
+
+---
+
+## P7 — بوابة جزء عمّ (فجوة اكتشفها مستخدم) ✅
+
+> **Problem (user report, 2026-09-28):** «انا لا اجد جزء عم» — the listening gates covered juz 28–29 only (قد سمع ٥٨–٦٦ + تبارك ٦٧–٧٧). Juz 30 existed as *text* (bridge words, كلماتي, آية اليوم — all from 78–114) but had **no listening gate and no place on the journey map** — odd for the juz every kid memorizes first.
+
+- **What shipped:**
+  - `GATES` += `amma` (78–114, النبأ→الناس, 37 surahs) — the gate engine is fully generic (`from`/`to`), so the gate list, player, celebration, review-by-listening, and parent-mode caps all work out of the box.
+  - `SURAH_META` now derives the 78–114 ayah counts **from `JUZ30` itself** (`Object.fromEntries` spread in data.js) — the map and the embedded text can never disagree.
+  - Journey map covers 58–114 (57 surahs, `JOURNEY_TOTAL_AYAHS` 568 → 1132), a third `GateSection` at surah 78, and `jump()` resolves the gate by range instead of a hardcoded ternary.
+  - `gate-amma.jpg` — rose-wrapped arch banner in the locked watercolor style (57 KB, P6 pipeline).
+  - Settings «كيف نظبط رحلتنا؟» copy updated to name all three gates.
+- **Offline:** juz-30 text is embedded, so the amma gate list + ayah texts work offline (audio shows the usual «التلاوة تحتاج إنترنت» notice); `sanitizeChild` already accepted listening keys 1–114, so old saves are unaffected.
+- **Tests added (`data-integrity`):** gates are contiguous 58→114 with no gaps/overlaps and every gate has a banner; `SURAH_META[n] === JUZ30[n].length` for all of 78–114; 57 surahs; total = 1132.
+- **Accept:** ✅ user can find جزء عمّ from the garden → map (or gate route), listen ayah-by-ayah, and the search box finds النبأ/الناس etc.
+
+---
+
+---
+
+## P8 — ترتيب الرحلة + كلمات تبارك وقد سمع ✅
+
+> **User request (2026-09-28):** «خلي ترتيب الرحلة بيبدا من جزء 30 بعدين 29 بعدين 28 وفي كلماتي زود كلمات من جزء29 و 28 بنفس النمط»
+
+- **Journey order:** `ALL_SURAHS` in JourneyMap is now 78–114 → 67–77 → 58–66 (the natural kids' ḥifẓ order); `GATES` reordered `[amma, tabarak, qadsama]`; gate sections render at surahs 78/67/58; `jump()` resolves gates by range; `childSurah()` follows the new order (a fresh child starts at النبأ).
+- **20 new words, same pattern:** `WORDS_R3` (10 from juz 29) + `WORDS_R4` (10 from juz 28), each verified programmatically against the embedded Uthmani text (exact token extraction + uniqueness + `splitWord` highlight in both reading modes). Trips: 7 «تاج المُلك» 👑 + 8 «دروب الوحي» 🕊️ (juz 29), 9 «ميزان الحشر» ⚖️ + 10 «أسرار الأسفار» 📚 (juz 28) — full round gating (R2 after R1, R3 after R2, R4 after R3) in both Bridge and Words.
+- **New badges:** trip7–trip10 + «بطل ثلاثة أجزاء» 🎖️ at word 50.
+- **Offline for all three juz:** `src/juz28-29.js` (568 ayahs, 53 KB) — byte-identical edition to `juz30.js` (verified 564/564 ayahs of 78–114 match the existing embedded file); `api.js` offline fallback now serves 58–114 from `{...JUZ28_29, ...JUZ30}` (audio still needs net).
+- **Art:** 4 new watercolor trip scenes (~170 KB) in the locked style.
+- **Tests:** data-integrity now asserts 50 unique words / 10 trips / round surah ranges (67–77, 58–66) / trip scenes / gate order; api.test gained the juz-28–29 offline fallback case → **351 passing** (+22), lint/format/SSR 12/12/build green (precache 60 entries ≈ 6.4 MB).
+- **How the text was sourced:** api.alquran.cloud is blocked from the sandbox network → pulled the same Tanzil/Uthmani edition from the `@faha1999/al-quran-database` npm package and verified byte-identity against `juz30.js` before building the file.
+
 ---
 
 ## Suggested execution order
