@@ -96,3 +96,11 @@
 - **المعالجة**: `tools/salman-process-scenes.py count <name>`، بإزالة الخلفية من الحواف ثم قص وتصغير وضغط ألوان، كما فُعل للحيوانات.
 - **الربط**: كل شيء يُعرض مرة لكل عدد، والإيموجي يبقى بديلًا (`countArt` في `catalog.js`).
 - **ما تبقّى**: مشاهد القصص (V2 و V3، انظر VISUALS.md).
+
+## 10. أصول «حدائق النور» — المحطة الأولى (P0–P2)
+
+- **الصور**: `public/salman/art/nour/{mountain,door,mosque,rooster}.png` — 4 صور للأشياء فقط (جبل أُحُد · باب · مسجد · ديك)، شفافة، ≤ 256 px، 96 لونًا: **34 KB** من ميزانية الطيار (≤ 200 KB). لا يُجسَّد نبي ولا صحابي ولا ملك.
+- **إعادة التوليد**: `python3 tools/salman-process-nour.py mountain door mosque rooster` (يقرأ الخام من `.work/` خارج Git: إزالة البياض من الحواف، قصّ، تصغير، تكميم).
+- **الصوت**: `public/salman/audio/nour/` — الأناشيد `ar-alif/ar-ba/ar-meem/ar-dal-chant.mp3` (4) والقصص المسجّلة بصوت voice-00 (6 حتى الآن: `ar-a-p` · `ar-b-p` · `ar-d-p` · `num-1-s` · `num-2-s` · `num-3-s`).
+- **قاعدة الرايات**: `python3 tools/salman-voice-flags.py` تضبط `voiced` في `src/salman/data/nour.js` من وجود الملفات فعلًا، وتُنسّق الملف؛ فالمقطع غير الموجود يبقى `voiced: false` ويرجع التطبيق إلى صوت المتصفح.
+- **المطابقة في الاختبارات**: `tests/salman-nour.test.mjs` يفشل إن أُعلن ملف غير موجود أو كان أصغر من 1000 بايت.

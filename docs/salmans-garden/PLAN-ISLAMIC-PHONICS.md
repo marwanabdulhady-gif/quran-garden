@@ -319,6 +319,8 @@ Rules in every phase: build on the existing screens and engines, reuse the libra
 
 **Each phase gets its own pull request**, so the plan PR stays docs-only: PR #7 = the plan and the decisions; then P0, P1, P2 … each opens its own PR with its gate results written in the description.
 
+**حالة التنفيذ (2026-10-11):** P0 وP1 ✅ منجزان، وP2 🟡 يعمل وينتظر 18 مقطعًا صوتيًا وبوابة الطفل — التفصيل في [`PHASES.md`](PHASES.md) وفي PR #7. ونص الطفل يُكتب في وحدة البيانات نفسها (`src/salman/data/nour.js`) لأنها مصدر التطبيق الوحيد، وسجلّ المراجعة في `CONTENT-REVIEW.md` — بدل ملفات `content/*.md` المذكورة أدناه.
+
 | Phase | What | What it reuses | Output | Gate |
 |---|---|---|---|---|
 | **P0 — Content, station 1** | Child versions for the first station of each garden: Arabic **ا ب م د** (أُحُد، باب، مسجد، ديك + أذان، بنت، مرض، دعاء = 8 stories), Math **١–٤**, English **s a t i** — each with story, action, voice-only chant and good deed | the two book transcriptions, `additions-fa-and-numbers.md`, the review protocol | `docs/salmans-garden/content/{arabic,math,english}/*.md` + a review record per story | every story has a record and a source link; 16 stories signed off |
