@@ -112,6 +112,7 @@ function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
           📝 مسودة: قيد المراجعة قبل أن تُسمع بصوت المعلّم
         </p>
       )}
+      {item.art && <img className="sg-scene" src={assetUrl(item.art)} alt="" />}
       {item.countArt && <CountPicture {...item.countArt} />}
       <div className={item.countArt ? 'sg-story sg-story-hidden' : 'sg-story'} lang={lang}>
         {item.paragraphs.map((p, i) => (

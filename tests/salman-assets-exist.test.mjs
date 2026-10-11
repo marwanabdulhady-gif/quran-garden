@@ -33,6 +33,7 @@ function collectReferences() {
   for (const m of MATH_STORIES) if (m.clip) refs.add(`salman/audio/stories/${m.id}.mp3`);
   for (const e of ENGLISH_STORIES) if (e.clip) refs.add(`salman/audio/stories/${e.id}.mp3`);
   for (const item of CATALOG.math) if (item.countArt) refs.add(`salman/art/count/${item.countArt.object}.png`);
+  for (const item of CATALOG.math) if (item.art) refs.add(item.art);
   for (const item of [...CATALOG.arabic, ...CATALOG.math, ...CATALOG.english]) {
     if (item.audio) refs.add(`salman/audio/${item.audio}.mp3`);
   }

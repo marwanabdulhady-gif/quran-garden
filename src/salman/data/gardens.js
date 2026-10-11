@@ -15,6 +15,7 @@ export const GARDEN_ORDER = ['arabic', 'math', 'quran', 'english'];
 export const MATH_STORIES = [
   {
     id: 'math-01',
+    scene: true,
     clip: true,
     title: 'السنجاب يعد الجوز',
     count: 3,
@@ -22,6 +23,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-02',
+    scene: true,
     clip: true,
     title: 'النجوم في السماء',
     count: 5,
@@ -43,6 +45,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s01',
+    scene: true,
     title: 'شمسٌ واحدة',
     count: 1,
     clip: true,
@@ -50,6 +53,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s02',
+    scene: true,
     title: 'الحمامتان',
     count: 2,
     clip: true,
@@ -57,6 +61,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s04',
+    scene: true,
     title: 'الأرانب الأربعة',
     count: 4,
     clip: true,
@@ -64,6 +69,7 @@ export const MATH_STORIES = [
   },
   {
     id: 'math-s06',
+    scene: true,
     title: 'الزهرات الست',
     count: 6,
     clip: true,

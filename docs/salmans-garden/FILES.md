@@ -188,3 +188,17 @@
 - `docs/salmans-garden/ASSETS.md`: الأصول وما تبقّى منها.
 - `docs/salmans-garden/PROPOSAL.md`: الاقتراح المعتمد.
 - `docs/salmans-garden/README.md`: فهرس الوثائق.
+
+## 3.4 مشاهد القصص (V2، 6 من 20 حتى الآن)
+
+ملفات JPG بقياس 800×450، تُعرض فوق نص القصة. تُولَّد من مصادر PNG خام في `/home/user/recovery/raw/scenes/` (لا تُحفظ في Git، وتُفقد عند إعادة تهيئة البيئة). الأداة: `tools/salman-process-scenes.py scene <id>`.
+
+| المشهد | القصة | ما يُعدّ | الملف |
+|---|---|---|---|
+| `math-01` | السنجاب يعد الجوز | 3 جوزات | `public/salman/art/stories/math-01.jpg` |
+| `math-02` | النجوم الخمس | 5 نجوم | `public/salman/art/stories/math-02.jpg` |
+| `math-s01` | شمس واحدة | 1 | `public/salman/art/stories/math-s01.jpg` |
+| `math-s02` | حمامتان على السور | 2 | `public/salman/art/stories/math-s02.jpg` |
+| `math-s04` | الأرانب الأربعة | 4 | `public/salman/art/stories/math-s04.jpg` |
+| `math-s06` | الزهور الست | 6 | `public/salman/art/stories/math-s06.jpg` |
+

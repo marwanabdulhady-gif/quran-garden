@@ -100,6 +100,7 @@ function mathStoryItems() {
       title: m.title,
       paragraphs: [m.text],
       ...(m.clip ? { audio: `stories/${m.id}` } : {}),
+      ...(m.scene ? { art: `salman/art/stories/${m.id}.jpg` } : {}),
       question: {
         prompt: 'كم العدد؟',
         choices: [toArabicNumeral(m.count), toArabicNumeral(distractor)],

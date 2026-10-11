@@ -487,3 +487,14 @@ body {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* مشاهد القصص (V2): صورة 16:9 أعلى نص القصة */
+.sg-scene {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 16px;
+  margin: 0 0 12px;
+}

@@ -41,3 +41,20 @@ describe('الأشياء المعدودة (V1)', () => {
     }
   });
 });
+
+describe('مشاهد قصص العدّ (V2)', () => {
+  const scenes = CATALOG.math.filter((i) => i.art);
+
+  it('كل قصة عليها مشهد تشير إلى ملف jpg موجود', () => {
+    for (const item of scenes) {
+      expect(item.art).toMatch(/^salman\/art\/stories\/[a-z0-9-]+\.jpg$/);
+      expect(existsSync(join(ROOT, 'public', item.art))).toBe(true);
+    }
+  });
+
+  it('المشاهد المقبولة حتى الآن ستة، وكل مشهد مُعلَّم في gardens.js', () => {
+    expect(scenes.map((i) => i.id).sort()).toEqual(
+      ['math-01', 'math-02', 'math-s01', 'math-s02', 'math-s04', 'math-s06'].sort()
+    );
+  });
+});
