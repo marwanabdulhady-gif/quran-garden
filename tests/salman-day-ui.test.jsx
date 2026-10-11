@@ -32,9 +32,12 @@ describe('يوم الحرف (حدائق النور)', () => {
   it('يفتح على مسار #/nour ويعرض خطوات اليوم السبع', () => {
     render(<SalmanApp />);
     expect(screen.getByText(/حروف النور/)).toBeTruthy();
-    for (const title of ['باب القصة', 'القصة', 'الصوت والحركة', 'صيد الصوت', 'التتبّع', 'اللعب', 'عمل اليوم']) {
-      expect(screen.getByText(title), title).toBeTruthy();
-    }
+    const labels = [...document.querySelectorAll('.sg-day-steps .sg-day-step-label')].map((x) => x.textContent);
+    expect(labels).toEqual(['باب القصة', 'القصة', 'الصوت والحركة', 'صيد الصوت', 'التتبّع', 'اللعب', 'عمل اليوم']);
+    // رأس الطريق يقول أين نحن، والحجر الحالي هو الأول والبقية لم يُوصل إليها بعد
+    expect(screen.getByText(/الخطوة ١ من ٧/)).toBeTruthy();
+    expect(document.querySelector('.sg-day-step.is-now').getAttribute('aria-current')).toBe('step');
+    expect(document.querySelectorAll('.sg-day-step.is-locked')).toHaveLength(6);
     // البداية عند باب القصة
     expect(btn('التالي')).toBeTruthy();
   });
@@ -107,5 +110,21 @@ describe('يوم الحرف (حدائق النور)', () => {
     const marks = document.querySelectorAll('.sg-story-text mark');
     expect(marks.length).toBeGreaterThan(0);
     expect(marks[0].textContent).toBe('أُحُد');
+  });
+});
+
+describe('خطوات اليوم تُحفظ ويُكمل الطفل من حيث توقّف', () => {
+  it('كل خطوة تُحفظ فورًا، وعند العودة يبدأ من الخطوة التالية', () => {
+    render(<SalmanApp />);
+    fireEvent.click(btn('التالي')); // باب القصة ✓
+    fireEvent.click(btn('التالي')); // القصة ✓
+    const rec = Object.values(stored().nour || {})[0];
+    expect(rec.done).toEqual(['door', 'story']);
+    expect(rec.completed).toBe(false);
+    cleanup();
+    render(<SalmanApp />);
+    expect(screen.getByText(/الخطوة ٣ من ٧/)).toBeTruthy();
+    expect(document.querySelectorAll('.sg-day-step.is-done')).toHaveLength(2);
+    expect(document.querySelector('.sg-day-steps').style.getPropertyValue('--fill')).not.toBe('0');
   });
 });

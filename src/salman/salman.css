@@ -1397,47 +1397,189 @@ body {
   height: 56px;
   object-fit: contain;
 }
-.sg-day-steps {
+/* خطوات اليوم: طريق من سبعة أحجار. الخط يمتلئ بلون الحديقة حتى الخطوة الحالية،
+   والحجر الحالي أكبر وينبض، والمنجز ملوّن بعلامة ✓، وما بعده باهت حتى يصل إليه الطفل */
+.sg-day-path {
+  --g: #10b981;
+  --stone: clamp(34px, 10vw, 46px);
+  margin: 12px 12px 4px;
+  padding: 10px 6px 12px;
+  border-radius: 22px;
+  border: 2px solid color-mix(in srgb, var(--g) 22%, white);
+  background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--g) 7%, white));
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--g) 60%, transparent);
+}
+.sg-day-path-head {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  margin: 0 6px 12px;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--sg-ink);
+}
+.sg-day-path-head strong {
+  color: color-mix(in srgb, var(--g) 75%, #0f172a);
+}
+.sg-day-path-count {
+  flex: none;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--g) 12%, white);
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+.sg-day-steps {
+  --n: 7;
+  --fill: 0;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
   list-style: none;
   margin: 0;
-  padding: 10px 16px 6px;
+  padding: 0;
+}
+/* المسار خلف الأحجار: من منتصف الحجر الأول إلى منتصف الأخير */
+.sg-day-steps::before,
+.sg-day-steps::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--stone) / 2 - 3px);
+  inset-inline-start: calc(100% / var(--n) / 2);
+  height: 6px;
+  border-radius: 999px;
+}
+.sg-day-steps::before {
+  inset-inline-end: calc(100% / var(--n) / 2);
+  background: repeating-linear-gradient(90deg, #e7e5e4 0 8px, transparent 8px 13px);
+}
+.sg-day-steps::after {
+  width: calc((100% - 100% / var(--n)) * var(--fill));
+  background: var(--g);
+  transition: width 0.5s ease;
 }
 .sg-day-step {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  min-width: 76px;
-  min-height: 64px;
-  padding: 6px 8px;
-  border: 2px solid var(--sg-line);
-  border-radius: 16px;
-  background: var(--sg-card);
+  gap: 6px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
   font: inherit;
-  font-size: 0.78rem;
+  color: var(--sg-ink);
+  cursor: pointer;
+}
+.sg-day-step:disabled {
+  cursor: default;
+}
+.sg-day-stone {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--stone);
+  height: var(--stone);
+  border-radius: 50%;
+  border: 3px solid color-mix(in srgb, var(--g) 30%, white);
+  background: #fff;
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--g) 22%, #e5e7eb);
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
+}
+.sg-day-emoji {
+  font-size: calc(var(--stone) * 0.5);
+  line-height: 1;
+}
+.sg-day-check {
+  position: absolute;
+  top: -5px;
+  inset-inline-end: -5px;
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--g);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 900;
+}
+.sg-day-step.is-done .sg-day-stone {
+  border-color: var(--g);
+  background: color-mix(in srgb, var(--g) 18%, white);
+}
+.sg-day-step.is-now .sg-day-stone {
+  border-color: var(--g);
+  transform: scale(1.12);
+  box-shadow:
+    0 0 0 5px color-mix(in srgb, var(--g) 20%, transparent),
+    0 4px 0 color-mix(in srgb, var(--g) 55%, #0f172a);
+  animation: sg-stone-pulse 1.8s ease-in-out infinite;
+}
+.sg-day-step.is-locked .sg-day-stone {
+  border-color: #e7e5e4;
+  background: #fafaf9;
+  box-shadow: none;
+}
+.sg-day-step.is-locked .sg-day-emoji {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.sg-day-step-label {
+  min-height: 2.5em;
+  font-size: 0.66rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  color: #64748b;
+}
+.sg-day-step.is-now .sg-day-step-label {
+  color: color-mix(in srgb, var(--g) 75%, #0f172a);
+  font-weight: 900;
+}
+.sg-day-step.is-done .sg-day-step-label {
   color: var(--sg-ink);
 }
-.sg-day-step.is-now {
-  border-color: var(--g);
-  outline: 3px solid color-mix(in srgb, var(--g) 25%, transparent);
+.sg-day-step:focus-visible .sg-day-stone {
+  outline: 3px solid var(--g);
+  outline-offset: 3px;
 }
-.sg-day-step.is-done {
-  background: #ecfdf5;
-  border-color: #10b981;
+@keyframes sg-stone-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 5px color-mix(in srgb, var(--g) 20%, transparent),
+      0 4px 0 color-mix(in srgb, var(--g) 55%, #0f172a);
+  }
+  50% {
+    box-shadow:
+      0 0 0 10px color-mix(in srgb, var(--g) 0%, transparent),
+      0 4px 0 color-mix(in srgb, var(--g) 55%, #0f172a);
+  }
 }
-.sg-day-progress {
-  height: 8px;
-  margin: 4px 16px 0;
-  background: #e2e8f0;
-  border-radius: 999px;
-  overflow: hidden;
+@media (prefers-reduced-motion: reduce) {
+  .sg-day-step.is-now .sg-day-stone {
+    animation: none;
+  }
 }
-.sg-day-progress span {
-  display: block;
-  height: 100%;
+@media (min-width: 700px) {
+  .sg-day-path {
+    --stone: 58px;
+    padding-inline: 16px;
+    max-width: 760px;
+    margin-inline: auto;
+    padding: 14px 16px 14px;
+  }
+  .sg-day-step-label {
+    font-size: 0.8rem;
+  }
 }
 .sg-day-card {
   display: flex;

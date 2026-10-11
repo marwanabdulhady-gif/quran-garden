@@ -382,6 +382,18 @@ export function recordDay(state, { unitId, garden, dayKey, steps = [] }) {
   return { state: awarded.state, earned, newBadges: awarded.newly };
 }
 
+// خطوة من يوم وحدة أُنجزت (قبل إكمال اليوم): نحفظ الخطوات حتى يعود الطفل من حيث توقّف،
+// وتظهر حلقة التقدّم على الخريطة. بلا نجوم هنا (النجوم عند إكمال اليوم في recordDay)،
+// ولا نلمس وحدة مكتملة (مراجعتها لا تمحو إكمالها).
+export function recordDayStep(state, { unitId, dayKey, steps = [] }) {
+  const prev = (state.nour || {})[unitId];
+  if (prev && prev.completed) return state;
+  return {
+    ...state,
+    nour: { ...(state.nour || {}), [unitId]: { day: dayKey, done: steps.slice(0, 12), completed: false } },
+  };
+}
+
 // نهاية الزيارة اليومية: هدية جديدة + شارة أول زيارة إن لزم
 export function finishVisit(state) {
   const visits = state.visits + 1;

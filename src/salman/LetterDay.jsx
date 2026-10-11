@@ -7,6 +7,7 @@ import { MASCOTS, GARDEN_MASCOT } from './data/art.js';
 import { assetUrl, playStory } from './lib/voice.js';
 import { speak, canSpeak } from './lib/speech.js';
 import { sfx } from './lib/sfx.js';
+import { toArabicNumeral } from './lib/catalog.js';
 
 // اتجاه النص: العربية RTL والإنجليزية LTR — الشاشة كلها RTL، والنص الإنجليزي يحتاج dir خاصًا
 const dirOf = (lang) => (lang === 'en' ? 'ltr' : 'rtl');
@@ -38,10 +39,25 @@ function highlight(text, keyWord) {
   return text.split(keyWord).flatMap((part, i, arr) => (i < arr.length - 1 ? [part, { key: true }] : [part]));
 }
 
-export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0, storyIndex, onDone, onExit }) {
+export default function LetterDay({
+  unit,
+  color,
+  backdrop,
+  mascot,
+  dayIndex = 0,
+  storyIndex,
+  initialDone = [],
+  onProgress,
+  onDone,
+  onExit,
+}) {
   const plan = useMemo(() => dayPlan(unit, { dayIndex }), [unit, dayIndex]);
-  const [index, setIndex] = useState(0);
-  const [done, setDone] = useState([]);
+  // نكمل من حيث توقّف الطفل: أول خطوة لم تُنجز بعد
+  const [done, setDone] = useState(() => initialDone.filter((id) => plan.some((s) => s.id === id)));
+  const [index, setIndex] = useState(() => {
+    const i = plan.findIndex((s) => !initialDone.includes(s.id));
+    return i < 0 ? 0 : i;
+  });
   const [solved, setSolved] = useState(false);
   const [pick, setPick] = useState(storyIndex ?? 0);
   const step = plan[index];
@@ -52,7 +68,14 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
   const story = plan.find((s) => s.id === 'story')?.story;
   const chosen = unit.stories?.[pick] || story;
 
-  const markDone = (id) => setDone((d) => (d.includes(id) ? d : [...d, id]));
+  const markDone = (id) => {
+    if (done.includes(id)) return;
+    const nextDone = [...done, id];
+    setDone(nextDone);
+    if (nextDone.length < plan.length) onProgress?.(nextDone);
+  };
+  // أبعد خطوة يمكن الرجوع إليها: ما أُنجز وما بعده مباشرة
+  const reach = Math.max(index, ...plan.map((s, i) => (done.includes(s.id) ? i + 1 : 0)));
 
   const next = () => {
     markDone(step.id);
@@ -105,29 +128,43 @@ export default function LetterDay({ unit, color, backdrop, mascot, dayIndex = 0,
         <img className="sg-day-mascot" src={assetUrl(MASCOTS[guide])} alt="" />
       </header>
 
-      <ol className="sg-day-steps" aria-label="خطوات اليوم">
-        {plan.map((s, i) => {
-          const state = done.includes(s.id) ? 'is-done' : i === index ? 'is-now' : '';
-          return (
-            <li key={s.id}>
-              <button
-                type="button"
-                className={`sg-day-step ${state}`}
-                style={{ '--g': color }}
-                onClick={() => i <= index && setIndex(i)}
-                aria-current={i === index ? 'step' : undefined}
-              >
-                <span aria-hidden="true">{s.emoji}</span>
-                <span className="sg-day-step-label">{s.title}</span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-
-      <p className="sg-day-progress" aria-hidden="true">
-        <span style={{ width: `${progress.ratio * 100}%`, background: color }} />
-      </p>
+      <nav className="sg-day-path" style={{ '--g': color }} aria-label="خطوات اليوم">
+        <p className="sg-day-path-head">
+          <span>
+            الخطوة {toArabicNumeral(index + 1)} من {toArabicNumeral(plan.length)} — <strong>{step.title}</strong>
+          </span>
+          <span className="sg-day-path-count">
+            ✅ {toArabicNumeral(progress.done)} / {toArabicNumeral(progress.total)}
+          </span>
+        </p>
+        <ol
+          className="sg-day-steps"
+          style={{ '--n': plan.length, '--fill': plan.length > 1 ? Math.min(1, index / (plan.length - 1)) : 0 }}
+        >
+          {plan.map((s, i) => {
+            const isDone = done.includes(s.id);
+            const state = i === index ? 'is-now' : isDone ? 'is-done' : i > reach ? 'is-locked' : '';
+            return (
+              <li key={s.id}>
+                <button
+                  type="button"
+                  className={`sg-day-step ${state}`}
+                  onClick={() => i <= reach && setIndex(i)}
+                  disabled={i > reach}
+                  aria-current={i === index ? 'step' : undefined}
+                  aria-label={`${toArabicNumeral(i + 1)}. ${s.title}${isDone ? ' · أُنجزت' : ''}`}
+                >
+                  <span className="sg-day-stone" aria-hidden="true">
+                    <span className="sg-day-emoji">{s.emoji}</span>
+                    {isDone && i !== index && <span className="sg-day-check">✓</span>}
+                  </span>
+                  <span className="sg-day-step-label">{s.title}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </nav>
 
       {step.id === 'door' && (
         <section className="sg-day-card">
