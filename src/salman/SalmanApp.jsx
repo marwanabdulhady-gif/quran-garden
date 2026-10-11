@@ -290,6 +290,10 @@ function parentOf(screen) {
 }
 
 const HOME = { name: 'home' };
+// يُحقن وقت البناء (vite.config.js)؛ في الاختبارات بلا بناء نعرض «dev»
+/* global __APP_VERSION__, __APP_BUILT__ */
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'dev';
+const APP_BUILT = typeof __APP_BUILT__ !== 'undefined' ? __APP_BUILT__ : '';
 // ألوان الكواكب (محطة لكل لون)
 const STATION_COLORS = ['#6366f1', '#22c55e', '#f97316', '#0ea5e9', '#e11d48', '#a855f7', '#eab308'];
 // حديقة القرآن: ثلاثة أقسام في مكان واحد
@@ -1192,6 +1196,9 @@ export default function SalmanApp() {
             🔒 ولي الأمر
           </button>
         </div>
+        <p className="sg-version">
+          الإصدار {APP_VERSION} · {APP_BUILT}
+        </p>
       </main>
     );
   }
