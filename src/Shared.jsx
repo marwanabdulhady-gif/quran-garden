@@ -262,7 +262,7 @@ export function flyStar(fromEl) {
     const star = document.createElement('span');
     star.className = 'fly-star';
     star.textContent = '⭐';
-    document.body.appendChild(star);
+    (document.querySelector('.qg-root') || document.body).appendChild(star);
     const dx = b.left + b.width / 2 - (a.left + a.width / 2);
     const dy = b.top + b.height / 2 - (a.top + a.height / 2);
     star.animate(

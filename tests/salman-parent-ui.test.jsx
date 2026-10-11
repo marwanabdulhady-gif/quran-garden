@@ -15,6 +15,7 @@ const NIGHT = new Date('2026-10-11T20:00:00Z');
 
 beforeEach(() => {
   window.localStorage.clear();
+  history.replaceState(null, '', '/');
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(DAYTIME);
 });

@@ -572,9 +572,11 @@ body {
   backdrop-filter: blur(4px);
 }
 .sg-welcome-mascot {
+  /* الرسمة عرضها 512 والشخصية في الوسط فقط: نقصّ الفراغ الجانبي */
   width: 96px;
-  height: 120px;
-  object-fit: contain;
+  height: 160px;
+  object-fit: cover;
+  object-position: center;
   flex: none;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.15));
 }
@@ -757,8 +759,9 @@ body {
   position: absolute;
   bottom: -14px;
   inset-inline-end: 10px;
-  height: 104px;
-  width: auto;
+  height: 120px;
+  width: 80px;
+  object-fit: cover;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.2));
 }
 .sg-garden-head {
@@ -1017,4 +1020,297 @@ body {
   .sg-btn-main {
     transition: none;
   }
+}
+
+/* ================= التنقّل: شريط علوي + شريط الحدائق السفلي ================= */
+:root {
+  --sg-tabbar-h: 68px;
+}
+.sg-shell {
+  min-height: 100vh;
+  padding-bottom: calc(var(--sg-tabbar-h) + env(safe-area-inset-bottom) + 8px);
+}
+.sg-topbar {
+  --g: #10b981;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin: -16px -16px 0;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--g) 25%, transparent);
+}
+.sg-topbar-title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 900;
+  text-align: center;
+  color: color-mix(in srgb, var(--g) 70%, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sg-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--g) 14%, white);
+  color: color-mix(in srgb, var(--g) 70%, black);
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+.sg-tabbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  height: calc(var(--sg-tabbar-h) + env(safe-area-inset-bottom));
+  padding: 6px 6px env(safe-area-inset-bottom);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 -6px 20px -12px rgba(19, 78, 74, 0.45);
+}
+.sg-tab {
+  --g: #10b981;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: #64748b;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.sg-tab-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  transition: transform 0.15s ease;
+}
+.sg-tab.is-active {
+  background: color-mix(in srgb, var(--g) 16%, white);
+  color: color-mix(in srgb, var(--g) 70%, black);
+}
+.sg-tab.is-active .sg-tab-icon {
+  transform: translateY(-2px) scale(1.12);
+}
+.sg-tab:focus-visible,
+.sg-icon-btn:focus-visible,
+.sg-station:focus-visible,
+.sg-play-card:focus-visible,
+.sg-letter-card:focus-visible {
+  outline: 4px solid #fbbf24;
+  outline-offset: 2px;
+}
+
+/* شارة المرحلة على صورة الحديقة */
+.sg-hero-badge {
+  position: absolute;
+  top: 10px;
+  inset-inline-start: 10px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  font-weight: 900;
+  font-size: 0.9rem;
+}
+.sg-home-links {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ===== حديقة الحروف: رحلة من ٧ محطات ===== */
+.sg-path {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sg-path::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  bottom: 24px;
+  inset-inline-start: 39px;
+  border-inline-start: 4px dashed #fecdd3;
+}
+.sg-station {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 84px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 24px;
+  background: #fff;
+  color: var(--sg-ink);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  box-shadow: 0 8px 18px -12px rgba(190, 18, 60, 0.55);
+}
+.sg-station-num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #fb7185, #e11d48);
+  color: #fff;
+  font-size: 1.3rem;
+  font-weight: 900;
+  box-shadow: 0 0 0 5px #ffe4e6;
+}
+.sg-station.is-done .sg-station-num {
+  background: linear-gradient(180deg, #4ade80, #16a34a);
+  box-shadow: 0 0 0 5px #dcfce7;
+}
+.sg-station-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+.sg-station-body strong {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+.sg-station-letters-row {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #e11d48;
+  letter-spacing: 2px;
+}
+.sg-station-stars {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* صفحة المحطة: اللعبة + حروفها */
+.sg-play-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 110px;
+  padding: 16px;
+  border: 0;
+  border-radius: 28px;
+  background: linear-gradient(135deg, #fb7185, #e11d48);
+  color: #fff;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  box-shadow:
+    0 6px 0 #be123c,
+    0 18px 30px -16px #be123c;
+}
+.sg-play-card:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #be123c;
+}
+.sg-play-letters {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 92px;
+  height: 78px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #e11d48;
+  font-size: 1.5rem;
+  font-weight: 900;
+  line-height: 1.2;
+  text-align: center;
+}
+.sg-play-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.sg-play-text strong {
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+.sg-play-text span {
+  opacity: 0.95;
+}
+.sg-station-letters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sg-letter-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 18px 8px 14px;
+  border: 0;
+  border-radius: 24px;
+  background: #fff;
+  color: var(--sg-ink);
+  font: inherit;
+  cursor: pointer;
+  box-shadow:
+    inset 0 -5px 0 #fecdd3,
+    0 8px 16px -12px rgba(190, 18, 60, 0.6);
+}
+.sg-letter-card .sg-letter-glyph {
+  font-size: 2.6rem;
+  line-height: 1.5;
+  color: #e11d48;
+}
+.sg-letter-card img {
+  height: 84px;
+  width: auto;
+  object-fit: contain;
+}
+.sg-letter-name {
+  font-weight: 900;
+}
+.sg-letter-progress {
+  font-size: 0.85rem;
+  opacity: 0.75;
+}
+
+/* ===== حديقة القرآن = رحلة القرآن داخل الغابة ===== */
+.sg-shell.is-quran {
+  padding-bottom: 0;
+}
+.sg-quran-tab .qg-root {
+  min-height: 100vh;
+  padding-bottom: calc(var(--sg-tabbar-h) + env(safe-area-inset-bottom));
+}
+/* شاشات رحلة القرآن الثابتة تترك مكانًا لشريط الحدائق */
+.sg-quran-tab .qg-root .garden,
+.sg-quran-tab .qg-root .home-footer {
+  bottom: calc(var(--sg-tabbar-h) + env(safe-area-inset-bottom));
 }

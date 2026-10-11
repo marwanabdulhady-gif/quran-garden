@@ -3,15 +3,16 @@
 // ورحلة القرآن الكاملة من حديقة القرآن.
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import React from 'react';
-import { render, screen, cleanup, fireEvent } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent, within } from '@testing-library/react';
 import SalmanApp from '../src/salman/SalmanApp.jsx';
-import { createState, normalizeState, recordHuroofLevel, STORAGE_KEY } from '../src/salman/lib/gamify.js';
+import { createState, normalizeState, recordHuroofLevel } from '../src/salman/lib/gamify.js';
 
 const DAYTIME = new Date('2026-10-11T07:00:00Z');
 const DAY = '2026-10-11';
 
 beforeEach(() => {
   window.localStorage.clear();
+  history.replaceState(null, '', '/');
   vi.useFakeTimers({ toFake: ['Date'] });
   vi.setSystemTime(DAYTIME);
 });
@@ -20,8 +21,6 @@ afterEach(() => {
   vi.useRealTimers();
   window.localStorage.clear();
 });
-
-const openGarden = (name) => fireEvent.click(screen.getByText(name).closest('button'));
 
 describe('مغامرة الحروف: النجوم في حالة سلمان', () => {
   it('تضيف نجوم المستوى لحديقة الحروف مرة واحدة، والتحسّن فقط يعطي نجومًا جديدة', () => {
@@ -44,42 +43,71 @@ describe('مغامرة الحروف: النجوم في حالة سلمان', () 
 });
 
 describe('الحدائق الأربع في موقع واحد', () => {
-  it('حديقة الحروف تعرض شبكة الحروف الـ28، والحرف يفتح قصصه', () => {
+  const tab = (label) => fireEvent.click(within(screen.getByRole('navigation', { name: 'الحدائق' })).getByText(label));
+
+  it('شريط الحدائق يظهر في الغابة وفيه الحدائق الأربع', () => {
     render(<SalmanApp />);
-    openGarden('حديقة الحروف');
-    expect(screen.getAllByRole('button', { name: /^الحرف / })).toHaveLength(28);
+    const nav = screen.getByRole('navigation', { name: 'الحدائق' });
+    for (const label of ['الغابة', 'الحروف', 'الأرقام', 'القرآن', 'English']) {
+      expect(within(nav).getByText(label)).toBeTruthy();
+    }
+  });
+
+  it('حديقة الحروف رحلة من ٧ محطات، والمحطة فيها اللعبة وحروفها الأربعة', () => {
+    render(<SalmanApp />);
+    tab('الحروف');
+    expect(location.hash).toBe('#/arabic');
+    const stations = document.querySelectorAll('.sg-station');
+    expect(stations).toHaveLength(7);
+    fireEvent.click(stations[0]);
+    expect(location.hash).toBe('#/arabic/1');
+    expect(screen.getByText(/العب: صِل الحرف بصديقه/)).toBeTruthy();
+    expect(screen.getAllByRole('button', { name: /^الحرف / })).toHaveLength(4);
+  });
+
+  it('اللعبة تُفتح من المحطة نفسها (بلا خريطة مستويات منفصلة)', () => {
+    render(<SalmanApp />);
+    tab('الحروف');
+    fireEvent.click(document.querySelector('.sg-station'));
+    fireEvent.click(screen.getByText(/العب: صِل الحرف بصديقه/).closest('button'));
+    expect(document.querySelector('.hp-root .play')).toBeTruthy();
+    expect(screen.queryByText('خريطة المستويات')).toBeNull();
+  });
+
+  it('الحرف يفتح صفحته وقصصه، وزر الرجوع يرجع للمحطة', () => {
+    render(<SalmanApp />);
+    tab('الحروف');
+    fireEvent.click(document.querySelector('.sg-station'));
     fireEvent.click(screen.getByRole('button', { name: 'الحرف ب' }));
-    expect(screen.getByText(/كل الحروف/)).toBeTruthy();
-    expect(screen.getAllByRole('listitem').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText('قصص الحرف')).toBeTruthy();
+    expect(document.querySelectorAll('.sg-cards li').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('لعبة «مغامرة الحروف» تعمل داخل حديقة الحروف وترجع إليها', () => {
+  it('حديقة القرآن هي رحلة القرآن نفسها داخل الغابة', () => {
     render(<SalmanApp />);
-    openGarden('حديقة الحروف');
-    fireEvent.click(screen.getByText('مغامرة الحروف').closest('button'));
-    expect(screen.getByText('خريطة المستويات')).toBeTruthy();
-    expect(document.querySelector('.hp-root')).toBeTruthy();
-    fireEvent.click(screen.getByText(/رجوع/));
-    expect(screen.getByText(/حديقة الحروف/)).toBeTruthy();
+    tab('القرآن');
+    expect(location.hash).toBe('#/quran');
+    expect(document.querySelector('.sg-quran-tab .qg-root')).toBeTruthy();
+    // شريط الحدائق باقٍ للرجوع لأي حديقة
+    expect(screen.getByRole('navigation', { name: 'الحدائق' })).toBeTruthy();
   });
 
-  it('حديقة القرآن تربط برحلة القرآن الكاملة على /quran.html', () => {
+  it('رابط مباشر إلى حديقة يفتحها (يعمل مع زر الرجوع والمشاركة)', () => {
+    history.replaceState(null, '', '/#/arabic/3');
     render(<SalmanApp />);
-    openGarden('حديقة القرآن');
-    expect(screen.getByText('رحلة حديقة القرآن').closest('a').getAttribute('href')).toBe('/quran.html');
+    expect(screen.getByText(/العب: صِل الحرف بصديقه/)).toBeTruthy();
   });
 
   it('حديقة الأرقام تعرض قصص العدّ والأرقام من ١ إلى ٢٠', () => {
     render(<SalmanApp />);
-    openGarden('حديقة الأرقام');
+    tab('الأرقام');
     expect(screen.getByText('قصص العدّ')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'العدّ حتى ٢٠' })).toBeTruthy();
   });
 
   it('حديقة الإنجليزية تعرض قصص الأصوات', () => {
     render(<SalmanApp />);
-    openGarden('حديقة الإنجليزية');
+    tab('English');
     expect(screen.getByText(/Phonics/)).toBeTruthy();
-    expect(JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}')).toBeTruthy();
   });
 });

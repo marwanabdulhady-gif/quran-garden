@@ -40,7 +40,7 @@ const SPOTS = {
   roses2: { x: 13, y: 79, label: 'حوض الورد السحري' },
 };
 
-export default function Garden({ go }) {
+export default function Garden({ go, embedded = false }) {
   const s = useGarden();
   const child = activeChild(s);
   const [walking, setWalking] = useState(!heroWalked);
@@ -293,16 +293,19 @@ export default function Garden({ go }) {
 
       {/* الشريط العلوي */}
       <div className="garden-top">
-        <button
-          className="icon-btn"
-          onClick={() => {
-            sfx.tap();
-            go('home');
-          }}
-          aria-label="العودة"
-        >
-          🏠
-        </button>
+        {/* داخل الغابة: شريط الحدائق السفلي هو التنقّل، فلا زر لشاشة اختيار الطفل */}
+        {!embedded && (
+          <button
+            className="icon-btn"
+            onClick={() => {
+              sfx.tap();
+              go('home');
+            }}
+            aria-label="العودة"
+          >
+            🏠
+          </button>
+        )}
         <div className="who">
           <img src={child.avatar || '/assets/hero-standing-t.png'} alt={child.name} />
           <span>

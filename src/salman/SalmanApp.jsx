@@ -1,21 +1,15 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { GARDENS, GARDEN_ORDER } from './data/gardens.js';
-import { QURAN_LEVELS, SURAHS } from './data/quran.js';
 import { BACKGROUNDS, MASCOTS, GARDEN_MASCOT } from './data/art.js';
-import { JUZ30 } from '../juz30.js';
-import { FATIHA } from './data/fatiha.js';
 import {
   BADGES,
   dayKeyFrom,
   finishVisit,
   growthStage,
-  levelDone,
-  levelUnlocked,
   answerItem,
   exposeItem,
   newAllowed,
   recordStory,
-  recordSurah,
   recordHuroofLevel,
   GIFTS,
 } from './lib/gamify.js';
@@ -23,7 +17,11 @@ import { CATALOG, gardenItems, toArabicNumeral } from './lib/catalog.js';
 import { pickSession } from './lib/session.js';
 import { countVisit, riyadhHour, visitGate } from './lib/parent.js';
 import ParentArea from './ParentArea.jsx';
-import HuroofGame from './HuroofGame.jsx';
+import Play from '../huroof/components/Play.jsx';
+import '../huroof/huroof.css';
+import QuranJourney from '../App.jsx';
+import '../styles.css';
+import { useGarden, activeChild } from '../store.js';
 import { LEVEL_DATA as HUROOF_LEVELS } from '../huroof/data/index.js';
 import { ANIMALS } from './data/animals.js';
 import { loadState, saveState } from './lib/store.js';
@@ -169,27 +167,6 @@ function Lesson({ item, onCorrect, onMiss, onContinue, continueLabel }) {
   );
 }
 
-function Header({ state }) {
-  return (
-    <header className="sg-top">
-      <span className="sg-pill" aria-label="أيام متتالية">
-        🔥 {toArabicNumeral(state.streak.current)} يوم
-      </span>
-      <span className="sg-pill" aria-label="النجوم">
-        ⭐ {toArabicNumeral(state.stars)}
-      </span>
-    </header>
-  );
-}
-
-function Back({ onClick, label = 'رجوع للغابة' }) {
-  return (
-    <button type="button" className="sg-btn sg-btn-soft sg-back" onClick={onClick}>
-      ➡ {label}
-    </button>
-  );
-}
-
 function Mascot({ name, bubble, className = '' }) {
   return (
     <div className={`sg-guide ${className}`}>
@@ -203,43 +180,12 @@ function gardenStageIndex(state, garden) {
   return growthStage(state.gardens[garden] || 0).index;
 }
 
-const HUROOF_MAX = HUROOF_LEVELS.reduce((n, l) => n + l.letters.length, 0);
-const huroofStars = (state) => Object.values(state.huroof || {}).reduce((n, v) => n + v, 0);
-
 // تحية حسب وقت اليوم في الرياض
 function greeting() {
   const h = riyadhHour();
   if (h < 12) return 'صباح الخير يا سلمان ☀️';
   if (h < 18) return 'مساء النور يا سلمان 🌤️';
   return 'مساء الخير يا سلمان 🌙';
-}
-
-// بطاقة نشاط مميّز في أعلى الحديقة (لعبة، رحلة القرآن، مستويات السور)
-function Feature({ icon, title, sub, onClick, href, color }) {
-  const body = (
-    <>
-      <span className="sg-feature-icon" aria-hidden="true">
-        {icon}
-      </span>
-      <span className="sg-feature-text">
-        <strong>{title}</strong>
-        <span>{sub}</span>
-      </span>
-      <span className="sg-feature-go" aria-hidden="true">
-        ←
-      </span>
-    </>
-  );
-  const style = { '--g': color };
-  return href ? (
-    <a className="sg-feature" href={href} style={style}>
-      {body}
-    </a>
-  ) : (
-    <button type="button" className="sg-feature" onClick={onClick} style={style}>
-      {body}
-    </button>
-  );
 }
 
 // بطاقة قصة أو تمرين داخل الحديقة
@@ -300,16 +246,169 @@ function CountPicture({ n, object, emoji }) {
   );
 }
 
+// ---------- التنقّل: شريط علوي + شريط حدائق سفلي + زر الرجوع في الهاتف ----------
+const TABS = [
+  { id: 'home', label: 'الغابة', icon: '🏠' },
+  { id: 'arabic', label: 'الحروف', icon: '🌸' },
+  { id: 'math', label: 'الأرقام', icon: '🍎' },
+  { id: 'quran', label: 'القرآن', icon: '🌴' },
+  { id: 'english', label: 'English', icon: '🌻' },
+];
+
+// أي تبويب يتبع له كل شاشة
+function tabOf(screen) {
+  if (screen.name === 'garden') return screen.garden;
+  if (['station', 'play', 'letter'].includes(screen.name)) return 'arabic';
+  if (screen.name === 'lesson') return screen.garden;
+  if (screen.name === 'quran') return 'quran';
+  return 'home';
+}
+
+// الشاشة الأم (لزر الرجوع عند فتح رابط مباشر)
+function parentOf(screen) {
+  if (screen.name === 'letter') return screen.level ? { name: 'station', level: screen.level } : ARABIC_HOME;
+  if (screen.name === 'station' || screen.name === 'play') return ARABIC_HOME;
+  if (screen.name === 'lesson') return screen.from || { name: 'garden', garden: screen.garden };
+  return HOME;
+}
+
+const HOME = { name: 'home' };
+const ARABIC_HOME = { name: 'garden', garden: 'arabic' };
+
+function hashOf(screen) {
+  switch (screen.name) {
+    case 'garden':
+      return `#/${screen.garden}`;
+    case 'quran':
+      return '#/quran';
+    case 'station':
+      return `#/arabic/${screen.level}`;
+    case 'play':
+      return `#/arabic/${screen.level}/play`;
+    case 'letter':
+      return `#/arabic/letter/${encodeURIComponent(screen.letter)}`;
+    case 'badges':
+      return '#/badges';
+    default:
+      return '#/';
+  }
+}
+
+export function screenFromHash(hash = '') {
+  if (hash.startsWith('#garden=')) return { name: 'quran' }; // رابط استرجاع حديقة القرآن
+  const parts = hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
+  const [a, b, c] = parts;
+  if (a === 'quran') return { name: 'quran' };
+  if (a === 'badges') return { name: 'badges' };
+  if (a === 'math' || a === 'english') return { name: 'garden', garden: a };
+  if (a === 'arabic') {
+    if (b === 'letter' && ANIMALS[c]) return { name: 'letter', letter: c };
+    const level = Number(b);
+    if (HUROOF_LEVELS.some((l) => l.id === level))
+      return c === 'play' ? { name: 'play', level } : { name: 'station', level };
+    return ARABIC_HOME;
+  }
+  return HOME;
+}
+
+function TopBar({ title, onBack, state, color }) {
+  return (
+    <header className="sg-topbar" style={color ? { '--g': color } : undefined}>
+      {onBack ? (
+        <button type="button" className="sg-icon-btn" onClick={onBack} aria-label="رجوع">
+          ➜
+        </button>
+      ) : (
+        <span className="sg-pill" aria-label="أيام متتالية">
+          🔥 {toArabicNumeral(state.streak.current)}
+        </span>
+      )}
+      <h1 className="sg-topbar-title">{title}</h1>
+      <span className="sg-pill" aria-label="النجوم">
+        ⭐ {toArabicNumeral(state.stars)}
+      </span>
+    </header>
+  );
+}
+
+function TabBar({ active, onTab }) {
+  return (
+    <nav className="sg-tabbar" aria-label="الحدائق">
+      {TABS.map((t) => (
+        <button
+          key={t.id}
+          type="button"
+          className={t.id === active ? 'sg-tab is-active' : 'sg-tab'}
+          style={t.id !== 'home' ? { '--g': GARDENS[t.id].color } : undefined}
+          aria-current={t.id === active ? 'page' : undefined}
+          onClick={() => onTab(t.id)}
+        >
+          <span className="sg-tab-icon" aria-hidden="true">
+            {t.icon}
+          </span>
+          <span className="sg-tab-label">{t.label}</span>
+        </button>
+      ))}
+    </nav>
+  );
+}
+
+// نجوم مستوى «مغامرة الحروف» ونجوم قصص الحرف
+const stationOf = (letter) => HUROOF_LEVELS.find((l) => l.letters.includes(letter));
+
 export default function SalmanApp() {
+  const quranStore = useGarden();
   const [state, setState] = useState(() => loadState());
-  const [screen, setScreen] = useState({ name: 'home' });
-  const [openSurah, setOpenSurah] = useState(null);
+  const [screen, setScreen] = useState(() => screenFromHash(globalThis.location?.hash));
   const [celebrate, setCelebrate] = useState(null);
   const today = dayKeyFrom();
 
   useEffect(() => {
     saveState(state);
   }, [state]);
+
+  // التاريخ: كل انتقال يُسجَّل، فزر الرجوع في الهاتف والمتصفح يرجع خطوة داخل الغابة
+  useEffect(() => {
+    try {
+      history.replaceState({ sg: screen, depth: 0 }, '');
+    } catch {
+      /* بيئة بلا history */
+    }
+    const onPop = (e) => {
+      setCelebrate(null);
+      setScreen(e.state?.sg || screenFromHash(location.hash));
+      window.scrollTo?.(0, 0);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const go = (next) => {
+    setCelebrate(null);
+    try {
+      history.pushState({ sg: next, depth: (history.state?.depth || 0) + 1 }, '', hashOf(next));
+    } catch {
+      /* بيئة بلا history */
+    }
+    setScreen(next);
+    window.scrollTo?.(0, 0);
+  };
+  // تحديث الشاشة الحالية بلا خطوة جديدة في التاريخ (خطوات الزيارة، شاشة الهدية)
+  const replace = (next) => {
+    try {
+      history.replaceState({ sg: next, depth: history.state?.depth || 0 }, '', hashOf(next));
+    } catch {
+      /* بيئة بلا history */
+    }
+    setScreen(next);
+    window.scrollTo?.(0, 0);
+  };
+  const back = () => {
+    if ((history.state?.depth || 0) > 0) history.back();
+    else replace(parentOf(screen));
+  };
+  const onTab = (id) => go(id === 'home' ? HOME : id === 'quran' ? { name: 'quran' } : { name: 'garden', garden: id });
 
   const closeCelebrate = useCallback(() => setCelebrate(null), []);
 
@@ -350,6 +449,11 @@ export default function SalmanApp() {
     setState((s) => exposeItem(s, { itemId: item.id, garden: item.garden, dayKey: today }));
   };
 
+  const openItem = (item, fresh, from) => {
+    if (fresh) showItem(item);
+    go({ name: 'lesson', garden: item.garden, itemId: item.id, from });
+  };
+
   // ---------- زيارة اليوم ----------
   const startVisit = () => {
     // وضع ولي الأمر: حدّ الزيارات وساعات الهدوء. الرفض لا يُظهر عدّادًا ولا عقوبة
@@ -358,7 +462,7 @@ export default function SalmanApp() {
     if (state.streak.current >= 2) playClip('streak');
     setState((s) => countVisit(s, today));
     if (plan[0]) showItem(plan[0]);
-    setScreen({ name: 'visit', plan, step: 0, stars: 0, badges: [] });
+    go({ name: 'visit', plan, step: 0, stars: 0, badges: [] });
   };
 
   const visitCorrect = (item, firstTry) => {
@@ -371,12 +475,12 @@ export default function SalmanApp() {
     const nextStep = screen.step + 1;
     if (nextStep < screen.plan.length) {
       showItem(screen.plan[nextStep]);
-      setScreen({ ...screen, step: nextStep });
+      replace({ ...screen, step: nextStep });
       return;
     }
     const f = finishVisit(state);
     setState(f.state);
-    setScreen({
+    replace({
       name: 'reward',
       stars: screen.stars,
       badges: [...screen.badges, ...f.newBadges],
@@ -393,16 +497,24 @@ export default function SalmanApp() {
     }
   }, [screen.name]);
 
-  const celebrateLayer = celebrate ? <Celebrate data={celebrate} onClose={closeCelebrate} /> : null;
+  // نجوم حديقة القرآن = قصص السور في الغابة + نجوم رحلة القرآن للطفل
+  const quranChild = activeChild(quranStore);
+  const gardenStars = (id) => (state.gardens[id] || 0) + (id === 'quran' ? quranChild?.stars || 0 : 0);
 
+  const celebrateLayer = celebrate ? <Celebrate data={celebrate} onClose={closeCelebrate} /> : null;
+  const tab = tabOf(screen);
+
+  // ---------- شاشات التركيز (بلا شريط الحدائق) ----------
   if (screen.name === 'visit') {
     const item = screen.plan[screen.step];
     return (
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
-        <p className="sg-progress" aria-label="تقدّم الزيارة">
-          زيارة اليوم · {toArabicNumeral(screen.step + 1)} / {toArabicNumeral(screen.plan.length)}
-        </p>
+        <TopBar
+          title={`زيارة اليوم · ${toArabicNumeral(screen.step + 1)} / ${toArabicNumeral(screen.plan.length)}`}
+          onBack={back}
+          state={state}
+        />
         <Lesson
           key={item.id}
           item={item}
@@ -442,7 +554,7 @@ export default function SalmanApp() {
             })}
           </div>
         )}
-        <button type="button" className="sg-btn sg-btn-main" onClick={() => setScreen({ name: 'home' })}>
+        <button type="button" className="sg-btn sg-btn-main" onClick={() => replace(HOME)}>
           رجوع للغابة 🌳
         </button>
       </main>
@@ -451,71 +563,73 @@ export default function SalmanApp() {
 
   if (screen.name === 'lesson') {
     const item = gardenItems(screen.garden).find((it) => it.id === screen.itemId);
-    if (!item) {
-      return (
-        <main className="sg-app" dir="rtl">
-          <Back onClick={() => setScreen({ name: 'home' })} />
-        </main>
-      );
-    }
+    const g = GARDENS[screen.garden];
     return (
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
-        <Back onClick={() => setScreen(screen.from || { name: 'garden', garden: screen.garden })} label="رجوع" />
-        <Lesson
-          key={item.id}
-          item={item}
-          onCorrect={(firstTry) => credit(item, firstTry)}
-          onMiss={() => missItem(item)}
-          onContinue={() => {
-            setCelebrate(null);
-            setScreen(screen.from || { name: 'garden', garden: screen.garden });
-          }}
-          continueLabel="رجوع للحديقة ➜"
-        />
+        <TopBar title={item ? item.title : g.name} onBack={back} state={state} color={g.color} />
+        {item && (
+          <Lesson
+            key={item.id}
+            item={item}
+            onCorrect={(firstTry) => credit(item, firstTry)}
+            onMiss={() => missItem(item)}
+            onContinue={back}
+            continueLabel="رجوع ➜"
+          />
+        )}
       </main>
     );
   }
 
-  const openItem = (item, fresh, from) => {
-    if (fresh) showItem(item);
-    setScreen({ name: 'lesson', garden: item.garden, itemId: item.id, from });
-  };
-
-  if (screen.name === 'huroof') {
+  if (screen.name === 'play') {
+    const level = HUROOF_LEVELS.find((l) => l.id === screen.level) || HUROOF_LEVELS[0];
+    const next = HUROOF_LEVELS.find((l) => l.id === level.id + 1);
     return (
-      <HuroofGame
-        name="سلمان"
-        best={state.huroof || {}}
-        onExit={() => setScreen({ name: 'garden', garden: 'arabic' })}
-        onLevelComplete={(levelId, stars) => {
-          setState((s) => recordHuroofLevel(s, { levelId, stars, dayKey: today }).state);
-        }}
-      />
+      <div className="hp-root" dir="rtl">
+        <Play
+          key={level.id}
+          level={level}
+          onExit={back}
+          onLevelComplete={(levelId, stars) =>
+            setState((s) => recordHuroofLevel(s, { levelId, stars, dayKey: today }).state)
+          }
+          onNext={next ? () => replace({ name: 'play', level: next.id }) : undefined}
+        />
+      </div>
     );
   }
 
-  if (screen.name === 'letter') {
+  if (screen.name === 'parent') {
+    return <ParentArea state={state} setState={setState} onBack={back} />;
+  }
+
+  // ---------- شاشات الحدائق (مع شريط الحدائق) ----------
+  let body;
+  if (screen.name === 'quran') {
+    // حديقة القرآن هي رحلة القرآن نفسها: الاستماع والترديد والحفظ والكلمات
+    body = (
+      <div className="sg-quran-tab">
+        <QuranJourney embedded />
+      </div>
+    );
+  } else if (screen.name === 'letter') {
     const letter = screen.letter;
     const animal = ANIMALS[letter];
     const items = gardenItems('arabic').filter((it) => it.letter === letter);
     const freshLeft = newAllowed(state, 'arabic', today);
-    const here = { name: 'letter', letter };
-    return (
+    body = (
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
-        <Back onClick={() => setScreen({ name: 'garden', garden: 'arabic' })} label="كل الحروف" />
-        <section className="sg-letter-hero" style={{ '--g': GARDENS.arabic.color }}>
+        <TopBar title={`الحرف ${letter}`} onBack={back} state={state} color={GARDENS.arabic.color} />
+        <section className="sg-letter-hero">
           <span className="sg-letter-big">{letter}</span>
-          {animal?.art ? (
-            <img className="sg-letter-animal" src={assetUrl(`salman/art/animals/${animal.slug}.png`)} alt="" />
-          ) : (
-            <span className="sg-big">{animal?.emoji}</span>
-          )}
+          <img className="sg-letter-animal" src={assetUrl(`salman/art/animals/${animal.slug}.png`)} alt="" />
           <p className="sg-letter-word">
-            {letter} … {animal?.word}
+            {letter} … {animal.word}
           </p>
         </section>
+        <h2 className="sg-section">قصص الحرف</h2>
         <ul className="sg-cards">
           {items.map((it) => (
             <ItemCard
@@ -523,21 +637,63 @@ export default function SalmanApp() {
               item={it}
               state={state}
               freshLeft={freshLeft}
-              onOpen={(item, fresh) => openItem(item, fresh, here)}
+              onOpen={(item, fresh) => openItem(item, fresh, screen)}
             />
           ))}
         </ul>
       </main>
     );
-  }
-
-  if (screen.name === 'garden') {
+  } else if (screen.name === 'station') {
+    const level = HUROOF_LEVELS.find((l) => l.id === screen.level) || HUROOF_LEVELS[0];
+    const best = state.huroof?.[level.id] || 0;
+    body = (
+      <main className="sg-app" dir="rtl">
+        <TopBar title={level.title} onBack={back} state={state} color={GARDENS.arabic.color} />
+        <button type="button" className="sg-play-card" onClick={() => go({ name: 'play', level: level.id })}>
+          <span className="sg-play-letters" aria-hidden="true">
+            {level.letters.join(' ')}
+          </span>
+          <span className="sg-play-text">
+            <strong>🎮 العب: صِل الحرف بصديقه</strong>
+            <span>
+              اسحب كل حرف إلى الحيوان الذي يبدأ به · ⭐ {toArabicNumeral(best)} /{' '}
+              {toArabicNumeral(level.letters.length)}
+            </span>
+          </span>
+        </button>
+        <h2 className="sg-section">حروف المحطة</h2>
+        <ul className="sg-station-letters">
+          {level.pairs.map((p) => {
+            const mine = gardenItems('arabic').filter((it) => it.letter === p.letter);
+            const done = mine.filter((it) => state.doneStories[it.id]).length;
+            return (
+              <li key={p.letter}>
+                <button
+                  type="button"
+                  className="sg-letter-card"
+                  aria-label={`الحرف ${p.letter}`}
+                  onClick={() => go({ name: 'letter', letter: p.letter, level: level.id })}
+                >
+                  <span className="sg-letter-glyph">{p.letter}</span>
+                  <img src={assetUrl(p.image)} alt="" loading="lazy" />
+                  <span className="sg-letter-name">{p.word}</span>
+                  <span className="sg-letter-progress">
+                    📖 {toArabicNumeral(done)} / {toArabicNumeral(mine.length)}
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </main>
+    );
+  } else if (screen.name === 'garden') {
     const id = screen.garden;
     const g = GARDENS[id];
     const items = gardenItems(id);
-    const stage = growthStage(state.gardens[id] || 0);
+    const stars = gardenStars(id);
+    const stage = growthStage(stars);
     const freshLeft = newAllowed(state, id, today);
-    const here = { name: 'garden', garden: id };
     const cards = (list) => (
       <ul className="sg-cards">
         {list.map((it) => (
@@ -546,40 +702,40 @@ export default function SalmanApp() {
             item={it}
             state={state}
             freshLeft={freshLeft}
-            onOpen={(item, fresh) => openItem(item, fresh, here)}
+            onOpen={(item, fresh) => openItem(item, fresh, screen)}
           />
         ))}
       </ul>
     );
     let content;
     if (id === 'arabic') {
-      const letters = [...new Set(items.map((it) => it.letter))];
       content = (
         <>
-          <h2 className="sg-section">الحروف</h2>
-          <ul className="sg-letters">
-            {letters.map((L) => {
-              const mine = items.filter((it) => it.letter === L);
-              const done = mine.filter((it) => state.doneStories[it.id]).length;
+          <h2 className="sg-section">رحلة الحروف · ٧ محطات</h2>
+          <ol className="sg-path">
+            {HUROOF_LEVELS.map((l) => {
+              const best = state.huroof?.[l.id] || 0;
+              const done = best >= l.letters.length;
               return (
-                <li key={L}>
+                <li key={l.id}>
                   <button
                     type="button"
-                    className={done === mine.length ? 'sg-letter is-done' : 'sg-letter'}
-                    onClick={() => setScreen({ name: 'letter', letter: L })}
-                    aria-label={`الحرف ${L}`}
+                    className={done ? 'sg-station is-done' : 'sg-station'}
+                    onClick={() => go({ name: 'station', level: l.id })}
                   >
-                    <span className="sg-letter-glyph">{L}</span>
-                    <span className="sg-letter-dots" aria-hidden="true">
-                      {mine.map((it) => (
-                        <i key={it.id} className={state.doneStories[it.id] ? 'is-on' : ''} />
-                      ))}
+                    <span className="sg-station-num">{done ? '✓' : toArabicNumeral(l.id)}</span>
+                    <span className="sg-station-body">
+                      <strong>{l.title}</strong>
+                      <span className="sg-station-letters-row">{l.letters.join('  ')}</span>
+                    </span>
+                    <span className="sg-station-stars">
+                      ⭐ {toArabicNumeral(best)}/{toArabicNumeral(l.letters.length)}
                     </span>
                   </button>
                 </li>
               );
             })}
-          </ul>
+          </ol>
         </>
       );
     } else if (id === 'math') {
@@ -601,7 +757,7 @@ export default function SalmanApp() {
                       className={done ? 'sg-number is-done' : 'sg-number'}
                       disabled={locked}
                       aria-label={it.title}
-                      onClick={() => openItem(it, !state.skills[it.id], here)}
+                      onClick={() => openItem(it, !state.skills[it.id], screen)}
                     >
                       {locked ? '🌙' : toArabicNumeral(i + 1)}
                     </button>
@@ -614,154 +770,41 @@ export default function SalmanApp() {
     } else {
       content = (
         <>
-          <h2 className="sg-section">{id === 'quran' ? 'قصص السور' : 'Phonics · الأصوات'}</h2>
+          <h2 className="sg-section">Phonics · الأصوات</h2>
           {cards(items)}
         </>
       );
     }
-    return (
+    body = (
       <main className="sg-app" dir="rtl">
         {celebrateLayer}
-        <Back onClick={() => setScreen({ name: 'home' })} />
+        <TopBar title={g.name} state={state} color={g.color} />
         <section
           className="sg-garden-hero"
           style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS[id])})`, '--g': g.color }}
         >
           <img className="sg-hero-plant" src={assetUrl(stage.art)} alt="" />
           <img className="sg-hero-mascot" src={assetUrl(MASCOTS[GARDEN_MASCOT[id]])} alt="" />
+          <span className="sg-hero-badge">
+            {stage.name} · ⭐ {toArabicNumeral(stars)}
+          </span>
         </section>
-        <div className="sg-garden-head">
-          <h1 className="sg-title" style={{ color: g.color }}>
-            {g.emoji} {g.name}
-          </h1>
-          <p className="sg-sub">
-            {stage.name} · ⭐ {toArabicNumeral(state.gardens[id] || 0)} · دليلك: {g.guide}
-          </p>
-          {stage.next && (
-            <span className="sg-bar" aria-hidden="true">
-              <span
-                style={{
-                  width: `${Math.round(((state.gardens[id] - stage.min) / (stage.next.min - stage.min)) * 100) || 0}%`,
-                  background: g.color,
-                }}
-              />
-            </span>
-          )}
-        </div>
-        {id === 'arabic' && (
-          <Feature
-            icon="🎮"
-            title="مغامرة الحروف"
-            sub={`اسحب الحرف إلى الحيوان · ⭐ ${toArabicNumeral(huroofStars(state))} من ${toArabicNumeral(HUROOF_MAX)}`}
-            color={g.color}
-            onClick={() => setScreen({ name: 'huroof' })}
-          />
-        )}
-        {id === 'quran' && (
-          <>
-            <Feature
-              icon="🕌"
-              title="رحلة حديقة القرآن"
-              sub="استمع وردّد واحفظ آية بآية"
-              color={g.color}
-              href="/quran.html"
-            />
-            <Feature
-              icon="📗"
-              title="مستويات السور"
-              sub="من الفاتحة إلى قصار السور"
-              color={g.color}
-              onClick={() => setScreen({ name: 'quran' })}
-            />
-          </>
-        )}
         {content}
       </main>
     );
-  }
-
-  if (screen.name === 'parent') {
-    return <ParentArea state={state} setState={setState} onBack={() => setScreen({ name: 'home' })} />;
-  }
-
-  if (screen.name === 'quran') {
-    return (
+  } else if (screen.name === 'badges') {
+    body = (
       <main className="sg-app" dir="rtl">
-        {celebrateLayer}
-        <Back onClick={() => setScreen({ name: 'home' })} />
-        <h1 className="sg-title">📗 مستويات السور</h1>
-        {QURAN_LEVELS.map((lvl) => {
-          const unlocked = levelUnlocked(state, lvl.level);
-          const done = levelDone(state, lvl.level);
-          return (
-            <section key={lvl.level} className={unlocked ? 'sg-level' : 'sg-level is-locked'}>
-              <h2 className="sg-level-title">
-                {done ? '🏆 ' : unlocked ? '✨ ' : '🔒 '}
-                {lvl.title}
-              </h2>
-              {!unlocked && <p className="sg-sub">افتح المستوى السابق أولًا 🌱</p>}
-              {lvl.surahs.map((sid) => {
-                const s = SURAHS[sid];
-                const learned = !!state.learnedSurahs[sid];
-                const open = openSurah === sid;
-                const verses = sid === 1 ? FATIHA.ayahs : JUZ30[sid];
-                return (
-                  <article key={sid} className="sg-surah">
-                    <button type="button" className="sg-row" onClick={() => setOpenSurah(open ? null : sid)}>
-                      <span>{learned ? '✅' : '📜'}</span>
-                      <span>
-                        سورة {s.name} · {toArabicNumeral(s.ayahs)} آيات
-                      </span>
-                    </button>
-                    {open && (
-                      <div className="sg-verses" lang="ar">
-                        {verses ? verses.join(' ۝ ') : 'النص يُضاف قريبًا.'}
-                      </div>
-                    )}
-                    {unlocked && !learned && (
-                      <button
-                        type="button"
-                        className="sg-btn sg-btn-main"
-                        onClick={() => {
-                          const wasDone = levelDone(state, lvl.level);
-                          const r = recordSurah(state, { surahId: sid, dayKey: today });
-                          setState(r.state);
-                          sfx('levelUp');
-                          if (!wasDone && levelDone(r.state, lvl.level)) {
-                            setCelebrate({ emoji: '📗', title: 'مستوى مكتمل!', sub: lvl.title, clip: 'level-unlock' });
-                          } else {
-                            setCelebrate({
-                              emoji: '📜',
-                              title: 'سورة محفوظة!',
-                              sub: `سورة ${s.name}`,
-                              clip: 'surah-learned',
-                            });
-                          }
-                        }}
-                      >
-                        حفظتها ✓ (+⭐⭐)
-                      </button>
-                    )}
-                  </article>
-                );
-              })}
-            </section>
-          );
-        })}
-      </main>
-    );
-  }
-
-  if (screen.name === 'badges') {
-    return (
-      <main className="sg-app" dir="rtl">
-        <Back onClick={() => setScreen({ name: 'home' })} />
-        <h1 className="sg-title">🏅 الأوسمة</h1>
+        <TopBar title="🏅 الأوسمة" onBack={back} state={state} />
         <p className="sg-sub">
           🎁 هدايا: {toArabicNumeral(state.gifts.length)}{' '}
           {state.gifts.map((id) => {
-            const g = GIFTS.find((x) => x.id === id);
-            return g?.art ? <img key={id} className="sg-gift-chip" src={assetUrl(g.art)} alt={g.name} /> : g?.emoji;
+            const gift = GIFTS.find((x) => x.id === id);
+            return gift?.art ? (
+              <img key={id} className="sg-gift-chip" src={assetUrl(gift.art)} alt={gift.name} />
+            ) : (
+              gift?.emoji
+            );
           })}
         </p>
         <div className="sg-badges">
@@ -781,87 +824,78 @@ export default function SalmanApp() {
         </div>
       </main>
     );
-  }
+  } else {
+    // ---------- الغابة الرئيسية ----------
+    const gate = visitGate(state, { dayKey: today, hour: riyadhHour() });
+    body = (
+      <main className="sg-app sg-home" dir="rtl">
+        {celebrateLayer}
+        <TopBar title="🌳 غابة سلمان" state={state} />
+        <section className="sg-welcome">
+          <img className="sg-welcome-mascot" src={assetUrl(MASCOTS.salman)} alt="" />
+          <div className="sg-welcome-text">
+            <p className="sg-hello">{greeting()}</p>
+            <p className="sg-sub">أربع حدائق تنمو معك كل يوم</p>
+            <button type="button" className="sg-link" onClick={() => playClip('welcome')}>
+              🔊 اسمع الترحيب
+            </button>
+          </div>
+        </section>
 
-  // ---------- الغابة الرئيسية ----------
-  const gate = visitGate(state, { dayKey: today, hour: riyadhHour() });
-  return (
-    <main className="sg-app sg-home" dir="rtl">
-      {celebrateLayer}
-      <Header state={state} />
-      <section className="sg-welcome">
-        <img className="sg-welcome-mascot sg-bounce" src={assetUrl(MASCOTS.salman)} alt="" />
-        <div className="sg-welcome-text">
-          <p className="sg-hello">{greeting()}</p>
-          <h1 className="sg-title">🌳 غابة سلمان</h1>
-          <p className="sg-sub">أربع حدائق تنمو معك كل يوم</p>
-          <button type="button" className="sg-link" onClick={() => playClip('welcome')}>
-            🔊 اسمع الترحيب
+        {gate.open ? (
+          <button type="button" className="sg-btn sg-btn-main sg-visit" onClick={startVisit}>
+            ✨ زيارة اليوم (١٠ دقايق)
+          </button>
+        ) : (
+          <p className="sg-gate" role="status">
+            {gate.reason === 'quiet' ? '🌙 الغابة نايمة الآن. نرجع الصبح!' : '🎁 خلصت زيارة اليوم. تعال بكرة!'}
+          </p>
+        )}
+
+        <div className="sg-gardens">
+          {GARDEN_ORDER.map((id) => {
+            const g = GARDENS[id];
+            const stars = gardenStars(id);
+            const st = growthStage(stars);
+            const pct = st.next ? Math.round(((stars - st.min) / (st.next.min - st.min)) * 100) : 100;
+            return (
+              <button key={id} type="button" className="sg-garden" style={{ '--g': g.color }} onClick={() => onTab(id)}>
+                <span className="sg-garden-scene" style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS[id])})` }}>
+                  <img className="sg-garden-art" src={assetUrl(st.art)} alt="" />
+                  <span className="sg-garden-emoji" aria-hidden="true">
+                    {g.emoji}
+                  </span>
+                </span>
+                <span className="sg-garden-body">
+                  <span className="sg-garden-name">{g.name}</span>
+                  <span className="sg-garden-meta">
+                    {st.name} · ⭐ {toArabicNumeral(stars)}
+                  </span>
+                  <span className="sg-bar" aria-hidden="true">
+                    <span style={{ width: `${pct}%`, background: g.color }} />
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="sg-home-links">
+          <button type="button" className="sg-shortcut" onClick={() => go({ name: 'badges' })}>
+            🏅 الأوسمة
+          </button>
+          <button type="button" className="sg-shortcut" onClick={() => go({ name: 'parent' })}>
+            🔒 ولي الأمر
           </button>
         </div>
-      </section>
+      </main>
+    );
+  }
 
-      <div className="sg-gardens">
-        {GARDEN_ORDER.map((id) => {
-          const g = GARDENS[id];
-          const stars = state.gardens[id] || 0;
-          const st = growthStage(stars);
-          const pct = st.next ? Math.round(((stars - st.min) / (st.next.min - st.min)) * 100) : 100;
-          return (
-            <button
-              key={id}
-              type="button"
-              className="sg-garden"
-              style={{ '--g': g.color }}
-              onClick={() => setScreen({ name: 'garden', garden: id })}
-            >
-              <span className="sg-garden-scene" style={{ backgroundImage: `url(${assetUrl(BACKGROUNDS[id])})` }}>
-                <img className="sg-garden-art" src={assetUrl(st.art)} alt="" />
-                <span className="sg-garden-emoji" aria-hidden="true">
-                  {g.emoji}
-                </span>
-              </span>
-              <span className="sg-garden-body">
-                <span className="sg-garden-name">{g.name}</span>
-                <span className="sg-garden-meta">
-                  {st.name} · ⭐ {toArabicNumeral(stars)}
-                </span>
-                <span className="sg-bar" aria-hidden="true">
-                  <span style={{ width: `${pct}%`, background: g.color }} />
-                </span>
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {gate.open ? (
-        <button type="button" className="sg-btn sg-btn-main sg-visit" onClick={startVisit}>
-          ✨ زيارة اليوم (١٠ دقايق)
-        </button>
-      ) : (
-        <p className="sg-gate" role="status">
-          {gate.reason === 'quiet' ? '🌙 الغابة نايمة الآن. نرجع الصبح!' : '🎁 خلصت زيارة اليوم. تعال بكرة!'}
-        </p>
-      )}
-
-      <div className="sg-shortcuts">
-        <a className="sg-shortcut" href="/quran.html">
-          🕌 رحلة القرآن
-        </a>
-        <button type="button" className="sg-shortcut" onClick={() => setScreen({ name: 'huroof' })}>
-          🎮 مغامرة الحروف
-        </button>
-        <button type="button" className="sg-shortcut" onClick={() => setScreen({ name: 'quran' })}>
-          📗 مستويات السور
-        </button>
-        <button type="button" className="sg-shortcut" onClick={() => setScreen({ name: 'badges' })}>
-          🏅 الأوسمة
-        </button>
-      </div>
-      <button type="button" className="sg-parent-link" onClick={() => setScreen({ name: 'parent' })}>
-        🔒 ولي الأمر
-      </button>
-    </main>
+  return (
+    <div className={screen.name === 'quran' ? 'sg-shell is-quran' : 'sg-shell'}>
+      {body}
+      <TabBar active={tab} onTab={onTab} />
+    </div>
   );
 }
