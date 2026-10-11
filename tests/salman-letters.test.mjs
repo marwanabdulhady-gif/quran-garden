@@ -72,9 +72,10 @@ describe('المرحلة C: الأرقام 1–20', () => {
     expect(CATALOG.math.filter((i) => i.source === 'count')).toHaveLength(20);
   });
 
-  it('المرحلة الأولى 1–10 لكل درس مقطع سؤال مسجَّل في audio/count/', () => {
+  it('كل درس عدّ 1–20 مقطع سؤال مسجَّل في audio/count/ (20/20)', () => {
     const staged = nums.filter((it) => it.audio);
-    expect(staged.map((it) => it.id)).toEqual(nums.slice(0, 10).map((it) => it.id));
+    expect(staged).toHaveLength(20);
+    expect(staged.map((it) => it.id)).toEqual(nums.map((it) => it.id));
     for (const it of staged) {
       expect(it.audio).toBe(`count/${it.id}`);
       const file = join(process.cwd(), 'public', 'salman', 'audio', `${it.audio}.mp3`);

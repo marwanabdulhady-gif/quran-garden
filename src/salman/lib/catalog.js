@@ -78,6 +78,8 @@ function arabicItems() {
         letter: L.letter,
         title: st.title,
         source: st.source,
+        // مشهد القصة (ar-XX-p / ar-XX-c1 …): موجود لكل قصة عربية في art/stories/
+        art: `salman/art/stories/${st.id}.jpg`,
         // مسودة: النصوص من OCR/PDF غير مُدقَّقة، وقرار المستخدم: تبقى في التطبيق مع تنبيه حتى التدقيق
         draft: true,
         paragraphs: st.paragraphs,
@@ -124,6 +126,8 @@ function quranItems() {
         id: `q-${sid}`,
         garden: 'quran',
         title: `سورة ${surah.name}`,
+        // مشهد السورة q-<sid>.jpg (بعد مراجعة المعلّم/العالم)
+        art: `salman/art/stories/q-${sid}.jpg`,
         paragraphs: [SURAH_STORIES[sid]],
         question: {
           prompt: 'ما اسم السورة اللي قصتها هذه؟',
@@ -144,6 +148,7 @@ function englishItems() {
     lang: 'en',
     paragraphs: [e.text],
     ...(e.clip ? { audio: `stories/${e.id}` } : {}),
+    ...(e.scene ? { art: `salman/art/stories/${e.id}.jpg` } : {}),
     question: {
       prompt: 'Which sound do you hear? · أي صوت تسمع؟',
       choices: e.choices,
@@ -153,7 +158,7 @@ function englishItems() {
 }
 
 // الأرقام 1 إلى 20 (مرحلة C): عدّ الأشياء المعروضة ثم اختيار الرقم. خياران: الرقم الصحيح وجاره.
-// المرحلة الأولى 1–10 والثانية 11–20 في الجدول نفسه.
+// المرحلة الأولى 1–10 والثانية 11–20 في الجدول نفسه (كلها مسجَّلة الآن).
 // الأشياء المعدودة: الإيموجي للنص (وبديلًا آمنًا)، واسم الرسم في public/salman/art/count/
 const COUNT_OBJECTS = [
   { emoji: '🍎', art: 'apple' },
@@ -176,8 +181,8 @@ export function numberItems() {
       source: 'count',
       paragraphs: [`عُدّ معي: ${Array(n).fill(obj).join(' ')}`],
       countArt: { n, object: o.art, emoji: o.emoji },
-      // مقاطع أسئلة العدّ (voice-00): المرحلة الأولى 1–10 مسجَّلة، والمرحلة الثانية 11–20 تُسجَّل ثم تُربط.
-      ...(n <= 10 ? { audio: `count/math-n-${num}` } : {}),
+      // مقاطع أسئلة العدّ (voice-00): 1–20 مسجَّلة ومربوطة.
+      audio: `count/math-n-${num}`,
       question: {
         prompt: 'كم عددها؟',
         choices: [toArabicNumeral(n), toArabicNumeral(distractor)],
