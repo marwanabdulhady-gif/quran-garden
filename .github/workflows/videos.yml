@@ -104,8 +104,11 @@ jobs:
           IN_LIMIT: ${{ github.event.inputs.limit }}
         run: |
           garden="$IN_GARDEN"; quality="$IN_QUALITY"; format="$IN_FORMAT"; limit="$IN_LIMIT"
-          # وسوم رسالة الـ commit تتفوق على المدخلات (لأن إطلاق الدفع لا يملك مدخلات)
-          tok=$(printf '%s' "$HF_MSG" | grep -oE '\[render-videos[^]]*\]' | head -1 || true)
+          # وسوم رسالة الـ commit تتفوق على المدخلات (لأن إطلاق الدفع لا يملك مدخلات).
+          # نطابق وسمًا في أول سطر فقط — وإلا التقط نصّ وصفي يتوسطه العلامة — ثم نُزيل
+          # القوسين حتى لا يلتصق ] بآخر قيمة (مثل limit=0]) فيفشل التحقّق الرقمي.
+          tok=$(printf '%s\n' "$HF_MSG" | grep -oE '^\[render-videos[^]]*\]' | head -1 || true)
+          tok="${tok#'['}"; tok="${tok%']'}"
           for kv in $tok; do
             case "$kv" in
               garden=*)  garden="${kv#garden=}" ;;

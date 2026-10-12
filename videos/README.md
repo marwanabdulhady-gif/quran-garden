@@ -83,6 +83,7 @@ npm run videos:browser             # مرة واحدة: نزّل Chrome Headless
 
 القيم المسموحة: `garden` ∈ english|math|quran|arabic|all (أو قائمة بفواصل) · `quality` ∈
 draft|looks|delivery · `format` ∈ portrait|landscape|square · `limit` رقم (0 = الكل).
+ضع الوسم في **أول سطر** قائم بذاته حتى لا يلتبس بنصّ وصفي يذكر العلامة في منتصف سطر.
 
 > ملاحظتان: ‏**أ)** لا يُشغَّل أي workflow من commit يغيّر ملفات `.github/workflows/` فقط — ضمِّن
 > تغييرًا في ملف آخر (مثل `videos/README.md`) مع الوسم. ‏**ب)** الأسبقية لوسوم الرسالة على مدخلات
