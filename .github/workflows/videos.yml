@@ -90,16 +90,41 @@ jobs:
           node-version: 22
           cache: npm
 
-      # يحسم المدخلات مرة واحدة: قيم workflow_dispatch إن وُجدت، وإلا افتراضيات
-      # الإطلاق بالـ commit (تجربة دخان صغيرة) — حتى لا ينكسر build على --format= فارغة.
+      # يحسم المدخلات مرة واحدة حسب الأسبقية:
+      #   1) وسوم [render-videos key=val …] في رسالة الـ commit (إطلاق الدفع)
+      #   2) مدخلات workflow_dispatch
+      #   3) افتراضيات تجربة الدخان (english/draft/portrait/limit=3)
+      # تُمرَّر رسالة الـ commit عبر env (لا تضمين ${{ }} داخل السكربت) تفاديًا لحقن السكربت.
       - name: Resolve render params
+        env:
+          HF_MSG: ${{ github.event.head_commit.message }}
+          IN_GARDEN: ${{ github.event.inputs.garden }}
+          IN_QUALITY: ${{ github.event.inputs.quality }}
+          IN_FORMAT: ${{ github.event.inputs.format }}
+          IN_LIMIT: ${{ github.event.inputs.limit }}
         run: |
+          garden="$IN_GARDEN"; quality="$IN_QUALITY"; format="$IN_FORMAT"; limit="$IN_LIMIT"
+          # وسوم رسالة الـ commit تتفوق على المدخلات (لأن إطلاق الدفع لا يملك مدخلات)
+          tok=$(printf '%s' "$HF_MSG" | grep -oE '\[render-videos[^]]*\]' | head -1 || true)
+          for kv in $tok; do
+            case "$kv" in
+              garden=*)  garden="${kv#garden=}" ;;
+              quality=*) quality="${kv#quality=}";;
+              format=*)  format="${kv#format=}" ;;
+              limit=*)   limit="${kv#limit=}" ;;
+            esac
+          done
+          # افتراضيات عند الفراغ
+          : "${garden:=english}"; : "${quality:=draft}"; : "${format:=portrait}"; : "${limit:=3}"
+          # تحقّق مبكر من القيم المسموحة بدل الفشل بعد تنزيل المتصفح
+          case "$garden"  in english|math|quran|arabic|all|*,*) ;; *) echo "::error::garden غير صالح: $garden"; exit 1;; esac
+          case "$quality" in draft|looks|delivery) ;; *) echo "::error::quality غير صالح: $quality"; exit 1;; esac
+          case "$format"  in portrait|landscape|square) ;; *) echo "::error::format غير صالح: $format"; exit 1;; esac
+          case "$limit"   in ''|*[!0-9]*) echo "::error::limit يجب أن يكون رقمًا: $limit"; exit 1;; esac
           {
-            echo "garden=${{ github.event.inputs.garden || 'english' }}"
-            echo "quality=${{ github.event.inputs.quality || 'draft' }}"
-            echo "format=${{ github.event.inputs.format || 'portrait' }}"
-            echo "limit=${{ github.event.inputs.limit || '3' }}"
+            echo "garden=$garden"; echo "quality=$quality"; echo "format=$format"; echo "limit=$limit"
           } >> "$GITHUB_ENV"
+          echo "render params → garden=$garden quality=$quality format=$format limit=$limit"
 
       - name: Install FFmpeg (runner)
         run: |

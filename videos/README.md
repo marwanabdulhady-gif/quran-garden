@@ -66,15 +66,33 @@ npm run videos:browser             # مرة واحدة: نزّل Chrome Headless
 
 ### العرض في CI
 
-شغّل workflow ‏**Videos** يدويًا واختر:
-- `garden` — أي حديقة (أو `all`)،
-- `quality` — `draft` (سريع للتجربة) / `looks` (الافتراضي) / `delivery` (الأعلى)،
-- `format` — `portrait` / `landscape` / `square`،
-- `limit` — أقصى عدد (للتجربة).
+طريقتان:
+
+**١) يدويًا — workflow_dispatch** (بعد دمج هذا الملف إلى `main`؛ شرط GitHub لتشغيل الإطلاق اليدوي).
+شغّل workflow ‏**Videos** واختر `garden` / `quality` / `format` / `limit`.
+
+**٢) بالدفع — وسم `[render-videos]` في رسالة الـ commit** (يعمل من أي فرع `arena/*` أو `main`،
+بلا حاجة للدمج). الوسوم الاختيارية تضبط المعاملات، وإلا فُرضت تجربة دخان صغيرة:
+
+```
+[render-videos]                                   # english · draft · portrait · limit=3
+[render-videos garden=quran quality=looks]        # حديقة واحدة بجودة أعلى
+[render-videos garden=english,math quality=looks limit=0]   # عدة حدائق، limit=0 = الكل
+[render-videos garden=all quality=delivery format=landscape limit=0]
+```
+
+القيم المسموحة: `garden` ∈ english|math|quran|arabic|all (أو قائمة بفواصل) · `quality` ∈
+draft|looks|delivery · `format` ∈ portrait|landscape|square · `limit` رقم (0 = الكل).
+
+> ملاحظتان: ‏**أ)** لا يُشغَّل أي workflow من commit يغيّر ملفات `.github/workflows/` فقط — ضمِّن
+> تغييرًا في ملف آخر (مثل `videos/README.md`) مع الوسم. ‏**ب)** الأسبقية لوسوم الرسالة على مدخلات
+> workflow_dispatch.
 
 ينتج artifact ‏`story-videos-*` فيه ملفات MP4، و`render-report.json` بحالة كل فيديو
-(المدة الفعلية مقابل المتوقَّعة، الحجم، زمن العرض). العرض الكامل (~ساعتان من الفيديو) بطيء على
-العدّاء (لقطة شاشة + GPU برمجي)؛ ابدأ بحديقة واحدة أو `limit` صغير.
+(المدة الفعلية مقابل المتوقَّعة، الحجم، زمن العرض). يُنزَّل الـ artifact من صفحة الـ run في
+واجهة Actions. العرض الكامل (~ساعتان من الفيديو) بطيء على العدّاء (لقطة شاشة + GPU برمجي)؛
+ابدأ بحديقة واحدة أو `limit` صغير.
+
 
 ## التحقق (لماذا بوابة `videos:check`)
 
