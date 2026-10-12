@@ -15,6 +15,8 @@
 > تتجاوز حدّ الـ 6 ساعات: part1 = ‎`offset=0 limit=19`‎ (ar-01-p→ar-10-p) · part2 =
 > ‎`offset=19 limit=19`‎ (ar-10-c1→ar-19-c1) · part3 = ‎`offset=38 limit=18`‎
 > (ar-19-c2→ar-28-c1). الأرتيفاكتات: `story-videos-arabic-portrait-draft-part1/2/3`.
+>
+> حالة الإطلاق: part1 ✓ (`f60ed24`) · part2 ✓ (هذا الـ commit) · part3 (التالي).
 
 زمن العرض تهيمن عليه **لقطات الإطارات في المتصفح** (30fps، 1080×1920) ولا يتغيّر كثيرًا
 باختيار الجودة — الجودة (`draft`/`looks`/`delivery`) تغيّر **ترميز ffmpeg** فقط
