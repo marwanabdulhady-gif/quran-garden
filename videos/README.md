@@ -86,7 +86,8 @@ draft|looks|delivery · `format` ∈ portrait|landscape|square · `limit` رقم
 
 > ملاحظتان: ‏**أ)** لا يُشغَّل أي workflow من commit يغيّر ملفات `.github/workflows/` فقط — ضمِّن
 > تغييرًا في ملف آخر (مثل `videos/README.md`) مع الوسم. ‏**ب)** الأسبقية لوسوم الرسالة على مدخلات
-> workflow_dispatch.
+> workflow_dispatch. تُطابق العلامة بالسابقة `[render-videos` فيصلح الشكلان `[render-videos]`
+> و`[render-videos garden=…]`.
 
 ينتج artifact ‏`story-videos-*` فيه ملفات MP4، و`render-report.json` بحالة كل فيديو
 (المدة الفعلية مقابل المتوقَّعة، الحجم، زمن العرض). يُنزَّل الـ artifact من صفحة الـ run في

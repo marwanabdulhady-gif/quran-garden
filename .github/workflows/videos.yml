@@ -76,10 +76,10 @@ jobs:
 
   render:
     name: Render MP4s
-    # يدوي دائمًا، أو عند دفع commit يحمل علامة [render-videos]
+    # يدوي دائمًا، أو عند دفع commit يحمل علامة [render-videos] أو [render-videos key=val …]
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'push' && contains(github.event.head_commit.message, '[render-videos]'))
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[render-videos'))
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
