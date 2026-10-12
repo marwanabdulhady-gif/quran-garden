@@ -104,6 +104,7 @@ jobs:
           IN_LIMIT: ${{ github.event.inputs.limit }}
         run: |
           garden="$IN_GARDEN"; quality="$IN_QUALITY"; format="$IN_FORMAT"; limit="$IN_LIMIT"
+          offset=""; part=""
           # وسوم رسالة الـ commit تتفوق على المدخلات (لأن إطلاق الدفع لا يملك مدخلات).
           # نطابق وسمًا في أول سطر فقط — وإلا التقط نصّ وصفي يتوسطه العلامة — ثم نُزيل
           # القوسين حتى لا يلتصق ] بآخر قيمة (مثل limit=0]) فيفشل التحقّق الرقمي.
@@ -115,21 +116,27 @@ jobs:
               quality=*) quality="${kv#quality=}";;
               format=*)  format="${kv#format=}" ;;
               limit=*)   limit="${kv#limit=}" ;;
+              offset=*)  offset="${kv#offset=}" ;;
+              part=*)    part="${kv#part=}" ;;
             esac
           done
           # افتراضيات عند الفراغ
-          : "${garden:=english}"; : "${quality:=draft}"; : "${format:=portrait}"; : "${limit:=3}"
+          : "${garden:=english}"; : "${quality:=draft}"; : "${format:=portrait}"; : "${limit:=3}"; : "${offset:=0}"
           # تحقّق مبكر من القيم المسموحة بدل الفشل بعد تنزيل المتصفح
           case "$garden"  in english|math|quran|arabic|all|*,*) ;; *) echo "::error::garden غير صالح: $garden"; exit 1;; esac
           case "$quality" in draft|looks|delivery) ;; *) echo "::error::quality غير صالح: $quality"; exit 1;; esac
           case "$format"  in portrait|landscape|square) ;; *) echo "::error::format غير صالح: $format"; exit 1;; esac
           case "$limit"   in ''|*[!0-9]*) echo "::error::limit يجب أن يكون رقمًا: $limit"; exit 1;; esac
-          # اسم صالح للأرتيفاكت: garden=math,quran فيه فاصلة → نستبدلها بـ + في الاسم
+          case "$offset"  in ''|*[!0-9]*) echo "::error::offset يجب أن يكون رقمًا: $offset"; exit 1;; esac
+          case "$part"    in *[!A-Za-z0-9]*) echo "::error::part يجب أن يكون حرفرقميًا: $part"; exit 1;; esac
+          # اسم صالح للأرتيفاكت: garden=math,quran فيه فاصلة → نستبدلها بـ + في الاسم،
+          # و part (إن وُجد) يميّز دفعات الحديقة الواحدة (arabic-part1/2/3).
           garden_slug=$(printf '%s' "$garden" | tr ',.' '++')
+          artifact_suffix=""; [ -n "$part" ] && artifact_suffix="-part$part"
           {
-            echo "garden=$garden"; echo "garden_slug=$garden_slug"; echo "quality=$quality"; echo "format=$format"; echo "limit=$limit"
+            echo "garden=$garden"; echo "garden_slug=$garden_slug"; echo "quality=$quality"; echo "format=$format"; echo "limit=$limit"; echo "offset=$offset"; echo "part=$part"; echo "artifact_suffix=$artifact_suffix"
           } >> "$GITHUB_ENV"
-          echo "render params → garden=$garden quality=$quality format=$format limit=$limit"
+          echo "render params → garden=$garden quality=$quality format=$format limit=$limit offset=$offset part=$part"
 
       - name: Install FFmpeg (runner)
         run: |
@@ -160,6 +167,7 @@ jobs:
         run: |
           ARGS="--quality=$quality"
           if [ "$garden" != "all" ]; then ARGS="$ARGS --garden=$garden"; fi
+          if [ -n "$offset" ] && [ "$offset" != "0" ]; then ARGS="$ARGS --offset=$offset"; fi
           if [ -n "$limit" ] && [ "$limit" != "0" ]; then ARGS="$ARGS --limit=$limit"; fi
           echo "render-all $ARGS"
           npm run videos:render -- $ARGS
@@ -167,7 +175,7 @@ jobs:
       - name: Upload rendered videos
         uses: actions/upload-artifact@v4
         with:
-          name: story-videos-${{ env.garden_slug }}-${{ env.format }}-${{ env.quality }}
+          name: story-videos-${{ env.garden_slug }}-${{ env.format }}-${{ env.quality }}${{ env.artifact_suffix }}
           path: videos/renders/
           if-no-files-found: error
           retention-days: 14
@@ -176,7 +184,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: render-report-${{ env.garden_slug }}-${{ env.format }}
+          name: render-report-${{ env.garden_slug }}-${{ env.format }}${{ env.artifact_suffix }}
           path: videos/renders/**/render-report.json
           if-no-files-found: ignore
           retention-days: 14

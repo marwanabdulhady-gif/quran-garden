@@ -5,6 +5,7 @@
 //   npm run videos:render                       # الكل (قد يستغرق ساعات)
 //   npm run videos:render -- --garden=english   # حديقة واحدة
 //   npm run videos:render -- --only=en-01,ar-01-p
+//   npm run videos:render -- --garden=arabic --offset=19 --limit=19  # شريحة (دفعة 2/3)
 //   npm run videos:render -- --quality=draft --fps=24
 //   npm run videos:render -- --force            # تجاهل الملفات المعروضة سابقًا
 //
@@ -35,6 +36,7 @@ const QUALITY = flag('quality', 'looks'); // draft | looks | delivery
 const FPS = flag('fps', '');
 const WORKERS = flag('workers', '');
 const LIMIT = Number(flag('limit', '0')) || 0;
+const OFFSET = Number(flag('offset', '0')) || 0;
 const FORCE = bool('force');
 const NO_VERIFY = bool('no-verify');
 
@@ -49,7 +51,7 @@ const format = manifest.format?.name ?? 'portrait';
 let videos = manifest.videos ?? [];
 if (GARDEN.length) videos = videos.filter((v) => GARDEN.includes(v.garden));
 if (ONLY.length) videos = videos.filter((v) => ONLY.includes(v.id));
-if (LIMIT) videos = videos.slice(0, LIMIT);
+if (OFFSET || LIMIT) videos = videos.slice(OFFSET, LIMIT ? OFFSET + LIMIT : undefined);
 
 if (!videos.length) {
   console.error('✗ لا فيديوهات مطابقة للفلاتر.');
