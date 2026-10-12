@@ -12,7 +12,7 @@
 //   node tools/videos/build-videos.mjs --format=landscape
 //   node tools/videos/build-videos.mjs --dry-run       # يطبع الملخّص دون كتابة
 
-import { mkdirSync, rmSync, copyFileSync, writeFileSync, existsSync, readdirSync } from 'node:fs';
+import { mkdirSync, rmSync, copyFileSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve, dirname, relative, join } from 'node:path';
 import { collectStories, chunkText, GARDENS } from './story-manifest.mjs';
 import { mp3DurationSeconds } from './mp3-duration.mjs';
@@ -776,14 +776,25 @@ async function main() {
   writeFileSync(join(OUT, 'index.html'), ROOT_INDEX(F, manifest.length, 8), 'utf8');
   writeFileSync(join(OUT, 'package.json'), JSON.stringify(PACKAGE_JSON, null, 2) + '\n', 'utf8');
   writeFileSync(join(OUT, 'hyperframes.json'), JSON.stringify(HYPERFRAMES_JSON, null, 2) + '\n', 'utf8');
+  // createdAt ثابت عبر إعادة التوليد حتى لا يتلوّث git diff في كل بناء
+  const metaPath = join(OUT, 'meta.json');
+  let createdAt = new Date().toISOString();
+  if (existsSync(metaPath)) {
+    try {
+      createdAt = JSON.parse(readFileSync(metaPath, 'utf8')).createdAt ?? createdAt;
+    } catch {
+      /* ملف تالف — نعيد إنشاءه */
+    }
+  }
   writeFileSync(
-    join(OUT, 'meta.json'),
-    JSON.stringify({ id: 'salman-story-videos', name: "Salman's Garden — Story Videos", createdAt: new Date().toISOString() }, null, 2) + '\n',
+    metaPath,
+    JSON.stringify({ id: 'salman-story-videos', name: "Salman's Garden — Story Videos", createdAt }, null, 2) + '\n',
     'utf8',
   );
 
   const summary = {
-    generatedAt: new Date().toISOString(),
+    // بلا طابع زمني: البيان مُلتزَم، فيجب أن يكون إعادة التوليد مطابقة بايت-ببايت
+    generator: 'tools/videos/build-videos.mjs',
     format: { name: FORMAT, width: F.w, height: F.h },
     hyperframes: HYPERFRAMES_VERSION,
     totals: {
