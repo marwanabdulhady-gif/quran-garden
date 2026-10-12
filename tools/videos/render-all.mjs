@@ -107,6 +107,9 @@ if (!chromeOk) {
   console.error('✗ Chrome Headless Shell غير متوفر، والعرض المحلي يحتاجه.');
   console.error('  ثبِّته مرة واحدة:  npx hyperframes browser ensure');
   console.error('  أو وجِّه الأمر إلى Chrome موجود:  export HYPERFRAMES_BROWSER_PATH=/usr/bin/google-chrome');
+  console.error('  أو اعرض في CI (عدّاءات GitHub تنزّل Chrome تلقائيًا):');
+  console.error('    • يدويًا: Actions → Videos → Run workflow (يتطلب دمج videos.yml إلى main أولًا)');
+  console.error('    • أو بدفع commit يحمل [render-videos] في رسالته إلى فرع arena/*');
   process.exit(1);
 }
 console.log('✓ المتصفح جاهز · ffmpeg و ffprobe جاهزان\n');
