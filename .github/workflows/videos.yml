@@ -124,8 +124,10 @@ jobs:
           case "$quality" in draft|looks|delivery) ;; *) echo "::error::quality غير صالح: $quality"; exit 1;; esac
           case "$format"  in portrait|landscape|square) ;; *) echo "::error::format غير صالح: $format"; exit 1;; esac
           case "$limit"   in ''|*[!0-9]*) echo "::error::limit يجب أن يكون رقمًا: $limit"; exit 1;; esac
+          # اسم صالح للأرتيفاكت: garden=math,quran فيه فاصلة → نستبدلها بـ + في الاسم
+          garden_slug=$(printf '%s' "$garden" | tr ',.' '++')
           {
-            echo "garden=$garden"; echo "quality=$quality"; echo "format=$format"; echo "limit=$limit"
+            echo "garden=$garden"; echo "garden_slug=$garden_slug"; echo "quality=$quality"; echo "format=$format"; echo "limit=$limit"
           } >> "$GITHUB_ENV"
           echo "render params → garden=$garden quality=$quality format=$format limit=$limit"
 
@@ -165,7 +167,7 @@ jobs:
       - name: Upload rendered videos
         uses: actions/upload-artifact@v4
         with:
-          name: story-videos-${{ env.garden }}-${{ env.format }}-${{ env.quality }}
+          name: story-videos-${{ env.garden_slug }}-${{ env.format }}-${{ env.quality }}
           path: videos/renders/
           if-no-files-found: error
           retention-days: 14
@@ -174,7 +176,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: render-report-${{ env.garden }}-${{ env.format }}
+          name: render-report-${{ env.garden_slug }}-${{ env.format }}
           path: videos/renders/**/render-report.json
           if-no-files-found: ignore
           retention-days: 14
