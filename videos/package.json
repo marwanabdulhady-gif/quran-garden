@@ -1,0 +1,14 @@
+{
+  "name": "quran-garden-videos",
+  "private": true,
+  "type": "module",
+  "description": "فيديوهات قصص «حدائق سلمان» — مشروع HyperFrames مولَّد من src/salman/data",
+  "scripts": {
+    "generate": "node ../tools/videos/build-videos.mjs",
+    "dev": "npx --yes hyperframes@0.8.149 preview",
+    "check": "npx --yes hyperframes@0.8.149 check",
+    "lint": "npx --yes hyperframes@0.8.149 lint",
+    "render:all": "node ../tools/videos/render-all.mjs",
+    "publish": "npx --yes hyperframes@0.8.149 publish"
+  }
+}

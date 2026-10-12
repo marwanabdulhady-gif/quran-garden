@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>عبدالله بن مسعود رضي الله عنه — حدائق سلمان</title>
+    <script src="../vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-600-arabic.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-600-latin.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-700-arabic.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-800-arabic.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-800-latin.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-700-arabic.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Lalezar";
+        src: url("../assets/fonts/Lalezar-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Lalezar";
+        src: url("../assets/fonts/Lalezar-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #04150f;
+        font-family: "Cairo", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #04150f; }
+
+      .clip { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; }
+
+      /* الخلفية: نفس الرسم مضبَّبًا يملأ الإطار، فلا يظهر شريط أسود في العمودي */
+      #bg {
+        background-image: url("../assets/stories/ar-21-c1.jpg");
+        background-size: cover;
+        background-position: center;
+        filter: blur(46px) saturate(1.2) brightness(0.42);
+        transform: scale(1.18);
+      }
+      #scrim {
+        background:
+          radial-gradient(120% 70% at 50% 12%, rgba(4, 21, 15, 0.25) 0%, rgba(4, 21, 15, 0.78) 62%, rgba(4, 21, 15, 0.94) 100%),
+          linear-gradient(to bottom, rgba(4, 21, 15, 0.55) 0%, rgba(4, 21, 15, 0) 26%, rgba(4, 21, 15, 0) 52%, rgba(4, 21, 15, 0.9) 88%);
+      }
+
+      /* شرائح علوية */
+      /*
+        اتجاه النص: لا نضع dir على <html> — ذلك يكسر العرض الصامت في HyperFrames
+        (lint: html_dir_attribute_breaks_render). نضع direction على كل عنصر نصّي بدلًا منه،
+        فيبقى التنسيق العربي صحيحًا ويعمل العرض.
+      */
+      #kicker {
+        top: 96px; right: 60px; left: auto;
+        width: auto; height: 62px; padding: 0 26px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(16, 185, 129, 0.16);
+        border: 2px solid rgba(16, 185, 129, 0.55);
+        border-radius: 999px;
+        color: #a7f3d0; font-size: 30px; font-weight: 700; letter-spacing: 0.04em;
+        direction: rtl;
+        white-space: nowrap;
+      }
+      .badge {
+        top: 96px; left: 60px;
+        width: auto; height: 62px; padding: 0 26px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255, 251, 235, 0.94);
+        border-radius: 999px;
+        color: #134e4a; font-size: 40px; font-weight: 800;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+        direction: rtl;
+        white-space: nowrap;
+      }
+
+      /* البطاقة الفنية */
+      #art {
+        top: 352px; left: 60px; width: 960px; height: 540px;
+        object-fit: cover;
+        border-radius: 34px;
+        border: 5px solid rgba(255, 251, 235, 0.92);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.62);
+        overflow: hidden;
+      }
+
+      /* العنوان */
+      #title-rule {
+        top: 960px; left: 486px; width: 108px; height: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #10b981, #6ee7b7);
+      }
+      #title {
+        top: 990px; width: 1080px; padding: 0 60px;
+        text-align: center; color: #fffbeb;
+        font-size: 66px; font-weight: 800; line-height: 1.32;
+        direction: rtl;
+        text-shadow: 0 6px 26px rgba(0, 0, 0, 0.6);
+      }
+
+      /* لوحة النص */
+      .panel {
+        top: 960px; left: 72px; width: 936px;
+        padding: 40px 44px;
+        background: rgba(255, 251, 235, 0.96);
+        border-radius: 30px;
+        border-right: 12px solid #10b981;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+      }
+      .panel-body {
+        position: absolute; top: 40px; left: 44px; right: 44px;
+        color: #1f2937; font-size: 46px; font-weight: 600; line-height: 1.85;
+        text-align: right;
+        direction: rtl;
+      }
+      .panel-quran {
+        font-family: "Amiri", "Cairo", serif;
+        font-size: 51.52px;
+        line-height: 2.1;
+        color: #134e4a;
+      }
+      .scene-chip {
+        top: 244px; left: 450px; width: 180px; height: 52px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(4, 21, 15, 0.62);
+        border: 2px solid rgba(167, 243, 208, 0.5);
+        border-radius: 999px;
+        color: #a7f3d0; font-size: 27.6px; font-weight: 700;
+        direction: rtl;
+      }
+
+      /* الحرف الكبير في المشهد الافتتاحي */
+      #intro-letter {
+        top: 790px; width: 1080px;
+        text-align: center;
+        font-family: "Lalezar", "Cairo", sans-serif;
+        font-size: 200px; line-height: 1;
+        direction: rtl;
+        color: #fffbeb;
+        text-shadow: 0 0 60px rgba(16, 185, 129, 0.6), 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      #intro-word {
+        top: 1028px; width: 1080px;
+        text-align: center;
+        font-size: 69.3px; font-weight: 800;
+        direction: rtl;
+        color: #6ee7b7;
+      }
+      #intro-kicker {
+        top: 650px; width: 1080px;
+        text-align: center;
+        font-size: 30px; font-weight: 700; letter-spacing: 0.24em;
+        color: rgba(167, 243, 208, 0.85); text-transform: uppercase;
+      }
+      #intro-ring {
+        top: 710px; left: 290px; width: 500px; height: 500px;
+        border-radius: 50%;
+        border: 3px solid rgba(16, 185, 129, 0.35);
+        box-shadow: 0 0 90px rgba(16, 185, 129, 0.22) inset;
+      }
+
+      /* بطاقة السؤال */
+      #q-prompt {
+        top: 960px; left: 72px; width: 936px;
+        text-align: center; color: #fffbeb;
+        font-size: 46px; font-weight: 800; line-height: 1.6;
+        direction: rtl;
+      }
+      #q-answer {
+        top: 1130px; left: 300px; width: 480px; height: 132px;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 28px;
+        color: #ffffff; font-size: 62px; font-weight: 800;
+        box-shadow: 0 24px 60px rgba(16, 185, 129, 0.4);
+      }
+
+      /* الختام */
+      #outro-big {
+        top: 840px; width: 1080px; text-align: center;
+        font-family: "Lalezar", "Cairo", sans-serif;
+        font-size: 84px; color: #fffbeb;
+        direction: rtl;
+        text-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+      }
+      #outro-small {
+        top: 986px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 700; letter-spacing: 0.14em;
+        direction: rtl;
+        color: rgba(167, 243, 208, 0.9);
+      }
+      #outro-rule {
+        top: 952px; left: 470px; width: 140px; height: 6px;
+        border-radius: 999px; background: #10b981;
+      }
+
+      #progress {
+        top: 1896px; left: 0; width: 1080px; height: 24px;
+        background: linear-gradient(90deg, #10b981, #6ee7b7);
+        transform-origin: right center;
+        transform: scaleX(0);
+      }
+</style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="ar-21-c1"
+      data-start="0"
+      data-duration="159.13"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="159.13" data-track-index="0"></div>
+      <div id="scrim" class="clip" data-start="0" data-duration="159.13" data-track-index="1"></div>
+      <img id="art" class="clip" src="../assets/stories/ar-21-c1.jpg" alt="عبدالله بن مسعود رضي الله عنه" data-start="0" data-duration="159.13" data-track-index="2" />
+      <div id="progress" class="clip" data-start="0" data-duration="159.13" data-track-index="3"></div>
+      <div id="intro-ring" class="clip" data-start="0" data-duration="3.2" data-track-index="4"></div>
+      <div id="intro-kicker" class="clip" data-start="0" data-duration="3.2" data-track-index="5">من قصص الصحابة</div>
+      <div id="intro-letter" class="clip" data-start="0" data-duration="3.2" data-track-index="6">ق</div>
+      <div id="intro-word" class="clip" data-start="0" data-duration="3.2" data-track-index="7">قرآن</div>
+      <div id="kicker" class="clip" data-start="3.2" data-duration="3.4" data-track-index="8">من قصص الصحابة</div>
+      <div id="badge-1" class="clip badge" data-start="3.2" data-duration="3.4" data-track-index="9" >الحرف ق</div>
+      <div id="badge-2" class="clip badge" data-start="3.38" data-duration="3.22" data-track-index="10" style="top:174px">قرآن</div>
+      <div id="title-rule" class="clip" data-start="3.2" data-duration="3.4" data-track-index="11"></div>
+      <h1 id="title" class="clip" data-start="3.2" data-duration="3.4" data-track-index="12">عبدالله بن مسعود رضي الله عنه</h1>
+      <div id="panel-1" class="clip panel" data-start="6.6" data-duration="13.68" data-track-index="13"></div>
+      <div id="panel-1-text" class="clip panel-body" data-start="6.6" data-duration="13.68" data-track-index="14">كَانَ فِي طُفُولَتِهِ -رَضِيَ اللهُ عَنْهُ- يَرْعَى الغَنَمَ بِصَحْرَاءِ مَكَّةَ، وَمَعَهُ أَبُو بَكْرٍ -رَضِيَ اللهُ عَنْهُ-، وَذَاتَ يَوْمٍ مَرَّ بِهِ النَّبِيُّ ﷺ، فَقَالَ: «يَا غُلامُ،</div>
+      <div id="panel-1-chip" class="clip scene-chip" data-start="6.6" data-duration="13.68" data-track-index="15">1 / 13</div>
+      <div id="panel-2" class="clip panel" data-start="20.28" data-duration="3.68" data-track-index="16"></div>
+      <div id="panel-2-text" class="clip panel-body" data-start="20.28" data-duration="3.68" data-track-index="17">هَلْ عِنْدَكَ مِنْ لَبَنٍ تَسْقِينَا؟»</div>
+      <div id="panel-2-chip" class="clip scene-chip" data-start="20.28" data-duration="3.68" data-track-index="18">2 / 13</div>
+      <div id="panel-3" class="clip panel" data-start="23.96" data-duration="13.55" data-track-index="19"></div>
+      <div id="panel-3-text" class="clip panel-body" data-start="23.96" data-duration="13.55" data-track-index="20">قَالَ عَبْدُاللهِ: نَعَمْ، وَلَكِنِّي مُؤْتَمَنٌ، فَالأَغْنَامُ لَمْ تَكُنْ مِلْكَهُ، فَقَالَ ﷺ: «ائْتِنِي بِشَاةٍ لَمْ تَلِدْ مِنْهُ اللَّبَنَ»، فَجَاءَهُ عَبْدُاللهِ بِشَاةٍ صَغِيرَةٍ،</div>
+      <div id="panel-3-chip" class="clip scene-chip" data-start="23.96" data-duration="13.55" data-track-index="21">3 / 13</div>
+      <div id="panel-4" class="clip panel" data-start="37.51" data-duration="12.62" data-track-index="22"></div>
+      <div id="panel-4-text" class="clip panel-body" data-start="37.51" data-duration="12.62" data-track-index="23">فَمَسَحَ ﷺ عَلَى الضَّرْعِ (العُضْوِ الَّذِي تُحْلَبُ مِنْهُ) وَهُوَ يَدْعُو اللهَ وَيَقْرَأُ القُرْآنَ، فَامْتَلَأَ الضَّرْعُ بِاللَّبَنِ، وَهَذِهِ مُعْجِزَةٌ نَبَوِيَّةٌ،</div>
+      <div id="panel-4-chip" class="clip scene-chip" data-start="37.51" data-duration="12.62" data-track-index="24">4 / 13</div>
+      <div id="panel-5" class="clip panel" data-start="50.13" data-duration="13.55" data-track-index="25"></div>
+      <div id="panel-5-text" class="clip panel-body" data-start="50.13" data-duration="13.55" data-track-index="26">فَحَلَبَ ﷺ اللَّبَنَ، وَسَقَى أَبَا بَكْرٍ، ثُمَّ سَقَى عَبْدَاللهِ، وَشَرِبَ ﷺ بَعْدَهُمَا، ثُمَّ أَمَرَ الضَّرْعَ أَنْ يَرْجِعَ صَغِيرًا كَمَا كَانَ، فَرَجَعَ صَغِيرًا لا لَبَنَ فِيهِ،</div>
+      <div id="panel-5-chip" class="clip scene-chip" data-start="50.13" data-duration="13.55" data-track-index="27">5 / 13</div>
+      <div id="panel-6" class="clip panel" data-start="63.68" data-duration="12.48" data-track-index="28"></div>
+      <div id="panel-6-text" class="clip panel-body" data-start="63.68" data-duration="12.48" data-track-index="29">فَقَالَ عَبْدُاللهِ لِلنَّبِيِّ ﷺ: عَلِّمْنِي القُرْآنَ وَتَكُونُ فِيهِ عَالِمًا، فَمَسَحَ ﷺ رَأْسَهُ وَقَالَ لَهُ: «يَرْحَمُكَ اللهُ، إِنَّكَ غُلامٌ مُعَلَّمٌ» (يَعْنِي:</div>
+      <div id="panel-6-chip" class="clip scene-chip" data-start="63.68" data-duration="12.48" data-track-index="30">6 / 13</div>
+      <div id="panel-7" class="clip panel" data-start="76.16" data-duration="10.48" data-track-index="31"></div>
+      <div id="panel-7-text" class="clip panel-body" data-start="76.16" data-duration="10.48" data-track-index="32">تَعَلَّمُ وَتُعَلِّمُ)، وَهُنَا أَسْلَمَ عَبْدُاللهِ، وَتَشَرَّفَ بِالقُرْبِ مِنَ النَّبِيِّ ﷺ، حَتَّى تَعَلَّمَ مِنْهُ ﷺ سَبْعِينَ سُورَةً،</div>
+      <div id="panel-7-chip" class="clip scene-chip" data-start="76.16" data-duration="10.48" data-track-index="33">7 / 13</div>
+      <div id="panel-8" class="clip panel" data-start="86.64" data-duration="11.15" data-track-index="34"></div>
+      <div id="panel-8-text" class="clip panel-body" data-start="86.64" data-duration="11.15" data-track-index="35">وَأَصْبَحَ مِنْ أَعْلَمِ الصَّحَابَةِ بِكِتَابِ اللهِ، وَذَاتَ لَيْلَةٍ دَخَلَ رَسُولُ اللهِ ﷺ المَسْجِدَ، فَوَجَدَ ابْنَ مَسْعُودٍ وَاقِفًا يُصَلِّي،</div>
+      <div id="panel-8-chip" class="clip scene-chip" data-start="86.64" data-duration="11.15" data-track-index="36">8 / 13</div>
+      <div id="panel-9" class="clip panel" data-start="97.79" data-duration="13.55" data-track-index="37"></div>
+      <div id="panel-9-text" class="clip panel-body" data-start="97.79" data-duration="13.55" data-track-index="38">وَإِذَا هُوَ يَقْرَأُ سُورَةَ النِّسَاءِ، وَبَعْدَ القِرَاءَةِ بَدَأَ ابْنُ مَسْعُودٍ يَدْعُو رَبَّهُ وَهُوَ قَائِمٌ يُصَلِّي دُونَ أَنْ يَرَى النَّبِيَّ ﷺ، فَقَالَ ﷺ: «اسْأَلْ تُعْطَهْ،</div>
+      <div id="panel-9-chip" class="clip scene-chip" data-start="97.79" data-duration="13.55" data-track-index="39">9 / 13</div>
+      <div id="panel-10" class="clip panel" data-start="111.34" data-duration="6.48" data-track-index="40"></div>
+      <div id="panel-10-text" class="clip panel-body" data-start="111.34" data-duration="6.48" data-track-index="41">اسْأَلْ تُعْطَهْ» (يَعْنِي: ادْعُ فَيَسْتَجِيبُ اللهُ دُعَاءَكَ)، ثُمَّ قَالَ ﷺ:</div>
+      <div id="panel-10-chip" class="clip scene-chip" data-start="111.34" data-duration="6.48" data-track-index="42">10 / 13</div>
+      <div id="panel-11" class="clip panel" data-start="117.82" data-duration="11.75" data-track-index="43"></div>
+      <div id="panel-11-text" class="clip panel-body" data-start="117.82" data-duration="11.75" data-track-index="44">«مَنْ سَرَّهُ أَنْ يَقْرَأَ القُرْآنَ غَضًّا كَمَا أُنْزِلَ فَلْيَقْرَأْهُ بِقِرَاءَةِ ابْنِ أُمِّ عَبْدٍ» (وَأُمُّ عَبْدِاللهِ كَانَتْ تُكَنَّى أُمَّ عَبْدٍ)،</div>
+      <div id="panel-11-chip" class="clip scene-chip" data-start="117.82" data-duration="11.75" data-track-index="45">11 / 13</div>
+      <div id="panel-12" class="clip panel" data-start="129.57" data-duration="13.68" data-track-index="46"></div>
+      <div id="panel-12-text" class="clip panel-body" data-start="129.57" data-duration="13.68" data-track-index="47">وَكَانَ النَّبِيُّ ﷺ يُحِبُّ سَمَاعَ القُرْآنِ مِنْهُ، فَذَاتَ يَوْمٍ قَالَ لَهُ: «اقْرَأْ عَلَيَّ القُرْآنَ»، فَقَالَ ابْنُ مَسْعُودٍ: أَقْرَأُ عَلَيْكَ، وَعَلَيْكَ أُنْزِلَ؟!، فَقَالَ ﷺ:</div>
+      <div id="panel-12-chip" class="clip scene-chip" data-start="129.57" data-duration="13.68" data-track-index="48">12 / 13</div>
+      <div id="panel-13" class="clip panel" data-start="143.25" data-duration="7.28" data-track-index="49"></div>
+      <div id="panel-13-text" class="clip panel-body" data-start="143.25" data-duration="7.28" data-track-index="50">«إِنِّي أُحِبُّ أَنْ أَسْمَعَهُ مِنْ غَيْرِي»، فَقَرَأَ عَلَيْهِ ﷺ مِنْ سُورَةِ النِّسَاءِ¹.</div>
+      <div id="panel-13-chip" class="clip scene-chip" data-start="143.25" data-duration="7.28" data-track-index="51">13 / 13</div>
+      <div id="q-prompt" class="clip" data-start="150.53" data-duration="5.2" data-track-index="52">أي حرف يبدأ به «قرآن»؟</div>
+      <div id="q-answer" class="clip" data-start="152.03" data-duration="3.7" data-track-index="53">ق</div>
+      <div id="outro-rule" class="clip" data-start="155.73" data-duration="3.4" data-track-index="54"></div>
+      <div id="outro-big" class="clip" data-start="155.73" data-duration="3.4" data-track-index="55">حدائق سلمان</div>
+      <div id="outro-small" class="clip" data-start="155.73" data-duration="3.4" data-track-index="56">حديقة الطفل المسلم</div>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo("#bg", { scale: 1.16 }, { scale: 1.26, duration: 159.13, ease: "none" }, 0);
+      tl.fromTo("#art", { scale: 1.0 }, { scale: 1.085, duration: 159.13, ease: "none" }, 0);
+      tl.fromTo("#progress", { scaleX: 0 }, { scaleX: 1, duration: 159.13, ease: "none" }, 0);
+      tl.fromTo("#intro-ring", { opacity: 0, scale: 0.72 }, { opacity: 1, scale: 1, duration: 0.9, ease: "power3.out" }, 0);
+      tl.to("#intro-ring", { opacity: 0, scale: 1.16, duration: 0.62, ease: "power2.in" }, 2.7);
+      tl.fromTo("#intro-kicker", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.12);
+      tl.to("#intro-kicker", { opacity: 0, duration: 0.42 }, 2.7);
+      tl.fromTo("#intro-letter", { opacity: 0, scale: 0.6, y: 26 }, { opacity: 1, scale: 1, y: 0, duration: 0.85, ease: "back.out(1.5)" }, 0.2);
+      tl.to("#intro-letter", { opacity: 0, scale: 1.12, duration: 0.42 }, 2.7);
+      tl.fromTo("#intro-word", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.55);
+      tl.to("#intro-word", { opacity: 0, y: -14, duration: 0.42 }, 2.7);
+      tl.fromTo("#kicker", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.62, ease: "power2.out" }, 3.26);
+      tl.to("#kicker", { opacity: 0, duration: 0.42 }, 6.1);
+      tl.fromTo("#badge-1", { opacity: 0, x: -46 }, { opacity: 1, x: 0, duration: 0.62, ease: "power2.out" }, 3.36);
+      tl.to("#badge-1", { opacity: 0, duration: 0.42 }, 6.1);
+      tl.fromTo("#badge-2", { opacity: 0, x: -46 }, { opacity: 1, x: 0, duration: 0.62, ease: "power2.out" }, 3.54);
+      tl.to("#badge-2", { opacity: 0, duration: 0.42 }, 6.1);
+      tl.fromTo("#title-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.55, ease: "power2.out" }, 3.44);
+      tl.to("#title-rule", { opacity: 0, duration: 0.42 }, 6.1);
+      tl.fromTo("#title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.72, ease: "power3.out" }, 3.54);
+      tl.to("#title", { opacity: 0, y: -18, duration: 0.42 }, 6.1);
+      tl.fromTo("#panel-1", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 6.6);
+      tl.to("#panel-1", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 19.78);
+      tl.fromTo("#panel-1-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 6.78);
+      tl.to("#panel-1-text", { opacity: 0, duration: 0.42 }, 19.78);
+      tl.fromTo("#panel-1-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 6.9);
+      tl.to("#panel-1-chip", { opacity: 0, duration: 0.3 }, 19.78);
+      tl.fromTo("#panel-2", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 20.28);
+      tl.to("#panel-2", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 23.46);
+      tl.fromTo("#panel-2-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 20.46);
+      tl.to("#panel-2-text", { opacity: 0, duration: 0.42 }, 23.46);
+      tl.fromTo("#panel-2-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 20.58);
+      tl.to("#panel-2-chip", { opacity: 0, duration: 0.3 }, 23.46);
+      tl.fromTo("#panel-3", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 23.96);
+      tl.to("#panel-3", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 37.01);
+      tl.fromTo("#panel-3-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 24.14);
+      tl.to("#panel-3-text", { opacity: 0, duration: 0.42 }, 37.01);
+      tl.fromTo("#panel-3-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 24.26);
+      tl.to("#panel-3-chip", { opacity: 0, duration: 0.3 }, 37.01);
+      tl.fromTo("#panel-4", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 37.51);
+      tl.to("#panel-4", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 49.63);
+      tl.fromTo("#panel-4-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 37.69);
+      tl.to("#panel-4-text", { opacity: 0, duration: 0.42 }, 49.63);
+      tl.fromTo("#panel-4-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 37.81);
+      tl.to("#panel-4-chip", { opacity: 0, duration: 0.3 }, 49.63);
+      tl.fromTo("#panel-5", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 50.13);
+      tl.to("#panel-5", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 63.18);
+      tl.fromTo("#panel-5-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 50.31);
+      tl.to("#panel-5-text", { opacity: 0, duration: 0.42 }, 63.18);
+      tl.fromTo("#panel-5-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 50.43);
+      tl.to("#panel-5-chip", { opacity: 0, duration: 0.3 }, 63.18);
+      tl.fromTo("#panel-6", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 63.68);
+      tl.to("#panel-6", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 75.66);
+      tl.fromTo("#panel-6-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 63.86);
+      tl.to("#panel-6-text", { opacity: 0, duration: 0.42 }, 75.66);
+      tl.fromTo("#panel-6-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 63.98);
+      tl.to("#panel-6-chip", { opacity: 0, duration: 0.3 }, 75.66);
+      tl.fromTo("#panel-7", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 76.16);
+      tl.to("#panel-7", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 86.14);
+      tl.fromTo("#panel-7-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 76.34);
+      tl.to("#panel-7-text", { opacity: 0, duration: 0.42 }, 86.14);
+      tl.fromTo("#panel-7-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 76.46);
+      tl.to("#panel-7-chip", { opacity: 0, duration: 0.3 }, 86.14);
+      tl.fromTo("#panel-8", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 86.64);
+      tl.to("#panel-8", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 97.29);
+      tl.fromTo("#panel-8-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 86.82);
+      tl.to("#panel-8-text", { opacity: 0, duration: 0.42 }, 97.29);
+      tl.fromTo("#panel-8-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 86.94);
+      tl.to("#panel-8-chip", { opacity: 0, duration: 0.3 }, 97.29);
+      tl.fromTo("#panel-9", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 97.79);
+      tl.to("#panel-9", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 110.84);
+      tl.fromTo("#panel-9-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 97.97);
+      tl.to("#panel-9-text", { opacity: 0, duration: 0.42 }, 110.84);
+      tl.fromTo("#panel-9-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 98.09);
+      tl.to("#panel-9-chip", { opacity: 0, duration: 0.3 }, 110.84);
+      tl.fromTo("#panel-10", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 111.34);
+      tl.to("#panel-10", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 117.32);
+      tl.fromTo("#panel-10-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 111.52);
+      tl.to("#panel-10-text", { opacity: 0, duration: 0.42 }, 117.32);
+      tl.fromTo("#panel-10-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 111.64);
+      tl.to("#panel-10-chip", { opacity: 0, duration: 0.3 }, 117.32);
+      tl.fromTo("#panel-11", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 117.82);
+      tl.to("#panel-11", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 129.07);
+      tl.fromTo("#panel-11-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 118);
+      tl.to("#panel-11-text", { opacity: 0, duration: 0.42 }, 129.07);
+      tl.fromTo("#panel-11-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 118.12);
+      tl.to("#panel-11-chip", { opacity: 0, duration: 0.3 }, 129.07);
+      tl.fromTo("#panel-12", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 129.57);
+      tl.to("#panel-12", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 142.75);
+      tl.fromTo("#panel-12-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 129.75);
+      tl.to("#panel-12-text", { opacity: 0, duration: 0.42 }, 142.75);
+      tl.fromTo("#panel-12-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 129.87);
+      tl.to("#panel-12-chip", { opacity: 0, duration: 0.3 }, 142.75);
+      tl.fromTo("#panel-13", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 143.25);
+      tl.to("#panel-13", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 150.03);
+      tl.fromTo("#panel-13-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 143.43);
+      tl.to("#panel-13-text", { opacity: 0, duration: 0.42 }, 150.03);
+      tl.fromTo("#panel-13-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.42, ease: "back.out(2)" }, 143.55);
+      tl.to("#panel-13-chip", { opacity: 0, duration: 0.3 }, 150.03);
+      tl.fromTo("#q-prompt", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 150.63);
+      tl.to("#q-prompt", { opacity: 0, duration: 0.42 }, 155.23);
+      tl.fromTo("#q-answer", { opacity: 0, scale: 0.72 }, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 152.13);
+      tl.to("#q-answer", { opacity: 0, scale: 0.94, duration: 0.42 }, 155.23);
+      tl.fromTo("#outro-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "power2.out" }, 155.93);
+      tl.fromTo("#outro-big", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.66, ease: "power3.out" }, 156.07);
+      tl.fromTo("#outro-small", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 156.35);
+      tl.to("#art", { opacity: 0.28, duration: 0.8, ease: "power2.inOut" }, 155.83);
+
+      window.__timelines["ar-21-c1"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

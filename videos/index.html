@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>حدائق سلمان — بطاقات القصص</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-600-arabic.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-600-latin.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-700-arabic.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-800-arabic.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("assets/fonts/Cairo-800-latin.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("assets/fonts/Amiri-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("assets/fonts/Amiri-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("assets/fonts/Amiri-700-arabic.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("assets/fonts/Amiri-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Lalezar";
+        src: url("assets/fonts/Lalezar-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Lalezar";
+        src: url("assets/fonts/Lalezar-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #04150f; font-family: "Cairo", system-ui, sans-serif; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+      .clip { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; }
+      #glow { background: radial-gradient(70% 46% at 50% 40%, rgba(16,185,129,0.3) 0%, rgba(4,21,15,0) 70%); }
+      #ring { top: 690px; left: 270px; width: 540px; height: 540px; border-radius: 50%; border: 3px solid rgba(16,185,129,0.4); }
+      #big { top: 810px; width: 1080px; text-align: center; direction: rtl; font-family: "Lalezar","Cairo",sans-serif; font-size: 84px; color: #fffbeb; }
+      #rule { top: 954px; left: 470px; width: 140px; height: 6px; border-radius: 999px; background: #10b981; }
+      #count { top: 1004px; width: 1080px; text-align: center; direction: rtl; font-size: 46px; font-weight: 700; color: #6ee7b7; }
+      #small { top: 1092px; width: 1080px; text-align: center; font-size: 34px; font-weight: 700; letter-spacing: 0.16em; color: rgba(167,243,208,0.8); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="8" data-width="1080" data-height="1920">
+      <div id="glow" class="clip" data-start="0" data-duration="8" data-track-index="0"></div>
+      <div id="ring" class="clip" data-start="0" data-duration="8" data-track-index="1"></div>
+      <div id="big" class="clip" data-start="0" data-duration="8" data-track-index="2">حدائق سلمان</div>
+      <div id="rule" class="clip" data-start="0" data-duration="8" data-track-index="3"></div>
+      <div id="count" class="clip" data-start="0" data-duration="8" data-track-index="4">114 قصة مصوَّرة</div>
+      <div id="small" class="clip" data-start="0" data-duration="8" data-track-index="5">SALMAN'S GARDEN · STORY CARDS</div>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#ring", { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 1.1, ease: "power3.out" }, 0);
+      tl.fromTo("#big", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.25);
+      tl.fromTo("#rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.6, ease: "power2.out" }, 0.55);
+      tl.fromTo("#count", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.75);
+      tl.fromTo("#small", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.95);
+      tl.to("#ring", { scale: 1.1, duration: 6.8, ease: "none" }, 1.2);
+      tl.to("#glow", { opacity: 0, duration: 1.0, ease: "power2.inOut" }, 6.9);
+      tl.to("#big", { opacity: 0, duration: 0.8 }, 7);
+      tl.to("#count", { opacity: 0, duration: 0.6 }, 7.1);
+      tl.to("#small", { opacity: 0, duration: 0.6 }, 7.1);
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

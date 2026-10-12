@@ -1,0 +1,136 @@
+name: Videos
+
+# فيديوهات القصص (HyperFrames):
+#   • validate — على كل PR: يولّد التركيبات ويفحصها (lint + اتساق) بلا متصفح، فهي بوابة رخيصة.
+#   • render   — يدوي (workflow_dispatch): يعرض MP4 فعليًا. يحتاج Chrome، و عدّاءات GitHub
+#                تملك إنترنت لتنزيله (بخلاف بيئات sandbox المقيدة)، فينجح العرض هنا.
+
+on:
+  pull_request:
+    paths:
+      - 'src/salman/data/**'
+      - 'tools/videos/**'
+      - 'videos/**'
+      - 'public/salman/art/stories/**'
+      - 'public/salman/audio/stories/**'
+      - 'public/fonts/**'
+      - '.github/workflows/videos.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/videos/**'
+      - '.github/workflows/videos.yml'
+  workflow_dispatch:
+    inputs:
+      garden:
+        description: 'أي حديقة تُعرض (أو all)'
+        required: true
+        default: 'english'
+        type: choice
+        options: [english, math, quran, arabic, all]
+      quality:
+        description: 'جودة العرض'
+        required: true
+        default: 'looks'
+        type: choice
+        options: [draft, looks, delivery]
+      format:
+        description: 'صيغة الإطار (تُعاد التوليد بها قبل العرض)'
+        required: true
+        default: 'portrait'
+        type: choice
+        options: [portrait, landscape, square]
+      limit:
+        description: 'أقصى عدد فيديوهات (0 = الكل) — للتجربة السريعة'
+        required: false
+        default: '0'
+
+jobs:
+  validate:
+    name: Validate compositions (lint + consistency)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # HyperFrames يتطلب Node 22+
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build compositions from story data
+        run: npm run videos:build -- --format=${{ github.event.inputs.format || 'portrait' }}
+
+      - name: Lint + consistency gate
+        run: npm run videos:check
+
+  render:
+    name: Render MP4s (${{ github.event.inputs.garden || 'manual' }})
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Install FFmpeg (runner) 
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+
+      - name: Cache HyperFrames browser
+        id: browser-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/hyperframes
+          key: hf-browser-${{ runner.os }}
+
+      - name: Ensure Chrome Headless Shell
+        run: npx --yes hyperframes@0.8.149 browser ensure
+
+      - name: Build compositions
+        run: npm run videos:build -- --format=${{ github.event.inputs.format }}
+
+      - name: Validate before rendering
+        run: npm run videos:check
+
+      - name: Render
+        env:
+          GARDEN: ${{ github.event.inputs.garden }}
+          QUALITY: ${{ github.event.inputs.quality }}
+          LIMIT: ${{ github.event.inputs.limit }}
+        run: |
+          ARGS="--quality=$QUALITY"
+          if [ "$GARDEN" != "all" ]; then ARGS="$ARGS --garden=$GARDEN"; fi
+          if [ -n "$LIMIT" ] && [ "$LIMIT" != "0" ]; then ARGS="$ARGS --limit=$LIMIT"; fi
+          echo "render-all $ARGS"
+          npm run videos:render -- $ARGS
+
+      - name: Upload rendered videos
+        uses: actions/upload-artifact@v4
+        with:
+          name: story-videos-${{ github.event.inputs.garden }}-${{ github.event.inputs.format }}-${{ github.event.inputs.quality }}
+          path: videos/renders/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload render report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: render-report
+          path: videos/renders/**/render-report.json
+          if-no-files-found: ignore
+          retention-days: 14
