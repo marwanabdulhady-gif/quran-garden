@@ -7,6 +7,10 @@
 |---|---|---|---|---|---|---|---|---|
 | 2026-10-12 | `393099a` | 38216631970 | english | draft | portrait | 3 (تجربة دخان) | 9.9 MB | `story-videos-english-portrait-draft` |
 | 2026-10-12 | `5f42ef0` | 38219398745 | english | looks | portrait | 25 | 230.5 MB | `story-videos-english-portrait-looks` |
+| 2026-10-12 | `26366d8` | 38227548434 | math,quran | delivery | portrait | 33 | 529.7 MB | `story-videos-math+quran-portrait-delivery` |
+| 2026-10-12 | `f60ed24` | 38235647987 | arabic · part1 (1–19) | draft | portrait | 19 | 115.8 MB | `story-videos-arabic-portrait-draft-part1` |
+| 2026-10-12 | `18f6983` | 38235718032 | arabic · part2 (20–38) | draft | portrait | 19 | 118.8 MB | `story-videos-arabic-portrait-draft-part2` |
+| 2026-10-12 | `4c4430d` | 38235741527 | arabic · part3 (39–56) | draft | portrait | 18 | 114.8 MB | `story-videos-arabic-portrait-draft-part3` |
 
 ## قيد مهم: حدّ الـ 6 ساعات للوظيفة
 
@@ -16,7 +20,9 @@
 > ‎`offset=19 limit=19`‎ (ar-10-c1→ar-19-c1) · part3 = ‎`offset=38 limit=18`‎
 > (ar-19-c2→ar-28-c1). الأرتيفاكتات: `story-videos-arabic-portrait-draft-part1/2/3`.
 >
-> حالة الإطلاق: part1 ✓ (`f60ed24`) · part2 ✓ (`18f6983`) · part3 ✓ (هذا الـ commit).
+> **اكتمل ✓:** الدفعات الثلاث عُرضت بنجاح (56 فيديو، ‎~349.5 MB‎ إجمالًا) بالتوازي، وكلّ
+> فيديو تحقّق منه `render-all.mjs` عبر ffprobe. نزّل `story-videos-arabic-portrait-draft-part1/2/3`
+> من صفحات الـ run وادمجها (كلّ جزء فيديوهات مستقلة، لا حاجة لدمج ملفات).
 
 زمن العرض تهيمن عليه **لقطات الإطارات في المتصفح** (30fps، 1080×1920) ولا يتغيّر كثيرًا
 باختيار الجودة — الجودة (`draft`/`looks`/`delivery`) تغيّر **ترميز ffmpeg** فقط
