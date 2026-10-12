@@ -2,8 +2,14 @@ name: Videos
 
 # فيديوهات القصص (HyperFrames):
 #   • validate — على كل PR: يولّد التركيبات ويفحصها (lint + اتساق) بلا متصفح، فهي بوابة رخيصة.
-#   • render   — يدوي (workflow_dispatch): يعرض MP4 فعليًا. يحتاج Chrome، و عدّاءات GitHub
-#                تملك إنترنت لتنزيله (بخلاف بيئات sandbox المقيدة)، فينجح العرض هنا.
+#   • render   — يعرض MP4 فعليًا. يحتاج Chrome، وعدّاءات GitHub تملك إنترنت لتنزيله
+#                (بخلاف بيئات sandbox المقيّدة)، فينجح العرض هنا.
+#
+# كيف يُطلَق render:
+#   1) يدويًا عبر workflow_dispatch (بعد دمج هذا الملف إلى main — شرط GitHub).
+#   2) أو بدفع commit يحمل [render-videos] في رسالته إلى main أو أي فرع arena/*.
+#      هذا الإطلاق الافتراضي صغير (english/draft/limit=3) كتجربة دخان؛ حدّد المدخلات
+#      يدويًا للعرض الكامل.
 
 on:
   pull_request:
@@ -16,9 +22,10 @@ on:
       - 'public/fonts/**'
       - '.github/workflows/videos.yml'
   push:
-    branches: [main]
+    branches: [main, 'arena/*']
     paths:
       - 'tools/videos/**'
+      - 'videos/**'
       - '.github/workflows/videos.yml'
   workflow_dispatch:
     inputs:
@@ -69,7 +76,10 @@ jobs:
 
   render:
     name: Render MP4s
-    if: github.event_name == 'workflow_dispatch'
+    # يدوي دائمًا، أو عند دفع commit يحمل علامة [render-videos]
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'push' && contains(github.event.head_commit.message, '[render-videos]'))
     runs-on: ubuntu-latest
     timeout-minutes: 360
     steps:
@@ -80,10 +90,18 @@ jobs:
           node-version: 22
           cache: npm
 
-      - name: Install
-        run: npm ci
+      # يحسم المدخلات مرة واحدة: قيم workflow_dispatch إن وُجدت، وإلا افتراضيات
+      # الإطلاق بالـ commit (تجربة دخان صغيرة) — حتى لا ينكسر build على --format= فارغة.
+      - name: Resolve render params
+        run: |
+          {
+            echo "garden=${{ github.event.inputs.garden || 'english' }}"
+            echo "quality=${{ github.event.inputs.quality || 'draft' }}"
+            echo "format=${{ github.event.inputs.format || 'portrait' }}"
+            echo "limit=${{ github.event.inputs.limit || '3' }}"
+          } >> "$GITHUB_ENV"
 
-      - name: Install FFmpeg (runner) 
+      - name: Install FFmpeg (runner)
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
@@ -91,7 +109,6 @@ jobs:
           ffprobe -version | head -1
 
       - name: Cache HyperFrames browser
-        id: browser-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/hyperframes
@@ -100,28 +117,27 @@ jobs:
       - name: Ensure Chrome Headless Shell
         run: npx --yes hyperframes@0.8.149 browser ensure
 
+      - name: Install
+        run: npm ci
+
       - name: Build compositions
-        run: npm run videos:build -- --format=${{ github.event.inputs.format }}
+        run: npm run videos:build -- --format=${{ env.format }}
 
       - name: Validate before rendering
         run: npm run videos:check
 
       - name: Render
-        env:
-          GARDEN: ${{ github.event.inputs.garden }}
-          QUALITY: ${{ github.event.inputs.quality }}
-          LIMIT: ${{ github.event.inputs.limit }}
         run: |
-          ARGS="--quality=$QUALITY"
-          if [ "$GARDEN" != "all" ]; then ARGS="$ARGS --garden=$GARDEN"; fi
-          if [ -n "$LIMIT" ] && [ "$LIMIT" != "0" ]; then ARGS="$ARGS --limit=$LIMIT"; fi
+          ARGS="--quality=$quality"
+          if [ "$garden" != "all" ]; then ARGS="$ARGS --garden=$garden"; fi
+          if [ -n "$limit" ] && [ "$limit" != "0" ]; then ARGS="$ARGS --limit=$limit"; fi
           echo "render-all $ARGS"
           npm run videos:render -- $ARGS
 
       - name: Upload rendered videos
         uses: actions/upload-artifact@v4
         with:
-          name: story-videos-${{ github.event.inputs.garden }}-${{ github.event.inputs.format }}-${{ github.event.inputs.quality }}
+          name: story-videos-${{ env.garden }}-${{ env.format }}-${{ env.quality }}
           path: videos/renders/
           if-no-files-found: error
           retention-days: 14
@@ -130,7 +146,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: render-report
+          name: render-report-${{ env.garden }}-${{ env.format }}
           path: videos/renders/**/render-report.json
           if-no-files-found: ignore
           retention-days: 14
