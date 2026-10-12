@@ -68,7 +68,7 @@ jobs:
         run: npm run videos:check
 
   render:
-    name: Render MP4s (${{ github.event.inputs.garden || 'manual' }})
+    name: Render MP4s
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 360
