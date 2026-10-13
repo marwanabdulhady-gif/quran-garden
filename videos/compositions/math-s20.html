@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ar">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>بالونات العيد — حدائق سلمان</title>
+    <script src="../vendor/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-600-arabic.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-600-latin.woff2") format("woff2");
+        font-weight: 600;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-700-arabic.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-800-arabic.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Cairo";
+        src: url("../assets/fonts/Cairo-800-latin.woff2") format("woff2");
+        font-weight: 800;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-700-arabic.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Amiri";
+        src: url("../assets/fonts/Amiri-700-latin.woff2") format("woff2");
+        font-weight: 700;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+      @font-face {
+        font-family: "Lalezar";
+        src: url("../assets/fonts/Lalezar-400-arabic.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+      }
+      @font-face {
+        font-family: "Lalezar";
+        src: url("../assets/fonts/Lalezar-400-latin.woff2") format("woff2");
+        font-weight: 400;
+        font-style: normal;
+        font-display: block;
+        unicode-range: U+0000-024F, U+2000-206F;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: #04150f;
+        font-family: "Cairo", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #04150f; }
+
+      .clip { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; }
+
+      /* الخلفية: نفس الرسم مضبَّبًا يملأ الإطار، فلا يظهر شريط أسود في العمودي */
+      #bg {
+        background-image: url("../assets/stories/math-s20.jpg");
+        background-size: cover;
+        background-position: center;
+        filter: blur(46px) saturate(1.2) brightness(0.42);
+        transform: scale(1.18);
+      }
+      #scrim {
+        background:
+          radial-gradient(120% 70% at 50% 12%, rgba(4, 21, 15, 0.25) 0%, rgba(4, 21, 15, 0.78) 62%, rgba(4, 21, 15, 0.94) 100%),
+          linear-gradient(to bottom, rgba(4, 21, 15, 0.55) 0%, rgba(4, 21, 15, 0) 26%, rgba(4, 21, 15, 0) 52%, rgba(4, 21, 15, 0.9) 88%);
+      }
+
+      /* شرائح علوية */
+      /*
+        اتجاه النص: لا نضع dir على <html> — ذلك يكسر العرض الصامت في HyperFrames
+        (lint: html_dir_attribute_breaks_render). نضع direction على كل عنصر نصّي بدلًا منه،
+        فيبقى التنسيق العربي صحيحًا ويعمل العرض.
+      */
+      #kicker {
+        top: 96px; right: 60px; left: auto;
+        width: auto; height: 62px; padding: 0 26px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(16, 185, 129, 0.16);
+        border: 2px solid rgba(16, 185, 129, 0.55);
+        border-radius: 999px;
+        color: #a7f3d0; font-size: 30px; font-weight: 700; letter-spacing: 0.04em;
+        direction: rtl;
+        white-space: nowrap;
+      }
+      .badge {
+        top: 96px; left: 60px;
+        width: auto; height: 62px; padding: 0 26px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255, 251, 235, 0.94);
+        border-radius: 999px;
+        color: #134e4a; font-size: 40px; font-weight: 800;
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.3);
+        direction: rtl;
+        white-space: nowrap;
+      }
+
+      /* البطاقة الفنية */
+      #art {
+        top: 352px; left: 60px; width: 960px; height: 540px;
+        object-fit: cover;
+        border-radius: 34px;
+        border: 5px solid rgba(255, 251, 235, 0.92);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.62);
+        overflow: hidden;
+      }
+
+      /* العنوان */
+      #title-rule {
+        top: 960px; left: 486px; width: 108px; height: 8px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #10b981, #6ee7b7);
+      }
+      #title {
+        top: 990px; width: 1080px; padding: 0 60px;
+        text-align: center; color: #fffbeb;
+        font-size: 66px; font-weight: 800; line-height: 1.32;
+        direction: rtl;
+        text-shadow: 0 6px 26px rgba(0, 0, 0, 0.6);
+      }
+
+      /* لوحة النص */
+      .panel {
+        top: 960px; left: 72px; width: 936px;
+        padding: 40px 44px;
+        background: rgba(255, 251, 235, 0.96);
+        border-radius: 30px;
+        border-right: 12px solid #10b981;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+      }
+      .panel-body {
+        position: absolute; top: 40px; left: 44px; right: 44px;
+        color: #1f2937; font-size: 46px; font-weight: 600; line-height: 1.85;
+        text-align: right;
+        direction: rtl;
+      }
+      .panel-quran {
+        font-family: "Amiri", "Cairo", serif;
+        font-size: 51.52px;
+        line-height: 2.1;
+        color: #134e4a;
+      }
+      .scene-chip {
+        top: 244px; left: 450px; width: 180px; height: 52px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(4, 21, 15, 0.62);
+        border: 2px solid rgba(167, 243, 208, 0.5);
+        border-radius: 999px;
+        color: #a7f3d0; font-size: 27.6px; font-weight: 700;
+        direction: rtl;
+      }
+
+      /* الحرف الكبير في المشهد الافتتاحي */
+      #intro-letter {
+        top: 790px; width: 1080px;
+        text-align: center;
+        font-family: "Lalezar", "Cairo", sans-serif;
+        font-size: 200px; line-height: 1;
+        direction: rtl;
+        color: #fffbeb;
+        text-shadow: 0 0 60px rgba(16, 185, 129, 0.6), 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+      #intro-word {
+        top: 1028px; width: 1080px;
+        text-align: center;
+        font-size: 69.3px; font-weight: 800;
+        direction: rtl;
+        color: #6ee7b7;
+      }
+      #intro-kicker {
+        top: 650px; width: 1080px;
+        text-align: center;
+        font-size: 30px; font-weight: 700; letter-spacing: 0.24em;
+        color: rgba(167, 243, 208, 0.85); text-transform: uppercase;
+      }
+      #intro-ring {
+        top: 710px; left: 290px; width: 500px; height: 500px;
+        border-radius: 50%;
+        border: 3px solid rgba(16, 185, 129, 0.35);
+        box-shadow: 0 0 90px rgba(16, 185, 129, 0.22) inset;
+      }
+
+      /* بطاقة السؤال */
+      #q-prompt {
+        top: 960px; left: 72px; width: 936px;
+        text-align: center; color: #fffbeb;
+        font-size: 46px; font-weight: 800; line-height: 1.6;
+        direction: rtl;
+      }
+      #q-answer {
+        top: 1130px; left: 300px; width: 480px; height: 132px;
+        display: flex; align-items: center; justify-content: center;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 28px;
+        color: #ffffff; font-size: 62px; font-weight: 800;
+        box-shadow: 0 24px 60px rgba(16, 185, 129, 0.4);
+      }
+
+      /* الختام */
+      #outro-big {
+        top: 840px; width: 1080px; text-align: center;
+        font-family: "Lalezar", "Cairo", sans-serif;
+        font-size: 84px; color: #fffbeb;
+        direction: rtl;
+        text-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+      }
+      #outro-small {
+        top: 986px; width: 1080px; text-align: center;
+        font-size: 34px; font-weight: 700; letter-spacing: 0.14em;
+        direction: rtl;
+        color: rgba(167, 243, 208, 0.9);
+      }
+      #outro-rule {
+        top: 952px; left: 470px; width: 140px; height: 6px;
+        border-radius: 999px; background: #10b981;
+      }
+
+      #progress {
+        top: 1896px; left: 0; width: 1080px; height: 24px;
+        background: linear-gradient(90deg, #10b981, #6ee7b7);
+        transform-origin: right center;
+        transform: scaleX(0);
+      }
+</style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="math-s20"
+      data-start="0"
+      data-duration="20.62"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="bg" class="clip" data-start="0" data-duration="20.62" data-track-index="0"></div>
+      <div id="scrim" class="clip" data-start="0" data-duration="20.62" data-track-index="1"></div>
+      <img id="art" class="clip" src="../assets/stories/math-s20.jpg" alt="بالونات العيد" data-start="0" data-duration="20.62" data-track-index="2" />
+      <div id="progress" class="clip" data-start="0" data-duration="20.62" data-track-index="3"></div>
+      <div id="intro-ring" class="clip" data-start="0" data-duration="2.6" data-track-index="4"></div>
+      <div id="intro-kicker" class="clip" data-start="0" data-duration="2.6" data-track-index="5">حدائق النور · العدّ</div>
+      <div id="intro-letter" class="clip" data-start="0" data-duration="2.6" data-track-index="6">20</div>
+      <div id="intro-word" class="clip" data-start="0" data-duration="2.6" data-track-index="7">بالونات العيد</div>
+      <div id="kicker" class="clip" data-start="2.6" data-duration="3.4" data-track-index="8">حدائق النور · العدّ</div>
+      <div id="badge-1" class="clip badge" data-start="2.6" data-duration="3.4" data-track-index="9" >العدد ٢٠</div>
+      <div id="title-rule" class="clip" data-start="2.6" data-duration="3.4" data-track-index="10"></div>
+      <h1 id="title" class="clip" data-start="2.6" data-duration="3.4" data-track-index="11">بالونات العيد</h1>
+      <div id="panel-1" class="clip panel" data-start="6" data-duration="6.02" data-track-index="12"></div>
+      <div id="panel-1-text" class="clip panel-body" data-start="6" data-duration="6.02" data-track-index="13">في يوم العيد عشرون بالونة ملوّنة. عدّ معنا حتى عشرين. كم بالونة في العيد؟</div>
+      <div id="q-prompt" class="clip" data-start="12.02" data-duration="5.2" data-track-index="14">كم العدد؟</div>
+      <div id="q-answer" class="clip" data-start="13.52" data-duration="3.7" data-track-index="15">٢٠</div>
+      <div id="outro-rule" class="clip" data-start="17.22" data-duration="3.4" data-track-index="16"></div>
+      <div id="outro-big" class="clip" data-start="17.22" data-duration="3.4" data-track-index="17">حدائق سلمان</div>
+      <div id="outro-small" class="clip" data-start="17.22" data-duration="3.4" data-track-index="18">حديقة الطفل المسلم</div>
+      <audio id="narration" src="../assets/audio/math-s20.mp3" data-start="2.6" data-duration="7.37" data-volume="1" data-hf-media-start-basis="local"></audio>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo("#bg", { scale: 1.16 }, { scale: 1.26, duration: 20.62, ease: "none" }, 0);
+      tl.fromTo("#art", { scale: 1.0 }, { scale: 1.085, duration: 20.62, ease: "none" }, 0);
+      tl.fromTo("#progress", { scaleX: 0 }, { scaleX: 1, duration: 20.62, ease: "none" }, 0);
+      tl.fromTo("#intro-ring", { opacity: 0, scale: 0.72 }, { opacity: 1, scale: 1, duration: 0.9, ease: "power3.out" }, 0);
+      tl.to("#intro-ring", { opacity: 0, scale: 1.16, duration: 0.62, ease: "power2.in" }, 2.1);
+      tl.fromTo("#intro-kicker", { opacity: 0, y: -18 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.12);
+      tl.to("#intro-kicker", { opacity: 0, duration: 0.42 }, 2.1);
+      tl.fromTo("#intro-letter", { opacity: 0, scale: 0.82 }, { opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.4)" }, 0.2);
+      tl.to("#intro-letter", { opacity: 0, duration: 0.42 }, 2.1);
+      tl.fromTo("#intro-word", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.5);
+      tl.to("#intro-word", { opacity: 0, y: -14, duration: 0.42 }, 2.1);
+      tl.fromTo("#kicker", { opacity: 0, x: 44 }, { opacity: 1, x: 0, duration: 0.62, ease: "power2.out" }, 2.66);
+      tl.to("#kicker", { opacity: 0, duration: 0.42 }, 5.5);
+      tl.fromTo("#badge-1", { opacity: 0, x: -46 }, { opacity: 1, x: 0, duration: 0.62, ease: "power2.out" }, 2.76);
+      tl.to("#badge-1", { opacity: 0, duration: 0.42 }, 5.5);
+      tl.fromTo("#title-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.55, ease: "power2.out" }, 2.84);
+      tl.to("#title-rule", { opacity: 0, duration: 0.42 }, 5.5);
+      tl.fromTo("#title", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.72, ease: "power3.out" }, 2.94);
+      tl.to("#title", { opacity: 0, y: -18, duration: 0.42 }, 5.5);
+      tl.fromTo("#panel-1", { opacity: 0, y: 54, scale: 0.975 }, { opacity: 1, y: 0, scale: 1, duration: 0.62, ease: "power3.out" }, 6);
+      tl.to("#panel-1", { opacity: 0, y: -30, duration: 0.42, ease: "power2.in" }, 11.52);
+      tl.fromTo("#panel-1-text", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.58, ease: "power2.out" }, 6.18);
+      tl.to("#panel-1-text", { opacity: 0, duration: 0.42 }, 11.52);
+      tl.fromTo("#q-prompt", { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 12.12);
+      tl.to("#q-prompt", { opacity: 0, duration: 0.42 }, 16.72);
+      tl.fromTo("#q-answer", { opacity: 0, scale: 0.72 }, { opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.8)" }, 13.62);
+      tl.to("#q-answer", { opacity: 0, scale: 0.94, duration: 0.42 }, 16.72);
+      tl.fromTo("#outro-rule", { opacity: 0, scaleX: 0 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "power2.out" }, 17.42);
+      tl.fromTo("#outro-big", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.66, ease: "power3.out" }, 17.56);
+      tl.fromTo("#outro-small", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, 17.84);
+      tl.to("#art", { opacity: 0.28, duration: 0.8, ease: "power2.inOut" }, 17.32);
+
+      window.__timelines["math-s20"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

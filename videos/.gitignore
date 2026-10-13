@@ -1,0 +1,16 @@
+# مخرجات وأصول مولَّدة — تُعاد بـ `npm run videos:build`، فلا نلتزمها.
+
+# الفيديوهات المعروضة (MP4) — كبيرة وتُنتَج محليًا أو في CI
+renders/
+
+# أصول منسوخة من public/ و node_modules/gsap عند التوليد:
+#   assets/stories  ← public/salman/art/stories
+#   assets/audio    ← public/salman/audio/stories
+#   assets/fonts    ← public/fonts
+#   vendor/gsap     ← node_modules/gsap
+assets/
+vendor/
+
+# سجلات ومخابئ HyperFrames
+.hyperframes/
+*.log
